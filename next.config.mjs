@@ -7,7 +7,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: "frame-ancestors 'self' https://carter-portfolio.fyi",
+            value: "frame-ancestors 'self' https://carter-portfolio.fyi https://www.carter-portfolio.fyi",
           },
         ],
       },

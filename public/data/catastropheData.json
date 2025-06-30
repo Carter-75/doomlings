@@ -1,0 +1,212 @@
+[
+  {
+    "name": "Planned Obsolescence",
+    "description": "-1 Gene Pool. Discard 1 from your hand for each Techling in your trait pile. Then draw 1 for each card you discard.",
+    "worldsEnd": "Discard 2 attachments in your trait pile."
+  },
+  {
+    "name": "Titan's Call",
+    "description": "-1 Gene Pool. If you have any dominants in your trait pile, discard all but 1 from your hand.",
+    "worldsEnd": "+3 if you have a dominant Mythling, Dinoling, or Techling in your trait pile. +2 if you have 2."
+  },
+  {
+    "name": "Anoxic Event",
+    "description": "-1 Gene Pool. Discard all face value 3 or higher from your hand, then stabilize.",
+    "worldsEnd": "-7 if your trait count is higher than 20."
+  },
+  {
+    "name": "Discovery Of Magic",
+    "description": "-1 Gene Pool. Discard 3 from your hand and stabilize. (Cannot discard Mythlings.)",
+    "worldsEnd": "If you hold any Mythlings, add their face value to your final score."
+  },
+    {
+        "name": "Mega Tsunami",
+        "description": "-1 Gene Pool. Pass your hand to the right.",
+        "worldsEnd": "Discard 1 red trait from your trait pile at random."
+    },
+    {
+        "name": "AI Takeover",
+        "description": "-1 Gene Pool. Discard all but 1 card from your hand.",
+        "worldsEnd": "Each colorless trait is now worth 2. Ignore all colorless trait effects. (Excluding dominants.)"
+    },
+    {
+        "name": "Nuclear Winter",
+        "description": "-1 Gene Pool. Stabilize. Then discard one card from your hand.",
+        "worldsEnd": "Discard one colorless trait from your trait pile."
+    },
+    {
+        "name": "Moonpocalypse",
+        "description": "-2 Gene Pool. This cata cannot reduce your gene pool lower than 4.",
+        "worldsEnd": "-5 if your genepool is 4 or higher"
+    },
+    {
+        "name": "Isolation",
+        "description": "-1 Gene Pool. If you hold 3 or fewer cards in your hand, suppress one random card in your hand and stabilize.",
+        "worldsEnd": "If you hold 3 or fewer cards, add the face value of 1 card in your hand to your final score."
+    },
+    {
+        "name": "Eyes Open From Behind The Stars",
+        "description": "-1 Gene Pool. Discard 1 from your hand. The player(s) who discarded the lowest face value must also discard one from their trait pile.",
+        "worldsEnd": "Discard your highest value trait from your trait pile to the old god."
+    },
+    {
+        "name": "Bioengineered Plague",
+        "description": "-1 Gene Pool. Each player chooses a color. The player on your left discards all cards of that color from their hand.",
+        "worldsEnd": "Discard 1 random trait from the highest color count in your trait pile. (If 2 or more colors are tied, pick 1.)"
+    },
+    {
+        "name": "Impact Event",
+        "description": "-1 Gene Pool. Discard 1 trait in your hand for every dominant trait in your trait pile.",
+        "worldsEnd": "-1 for each trait in your trait pile with a face value of 3 or more."
+    },
+    {
+        "name": "The Four Horsemen",
+        "description": "-1 Gene Pool. Discard 1 trait from your trait pile.",
+        "worldsEnd": "Discard 1 trait from your trait pile with a face value of 4 or higher."
+    },
+    {
+        "name": "Grey Goo",
+        "description": "+0 Gene Pool. Discard your hand and stabilize.",
+        "worldsEnd": "-5 points to the player(s) with the most traits in their trait pile."
+    },
+    {
+        "name": "Retrovirus",
+        "description": "-1 Gene Pool. Discard 1 trait from your hand for every green traits in your trait pile.",
+        "worldsEnd": "-1 for every green traits in your trait pile"
+    },
+    {
+        "name": "Overpopulation",
+        "description": "+1 Gene Pool. Draw 1 card for every color type in your trait pile.",
+        "worldsEnd": "+4 points to the player(s) with the fewest traits in their trait pile."
+    },
+    {
+        "name": "Pulse Event",
+        "description": "-1 Gene Pool. Discard 1 card from your hand for every purple traits in your trait pile.",
+        "worldsEnd": "Discard 1 purple traits in your trait pile."
+    },
+    {
+        "name": "Solar Flare",
+        "description": "-1 Gene Pool. Discard half your hand rounded up.",
+        "worldsEnd": "-1 for every purple traits in your trait pile."
+    },
+    {
+        "name": "The Big One",
+        "description": "-1 Gene Pool. Give 1 card from your hand to the opponent(s) on your left and right.",
+        "worldsEnd": "-2 to your score for every color missing from your trait pile."
+    },
+    {
+        "name": "Mass Extinction",
+        "description": "-1 Gene Pool. Discard 1 card from your hand for every colorless trait in your trait pile.",
+        "worldsEnd": "Discard 1 green traits from your trait pile."
+    },
+    {
+        "name": "Super Volcano",
+        "description": "-1 Gene Pool. Discard 1 card from your hand for every blue trait in your trait pile.",
+        "worldsEnd": "-1 for every blue trait in your trait pile."
+    },
+    {
+        "name": "Ice Age",
+        "description": "-1 Gene Pool. Discard 1 trait from your hand for every red trait in your trait pile.",
+        "worldsEnd": "-1 for every red trait in your trait pile."
+    },
+    {
+        "name": "Nuclear Winter",
+        "description": "-2 Gene Pool. Stabilize.",
+        "worldsEnd": "Discard 1 colorless trait from your trait pile."
+    },
+    {
+        "name": "Glacial Meltdown",
+        "description": "-1 Gene Pool. Discard 2 cards from your hand at random.",
+        "worldsEnd": "Discard 1 blue trait from your trait pile at random."
+    },
+    {
+        "name": "Ecological Collapse",
+        "description": "-1 Gene Pool. Discard 1 card from your hand for every color in your trait pile.",
+        "worldsEnd": "+2 for every negative face value in your trait pile."
+    },
+    {
+        "name": "Invasive Species",
+        "description": "-1 Gene Pool. Pass all green cards from your hand right.",
+        "worldsEnd": "Discard a card from your hand with a face value of 7 or less and add it to your final score."
+    },
+    {
+        "name": "Sacrifice",
+        "description": "-1 Gene Pool. Return a positive face value trait to your hand.",
+        "worldsEnd": "-4 if you have 2 or fewer red traits in your trait pile."
+    },
+    {
+        "name": "Tropical Superstore",
+        "description": "-1 Gene Pool. Pass all colorless cards in your hand right.",
+        "worldsEnd": "+1 for each purple trait in the trait pile to your left."
+    },
+    {
+        "name": "Endless Monsoon",
+        "description": "-1 Gene Pool. Pass all purple cards from your hand right.",
+        "worldsEnd": "-1 for each card in your hand."
+    },
+    {
+        "name": "Choking Vines",
+        "description": "-1 Gene Pool. Ignore blue and green actions.",
+        "worldsEnd": "+1 for each green trait in the trait pile to your left."
+    },
+    {
+        "name": "Jungle Rot",
+        "description": "-1 Gene Pool. Ignore red and purple actions.",
+        "worldsEnd": "-4 if you have 2 or fewer green traits in your trait pile."
+    },
+    {
+        "name": "Great Deluge",
+        "description": "-1 Gene Pool. Pass all blue cards from your hand right.",
+        "worldsEnd": "-4 if you have 2 or fewer blue traits in your trait pile."
+    },
+    {
+        "name": "Ancient Corruption",
+        "description": "-1 Gene Pool. Discard all actions from your hand.",
+        "worldsEnd": "-1 for all actions in your trait pile."
+    },
+    {
+        "name": "Ashlands",
+        "description": "-1 Gene Pool. Discard all purple and blue cards from your hand and stabilize.",
+        "worldsEnd": "-4 if you have 2 or fewer purple traits in your trait pile."
+    },
+    {
+        "name": "Strange Matter",
+        "description": "-1 Gene Pool. Pass all red cards from your hand right.",
+        "worldsEnd": "-2 for every Drop of Life in your trait pile."
+    },
+    {
+        "name": "Tragedy of the Commons",
+        "description": "-1 Gene Pool. Choose a color in your hand to keep. Discard the rest.",
+        "worldsEnd": "Discard a Drop of Life from your trait pile."
+    },
+    {
+        "name": "Planetary Deforestation",
+        "description": "-1 Gene Pool. Discard all green and red cards from your hand and stabilize.",
+        "worldsEnd": "Subtract your gene pool from your final score."
+    },
+    {
+        "name": "Algal Superbloom",
+        "description": "+0 Gene Pool. Draw one for each negative face value in your trait pile.",
+        "worldsEnd": "+1 for each blue trait in the trait pile to your left."
+    },
+    {
+        "name": "Volcanic Winter",
+        "description": "-1 Gene Pool. Discard all cards from your hand with a face value of 4 or greater.",
+        "worldsEnd": "+1 for each red trait in the trait pile to your left."
+    },
+    {
+        "name": "Too Much Pink",
+        "description": "-1 Gene Pool. Discard your hand. Draw 4 at the start of your turn.",
+        "worldsEnd": "Reveal the top card of the trait deck. +1 for each trait of that color in your trait pile."
+    },
+    {
+        "name": "Abyss Stares Back",
+        "description": "-1 Gene Pool. Suppress all cards from your hand. Stabilize.",
+        "worldsEnd": "-5 if you have 13 or more traits in your trait pile."
+    },
+    {
+        "name": "Deus Ex Machina",
+        "description": "+0 Gene Pool. Stabilize crisis averted.",
+        "worldsEnd": "Draw a card. Add its face value to its final score (+5 max). Then discard it."
+    }
+]

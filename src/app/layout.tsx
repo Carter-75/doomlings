@@ -1,11 +1,14 @@
 import "./globals.css";
-
+import { Inter } from "next/font/google";
 import type { Metadata } from "next";
-import PortfolioFrame from "@/components/PortfolioFrame";
+import UIScaler from "@/components/UIScaler";
+import AmbientEffects from "@/components/AmbientEffects";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Lottery Winnings Calculator",
-  description: "Calculate your lottery winnings and financial future.",
+  title: "Doomlings",
+  description: "A digital companion for the Doomlings card game.",
 };
 
 export default function RootLayout({
@@ -15,10 +18,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body className={inter.className}>
+        <UIScaler />
+        <AmbientEffects />
         {children}
-        <PortfolioFrame />
       </body>
     </html>
   );
 }
+

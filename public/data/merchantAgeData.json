@@ -1,0 +1,42 @@
+[
+    {
+        "name": "Bon",
+        "description": "Bargain: Trash 1 trinket, then gain 1 trinket. You may repeat once."
+    },
+    {
+        "name": "Toddles",
+        "description": "Buy: Gain 1 trinket. Then trash 1."
+    },
+    {
+        "name": "Toddles",
+        "description": "Buy: Gain 1 trinket. Then trash 1."
+    },
+    {
+        "name": "Fowler",
+        "description": "Exchange: You may trash 1 trinket, then gain 1."
+    },
+    {
+        "name": "Huk",
+        "description": "Collect: Pocket 1 trinket, then gain 1."
+    },
+    {
+        "name": "Toddles",
+        "description": "Buy: Gain 1 trinket. Then trash 1."
+    },
+    {
+        "name": "Fowler",
+        "description": "Exchange: You may trash 1 trinket, then gain 1."
+    },
+    {
+        "name": "Fowler",
+        "description": "Exchange: You may trash 1 trinket, then gain 1."
+    },
+    {
+        "name": "Huk",
+        "description": "Collect: Pocket 1 trinket, then gain 1."
+    },
+    {
+        "name": "Toddles",
+        "description": "Buy: Gain 1 trinket. Then trash 1."
+    }
+]

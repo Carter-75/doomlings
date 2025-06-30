@@ -1,0 +1,572 @@
+[    
+  {
+    "name": "Slumbering",
+    "tiers": {
+      "1": "• Tier 1: At World's End: Discard 1 from hand. If the card is: Purple: Discard up to 2 from your trait pile. Red: Add its face value. Green: Play one trait. Blue: +5. +3pt.",
+      "2": "• Tier 2: At World's End: Discard 1 from hand. Then choose one: Purple: Discard up to 3 from your trait pile. Red: Add twice its face value. Green: Play up to 2 traits. Blue: +7. +6pt.",
+      "3": "• Tier 3: At World's End: Discard 2 from hand. Then choose one: Purple: Discard up to 4 from your trait pile. Red: Add three times its face value. Green: Play up to 3 traits. Blue: +9. +8pt.",
+      "4": "• Tier 4: At World's End: Discard 2 from hand. Then choose one: Purple: Discard up to 5 Purple traits from your trait pile. Red: Add four times its face value. Green: Play all traits in your hand (Max 7). Blue: +11. +11pt.",
+      "5": "• Tier 5: At World's End: Discard any number from hand. Then choose one: Purple: Discard up to 10 traits of chosen color from your trait pile. Red: Add five times its face value. Green: Play all Green traits from your hand (Max 10). Blue: +13. +15pt."
+    }
+  },
+  {
+    "name": "Titanic",
+    "tiers": {
+      "1": "• Tier 1: To play, you must discard a total face value of 5 or higher from your trait pile using any number of cards. (Titanic cannot regenerate tissue!) +10pt.",
+      "2": "• Tier 2: To play, you must discard a total face value of 6 or higher. +14pt.",
+      "3": "• Tier 3: To play, you must discard a total face value of 5 or higher, then draw 1. +18pt.",
+      "4": "• Tier 4: To play, you must discard a total face value of 4 or higher, then draw 2. +22pt.",
+      "5": "• Tier 5: To play, you may discard any number of traits, then draw 3 and play one. +26pt."
+    }
+  },
+  {
+    "name": "Gentle",
+    "tiers": {
+      "1": "• Tier 1: To play, you must discard a face value 2 or higher from your trait pile. Opponents discard 1 from their trait pile with a higher face value. +6pt.",
+      "2": "• Tier 2: To play, you must discard a face value 1 or higher. Opponents discard 2 with a higher face value. +8pt.",
+      "3": "• Tier 3: To play, you must discard a face value 1 or higher. Opponents discard 2 with a higher face value, then you draw 1. +11pt.",
+      "4": "• Tier 4: To play, you must discard a face value 0 or higher. Opponents discard 3 with a higher face value. +14pt.",
+      "5": "• Tier 5: To play, no discard required. Opponents discard 3 with a higher face value of a chosen card in your hand and you draw 2. +18pt."
+    }
+  },
+  {
+    "name": "Hollow Bones",
+    "tiers": {
+      "1": "• Tier 1: To play, you must discard 1 positive trait from your trait pile. At World's End: choose a color. Opponents discard 2 from their trait pile of that color. +2pt.",
+      "2": "• Tier 2: To play, you must discard 1 positive trait and suppress 1 card. At World's End: choose two colors. Opponents discard 2 of each from their trait pile. +5pt.",
+      "3": "• Tier 3: To play, you must discard 2 positive traits. At World's End: choose a color. Opponents discard 5 of that color from their trait pile. +8pt.",
+      "4": "• Tier 4: To play, you may suppress 2 instead of discarding 2 if you want. At World's End: choose two colors; opponents discard 3 each of those colors. +11pt.",
+      "5": "• Tier 5: To play, no cost. At World's End: choose a color; opponents discard 7 cards of that color and you draw 2. +15pt."
+    }
+  },
+  {
+    "name": "Sorcerer",
+    "tiers": {
+      "1": "• Tier 1: At World's End: You may stabilize to 8. +2pt.",
+      "2": "• Tier 2: At World's End: You may stabilize to 8 and draw 3. +5pt.",
+      "3": "• Tier 3: At World's End: You may stabilize to 8 and draw 5. +8pt.",
+      "4": "• Tier 4: At World's End: You may stabilize to 8 and draw 8. +11pt.",
+      "5": "• Tier 5: At World's End: You may stabilize to 1 and draw 10 and play all currently in your hand including dominants even with 2 already played. +15pt."
+    }
+  },
+  {
+    "name": "Chronomancer",
+    "tiers": {
+      "1": "• Tier 1: Play another trait. At World's End: Take another turn. +1pt.",
+      "2": "• Tier 2: Play another trait twice. At World's End: Take another turn and draw 1. +4pt.",
+      "3": "• Tier 3: Play up to two additional traits. At World's End: Take another turn and draw 2. +7pt.",
+      "4": "• Tier 4: Play two additional traits and draw 1. At World's End: Take two extra turns. +11pt.",
+      "5": "• Tier 5: Play any number of additional traits (Max 7). At World's End: Take three extra turns and draw 3. +15pt."
+    }
+  },
+  {
+    "name": "Summoner",
+    "tiers": {
+      "1": "• Tier 1: Discard up to 3 from hand, then play 1 for each discarded card. Ignore Actions. +1pt.",
+      "2": "• Tier 2: Discard up to 4 from hand, then play 1 for each discarded card. Ignore Actions. +4pt.",
+      "3": "• Tier 3: Discard up to 5 from hand, then play 2 for each discarded card. Ignore Actions. +7pt.",
+      "4": "• Tier 4: Discard any number from hand, then play twice that many (Max 8). +11pt.",
+      "5": "• Tier 5: Discard any number from hand, then play twice that many (Max 12). +15pt."
+    }
+  },
+  {
+    "name": "Solar-Powered",
+    "tiers": {
+      "1": "• Tier 1: Attach. Value is equal to host's face value.",
+      "2": "• Tier 2: Attach; host trait cannot be removed from your trait pile and value is equal to host's face value. +3pt.",
+      "3": "• Tier 3: Attach; you may play the attached trait immediately. +10pt.",
+      "4": "• Tier 4: Attach to two traits simultaneously, they cannot be removed from your trait pile. Value is equal to both traits added. +9pt.",
+      "5": "• Tier 5: Attach to any number of traits of one color (Max 5), they cannot be removed from your trait pile. value is equal to all traits added. +12pt."
+    }
+  },
+  {
+    "name": "Steam-Powered",
+    "tiers": {
+      "1": "• Tier 1: Attach. If host trait is: Blue: +1 Gene Pool. Green: Play another trait. Purple: Play an action in your trait pile. Red: +2. +2pt.",
+      "2": "• Tier 2: Attach. If host is Blue: +2 Gene Pool. Green: Play two traits. Purple: Play two actions in your trait pile. Red: +3. +5pt.",
+      "3": "• Tier 3: Attach. If host is Blue: +3 Gene Pool. Green: Play three traits. Purple: Play three actions in your trait pile. Red: +4. +8pt.",
+      "4": "• Tier 4: Attach. If host is Blue: +4 Gene Pool. Green: Play all green traits in your hand (ignore actions) OR play all green traits in your hand (Max 5). Purple: Play any three actions in any hand or trait pile into your pile. Red: +5. +11pt.",
+      "5": "• Tier 5: Attach. If host is Blue: +5 Gene Pool. Green: Play all traits in your hand (ignore actions) OR play all traits in your hand (Max 8). Purple: Play all actions in any hand or pile (including discard and trait deck) into your pile (Max 7). Red: +6. +15pt."
+    }
+  },
+  {
+    "name": "Simulated Intelligence",
+    "tiers": {
+      "1": "• Tier 1: At World's End: If you are tied for the highest trait pile count, play another trait. Otherwise, discard 1 from your trait pile for each opponent with more traits than you. +6pt.",
+      "2": "• Tier 2: At World's End: If tied, play another trait and draw 1. Otherwise, discard 1 from your trait pile per opponent. +9pt.",
+      "3": "• Tier 3: At World's End: If tied, play two traits and draw 2. Otherwise, discard 2 from your trait pile per opponent. +12pt.",
+      "4": "• Tier 4: At World's End: If tied, play two traits and draw 3. Otherwise, discard 2 from your trait pile per opponent and you draw 1. +15pt.",
+      "5": "• Tier 5: At World's End: If tied, play three traits and draw 5. Otherwise, discard 3 from your trait pile per opponent. +20pt."
+    }
+  },
+  {
+    "name": "Back Propagation",
+    "tiers": {
+      "1": "• Tier 1: Attach. Host's value is now 2. At World's End: You may move this attachment to another trait in your trait pile. +2pt.",
+      "2": "• Tier 2: Attach. Host's value is now 3. At World's End: You may move this attachment and draw 1. +5pt.",
+      "3": "• Tier 3: Attach. Host's value is now 4. At World's End: You may move this attachment and draw 2, then stabilize. +8pt.",
+      "4": "• Tier 4: Attach. Host's value is now 5. At World's End: You may move this attachment, draw 3, and suppress 1 card. +11pt.",
+      "5": "• Tier 5: Attach. Host's value becomes equal to the highest trait in your pile. At World's End: You may move this attachment and draw 5. +15pt."
+    }
+  },
+  {
+    "name": "IRONWOOD",
+    "tiers": {
+      "1": "• Tier 1: Excluding Dominants, if you have 5 or fewer green traits in your trait pile, they cannot be removed. +3pt.",
+      "2": "• Tier 2: Excluding Dominants, if you have 7 or fewer green traits in your trait pile, they cannot be removed. +5pt.",
+      "3": "• Tier 3: Excluding Dominants, all green traits in your trait pile cannot be removed. +8pt.",
+      "4": "• Tier 4: All green traits in your trait pile cannot be removed, including Dominants. +11pt.",
+      "5": "• Tier 5: All green traits in your trait pile cannot be removed, including Dominants. Gain +1 for each green trait protected. +15pt."
+    }
+  },
+  {
+    "name": "HIVE MIND",
+    "tiers": {
+      "1": "• Tier 1: Swap up to 2 positive face value traits from your trait pile with any traits from any trait pile(s). +2pt.",
+      "2": "• Tier 2: Swap up to 3 traits (any face value) from your trait pile with traits from any trait pile(s). +5pt.",
+      "3": "• Tier 3: Swap up to 4 traits from your trait pile with traits from any trait pile(s). You may suppress one after. +8pt.",
+      "4": "• Tier 4: Swap up to 5 traits from your trait pile with traits from any trait pile(s). Draw 2. +11pt.",
+      "5": "• Tier 5: Swap up to 7 traits from your trait pile with traits from any trait pile(s). You may steal one Dominant. +15pt."
+    }
+  },
+  {
+    "name": "FABLED",
+    "tiers": {
+      "1": "• Tier 1: To play, you must discard 4 different colors from your hand. +1 Gene Pool. +6pt.",
+      "2": "• Tier 2: Discard 3 different colors. +1 Gene Pool. +8pt.",
+      "3": "• Tier 3: Discard 2 colors. +2 Gene Pool. +11pt.",
+      "4": "• Tier 4: No discard. +2 Gene Pool. +14pt.",
+      "5": "• Tier 5: No discard. +2 Gene Pool. +1 per color in hand. +18pt."
+    }
+  },
+  {
+    "name": "FIERCE",
+    "tiers": {
+      "1": "• Tier 1: You may discard up to 2 traits from your trait pile. Draw 2 for each. +5pt.",
+      "2": "• Tier 2: Discard up to 3 traits. Draw 2 per. +7pt.",
+      "3": "• Tier 3: Discard up to 4 traits. Draw 3 per. +10pt.",
+      "4": "• Tier 4: Discard any number of traits. Draw 3 per and max 15. +13pt.",
+      "5": "• Tier 5: Discard any number. Draw 4 per and max 18. Play 1 drawn trait. +16pt."
+    }
+  },
+  {
+    "name": "LEGENDARY V2",
+    "tiers": {
+      "1": "• Tier 1: If LEGENDARY is discarded from hand, and you have at least 2 Dominants, play it. +5pt.",
+      "2": "• Tier 2: If LEGENDARY is discarded, and you have 1 Dominant, play it. +8pt.",
+      "3": "• Tier 3: If LEGENDARY is discarded, you may play it immediately. Draw 1. +11pt.",
+      "4": "• Tier 4: If discarded or suppressed, play immediately. Draw 2. +14pt.",
+      "5": "• Tier 5: If it enters discard or suppress pile, play immediately. Draw 3. +18pt."
+    }
+  },
+  {
+    "name": "CONSTRICTOR",
+    "tiers": {
+      "1": "• Tier 1: All opponents receive: -1 Gene Pool. +4pt.",
+      "2": "• Tier 2: All opponents: -1 Gene Pool. You gain +1 Gene Pool. +6pt.",
+      "3": "• Tier 3: All opponents: -2 Gene Pool. You gain +1. +9pt.",
+      "4": "• Tier 4: All opponents: -2. You gain +2. +12pt.",
+      "5": "• Tier 5: All opponents: -3. You gain +2 and draw 2. +16pt."
+    }
+  },
+  {
+    "name": "BIG FELLER",
+    "tiers": {
+      "1": "• Tier 1: +6pt if you have 4 or fewer traits with a face value of 1 or lower. +3pt.",
+      "2": "• Tier 2: +7pt if you have 5 or fewer traits of face value 1 or lower. +5pt.",
+      "3": "• Tier 3: +8pt if you have 6 or fewer traits of value 2 or lower. +8pt.",
+      "4": "• Tier 4: +9pt if 7 or fewer traits value 2 or lower. +11pt.",
+      "5": "• Tier 5: +10pt if 8 or fewer traits of value 3 or lower. +15pt."
+    }
+  },
+  {
+    "name": "ADRENALIZED",
+    "tiers": {
+      "1": "• Tier 1: When you begin your turn with 2 or fewer cards in hand, draw 4 immediately. +5pt.",
+      "2": "• Tier 2: Begin turn with 3 or fewer, draw 4. +7pt.",
+      "3": "• Tier 3: Begin turn with 4 or fewer, draw 5. +10pt.",
+      "4": "• Tier 4: Begin turn with 5 or fewer, draw 6. +13pt.",
+      "5": "• Tier 5: Begin with 6 or fewer, draw 7. Play 1 immediately. +16pt."
+    }
+  },
+  {
+    "name": "IRONWOOD",
+    "tiers": {
+      "1": "• Tier 1: Excluding Dominants, if you have 5 or fewer green traits in your trait pile, they cannot be removed. +3pt.",
+      "2": "• Tier 2: Excluding Dominants, if you have 7 or fewer green traits in your trait pile, they cannot be removed. +5pt.",
+      "3": "• Tier 3: Excluding Dominants, all green traits in your trait pile cannot be removed. +8pt.",
+      "4": "• Tier 4: All green traits in your trait pile cannot be removed, including Dominants. +11pt.",
+      "5": "• Tier 5: All green traits in your trait pile cannot be removed, including Dominants. Gain +1 for each green trait protected. +15pt."
+    }
+  },
+    {
+        "name": "ECHOLOCATION",
+        "tiers": {
+            "1": "• Tier 1: Until World's End: Draw 1 card at the start of each of your turns. +4pt.",
+            "2": "• Tier 2: Until World's End: Draw 2 cards at the start of each of your turns. +6pt.",
+            "3": "• Tier 3: Until World's End: Draw 3 cards at the start of each of your turns. +9pt.",
+            "4": "• Tier 4: Until World's End: Draw 4 cards at the start of each of your turns. +12pt.",
+            "5": "• Tier 5: Until World's End: Draw 5 cards at the start of each of your turns. +15pt."
+        }
+    },
+    {
+        "name": "ETHEREAL",
+        "tiers": {
+            "1": "• Tier 1: Until World's End: If you hold 6 or fewer cards at the end of your turn, you may suppress one from your hand instead of stabilizing. If this effect empties your hand, draw 2. +1pt.",
+            "2": "• Tier 2: Until World's End: If you hold 8 or fewer cards at the end of your turn, you may suppress two from your hand instead of stabilizing. If this effect empties your hand, draw 3. +3pt.",
+            "3": "• Tier 3: Until World's End: If you hold any number of cards at the end of your turn, you may suppress two from your hand instead of stabilizing. If this effect empties your hand, draw 4. +6pt.",
+            "4": "• Tier 4: Until World's End: If you hold any number of cards at the end of your turn, you may suppress three from your hand instead of stabilizing. If this effect empties your hand, draw 5. +9pt.",
+            "5": "• Tier 5: Until World's End: If you hold any number of cards at the end of your turn, you may suppress any number from your hand instead of stabilizing. If this effect empties your hand, draw 7. +12pt."
+        }
+    },
+    {
+        "name": "IMMUNITY",
+        "tiers": {
+            "1": "• Tier 1: +2 for each trait with a negative face value in your trait pile. +4pt.",
+            "2": "• Tier 2: +3 for each trait with a negative face value in your trait pile. +6pt.",
+            "3": "• Tier 3: +4 for each trait with a negative face value in your trait pile. +9pt.",
+            "4": "• Tier 4: +5 for each trait with a negative face value in your trait pile. +12pt.",
+            "5": "• Tier 5: +7 for each trait with a negative face value in your trait pile. +15pt."
+        }
+    },
+    {
+        "name": "LEGENDARY",
+        "tiers": {
+            "1": "• Tier 1: Discard your hand; do not stabilize. +8pt.",
+            "2": "• Tier 2: Discard your hand; draw 2 cards; do not stabilize. +11pt.",
+            "3": "• Tier 3: Discard your hand; draw 4 cards; do not stabilize. +14pt.",
+            "4": "• Tier 4: Discard your hand; draw 6 cards; do not stabilize. +17pt.",
+            "5": "• Tier 5: Discard your hand; draw 10 cards; do not stabilize. +22pt."
+        }
+    },
+    {
+        "name": "RAVENOUS",
+        "tiers": {
+            "1": "• Tier 1: When you play a red trait on your turn, draw three cards before playing its effect. +3pt.",
+            "2": "• Tier 2: When you play a red trait on your turn, draw four cards before playing its effect. +5pt.",
+            "3": "• Tier 3: When you play a red or green trait on your turn, draw four cards before playing its effect. +8pt.",
+            "4": "• Tier 4: When you play a red, green, or blue trait on your turn, draw five cards before playing its effect. +11pt.",
+            "5": "• Tier 5: When you play any trait on your turn, draw six cards before playing its effect. +15pt."
+        }
+    },
+    {
+        "name": "TINY",
+        "tiers": {
+            "1": "• Tier 1: -1 for each trait in your trait pile. Including this one. +17pt.",
+            "2": "• Tier 2: -0.5 for each trait in your trait pile. Including this one. +20pt.",
+            "3": "• Tier 3: No penalty for traits in your trait pile. +23pt.",
+            "4": "• Tier 4: +0.5 for each trait in your trait pile. Including this one. +26pt.",
+            "5": "• Tier 5: +1 for each trait in your trait pile. Including this one. +30pt."
+        }
+    },
+    {
+        "name": "DENIAL",
+        "tiers": {
+            "1": "• Tier 1: Ignore the next catastrophe. Warning: You cannot ignore The Four Horsemen. +4pt.",
+            "2": "• Tier 2: Ignore the next 2 catastrophes. Warning: You cannot ignore The Four Horsemen. +8pt.",
+            "3": "• Tier 3: Ignore the next 3 catastrophe. +12pt.",
+            "4": "• Tier 4: Ignore the next 4 catastrophes. +16pt.",
+            "5": "• Tier 5: Ignore all catastrophes. +20pt."
+        }
+    },
+    {
+        "name": "FAITH",
+        "tiers": {
+            "1": "• Tier 1: At World's End: You may change all of your color traits of one color to 1 alternative color. +4pt.",
+            "2": "• Tier 2: At World's End: You may change all of your color traits of one color to 1 alternative color. Gain +1 for each trait changed. +6pt.",
+            "3": "• Tier 3: At World's End: You may change all of your color traits of up to two colors to 1 alternative color each. +8pt.",
+            "4": "• Tier 4: At World's End: You may change all of your color traits of up to three colors to any alternative colors. +12pt.",
+            "5": "• Tier 5: At World's End: You may change all of your color traits to any colors you wish. Gain +2 for each trait changed. +15pt."
+        }
+    },
+    {
+        "name": "JIB WIB",
+        "tiers": {
+            "1": "• Tier 1: +5 to all players with a gene pool of 2 or lower. +6pt.",
+            "2": "• Tier 2: +8 to all players with a gene pool of 2 or lower. +8pt.",
+            "3": "• Tier 3: +10 to all players with a gene pool of 3 or lower. +10pt.",
+            "4": "• Tier 4: +12 to all players with a gene pool of 4 or lower. +12pt.",
+            "5": "• Tier 5: +15 to all players regardless of gene pool. +15pt."
+        }
+    },
+    {
+        "name": "OPTIMISTIC NIHILISM",
+        "tiers": {
+            "1": "• Tier 1: Bring about the next catastrophe. Skip all turns; ignore all age effects along the way. Do not stabilize. +4pt.",
+            "2": "• Tier 2: Bring about the next catastrophe. Skip all turns; ignore all age effects along the way. Draw 3 cards after. Do not stabilize. +7pt.",
+            "3": "• Tier 3: Bring about the next 2 catastrophes. Skip all turns; ignore all age effects along the way. Draw 4 cards after. Do not stabilize. +10pt.",
+            "4": "• Tier 4: Bring about the next 3 catastrophes. Skip all turns; ignore all age effects along the way. Draw 5 cards after. Do not stabilize. +14pt.",
+            "5": "• Tier 5: Bring about all remaining catastrophes. Skip all turns; ignore all age effects along the way. Draw 7 cards after. Do not stabilize. +20pt."
+        }
+    },
+    {
+        "name": "STYGIAN",
+        "tiers": {
+            "1": "• Tier 1: At World's End: Choose a color. Suppress all traits of that color in your trait pile. -2 for each color in your trait pile. +10pt.",
+            "2": "• Tier 2: At World's End: Choose a color. Suppress all traits of that color in your trait pile. -1 for each color in your trait pile. +13pt.",
+            "3": "• Tier 3: At World's End: Choose a color. Suppress all traits of that color in your trait pile. No penalty for colors in your trait pile. +16pt.",
+            "4": "• Tier 4: At World's End: Choose a color. Suppress all traits of that color in your trait pile. +1 for each color in your trait pile. +19pt.",
+            "5": "• Tier 5: At World's End: Choose two colors. Suppress all traits of those colors in your trait pile. +2 for each color in your trait pile. +22pt."
+        }
+    },
+    {
+        "name": "RUGGEDIZED",
+        "tiers": {
+            "1": "• Tier 1: Attach to a trait. Host trait cannot be removed from your trait pile. You may attach to a new host trait at the end of each of your turns. +4pt.",
+            "2": "• Tier 2: Attach to a trait. Host trait cannot be removed from your trait pile. You may attach to a new host trait at any time during your turn. +7pt.",
+            "3": "• Tier 3: Attach to two traits. Host traits cannot be removed from your trait pile. You may attach to new host traits at the end of each of your turns. +10pt.",
+            "4": "• Tier 4: Attach to three traits. Host traits cannot be removed from your trait pile. You may attach to new host traits at any time during your turn. +13pt.",
+            "5": "• Tier 5: Attach to any number of traits of a single color. Host traits cannot be removed from your trait pile. You may change your chosen color at the end of each of your turns. +16pt."
+        }
+    },
+    {
+        "name": "HEROIC",
+        "tiers": {
+            "1": "• Tier 1: To play, you must have 3 or more green traits from your trait pile. +7pt.",
+            "2": "• Tier 2: To play, you must have 2 or more green traits from your trait pile. +10pt.",
+            "3": "• Tier 3: To play, you must have 1 or more green traits from your trait pile. +13pt.",
+            "4": "• Tier 4: No requirement to play. +1 for each green trait in your pile. +15pt.",
+            "5": "• Tier 5: No requirement to play. +2 for each green trait in your pile. +18pt."
+        }
+    },
+    {
+        "name": "IRONWOOD",
+        "tiers": {
+            "1": "• Tier 1: Excluding dominants, if you have 5 or fewer green traits in your trait pile, they cannot be removed. +3pt.",
+            "2": "• Tier 2: Excluding dominants, if you have 7 or fewer green traits in your trait pile, they cannot be removed. +5pt.",
+            "3": "• Tier 3: Excluding dominants, all green traits in your trait pile cannot be removed. +8pt.",
+            "4": "• Tier 4: All green traits in your trait pile cannot be removed, including dominants. +11pt.",
+            "5": "• Tier 5: All green traits in your trait pile cannot be removed, including dominants. Gain +1 for each green trait protected. +15pt."
+        }
+    },
+    {
+        "name": "PACK BEHAVIOR",
+        "tiers": {
+            "1": "• Tier 1: +1 for every color pair in your trait pile. +3pt.",
+            "2": "• Tier 2: +2 for every color pair in your trait pile. +5pt.",
+            "3": "• Tier 3: +3 for every color pair in your trait pile. +8pt.",
+            "4": "• Tier 4: +4 for every color pair in your trait pile. +11pt.",
+            "5": "• Tier 5: +5 for every color pair in your trait pile. +15pt."
+        }
+    },
+    {
+        "name": "PACK BEHAVIOR",
+        "tiers": {
+            "1": "• Tier 1: +1 for every color pair in your trait pile. +3pt.",
+            "2": "• Tier 2: +2 for every color pair in your trait pile. +5pt.",
+            "3": "• Tier 3: +3 for every color pair in your trait pile. +8pt.",
+            "4": "• Tier 4: +4 for every color pair in your trait pile. +11pt.",
+            "5": "• Tier 5: +5 for every color pair in your trait pile. +15pt."
+        }
+    },
+    {
+        "name": "POPPLEBELLY",
+        "tiers": {
+            "1": "• Tier 1: Your gene pool is 1 and cannot be modified. Draw 2 at the start of each of your turns. +4pt.",
+            "2": "• Tier 2: Your gene pool is 2 and cannot be modified. Draw 2 at the start of each of your turns. +6pt.",
+            "3": "• Tier 3: Your gene pool is 3 and cannot be modified. Draw 3 at the start of each of your turns. +8pt.",
+            "4": "• Tier 4: Your gene pool is 4 and cannot be modified. Draw 4 at the start of each of your turns. +10pt.",
+            "5": "• Tier 5: Your gene pool is 5 and cannot be modified. Draw 5 at the start of each of your turns. +15pt."
+        }
+    },
+    {
+        "name": "PYROPHYTE",
+        "tiers": {
+            "1": "• Tier 1: At World's End: Draw 4 cards; you may play any with a face value of 2 or lower, ignore actions. +1pt.",
+            "2": "• Tier 2: At World's End: Draw 5 cards; you may play any with a face value of 3 or lower, ignore actions. +3pt.",
+            "3": "• Tier 3: At World's End: Draw 6 cards; you may play any with a face value of 4 or lower, ignore actions. +5pt.",
+            "4": "• Tier 4: At World's End: Draw 7 cards; you may play any with a face value of 5 or lower, keep their actions. +8pt.",
+            "5": "• Tier 5: At World's End: Draw 10 cards; you may play any cards regardless of face value, keep their actions. +12pt."
+        }
+    },
+    {
+        "name": "SYMBIOSIS",
+        "tiers": {
+            "1": "• Tier 1: +2 for every trait in your lowest color count. Must have 2 or more colors. If there's a tie, pick one. +3pt.",
+            "2": "• Tier 2: +3 for every trait in your lowest color count. Must have 2 or more colors. If there's a tie, pick one. +5pt.",
+            "3": "• Tier 3: +4 for every trait in your lowest color count. Must have 2 or more colors. If there's a tie, pick one. +8pt.",
+            "4": "• Tier 4: +5 for every trait in your lowest color count. If there's a tie, pick all tied colors. +11pt.",
+            "5": "• Tier 5: +6 for every trait in your lowest color count. No color requirement. If there's a tie, pick all tied colors. +15pt."
+        }
+    },
+    {
+        "name": "CAMOUFLAGE",
+        "tiers": {
+            "1": "• Tier 1: +1 gene pool. +1 for each card in your hand. +1pt.",
+            "2": "• Tier 2: +1 gene pool. +2 for each card in your hand. +3pt.",
+            "3": "• Tier 3: +2 gene pool. +2 for each card in your hand. +6pt.",
+            "4": "• Tier 4: +2 gene pool. +3 for each card in your hand. +9pt.",
+            "5": "• Tier 5: +3 gene pool. +4 for each card in your hand. +12pt."
+        }
+    },
+    {
+        "name": "VAMPIRISM",
+        "tiers": {
+            "1": "• Tier 1: Steal a trait from an opponent's trait pile; play its action. +3pt.",
+            "2": "• Tier 2: Steal a trait from an opponent's trait pile; play its action. You may keep the trait in your trait pile. +6pt.",
+            "3": "• Tier 3: Steal two traits from any opponent's trait piles; play their actions. You may keep one trait in your trait pile. +9pt.",
+            "4": "• Tier 4: Steal three traits from any opponent's trait piles; play their actions. You may keep two traits in your trait pile. +12pt.",
+            "5": "• Tier 5: Steal five traits from any opponent's trait piles or steal one dominant; play their actions. You may keep all traits in your trait pile. +15pt."
+        }
+    },
+    {
+        "name": "VAMPIRISM",
+        "tiers": {
+            "1": "• Tier 1: Steal a trait from an opponent's trait pile; play its action. +3pt.",
+            "2": "• Tier 2: Steal a trait from an opponent's trait pile; play its action. You may keep the trait in your trait pile. +6pt.",
+            "3": "• Tier 3: Steal two traits from any opponent's trait piles; play their actions. You may keep one trait in your trait pile. +9pt.",
+            "4": "• Tier 4: Steal three traits from any opponent's trait piles; play their actions. You may keep two traits in your trait pile. +12pt.",
+            "5": "• Tier 5: Steal five traits from any opponent's trait piles or steal one dominant; play their actions. You may keep all traits in your trait pile. +15pt."
+        }
+    },
+    {
+        "name": "VIRAL",
+        "tiers": {
+            "1": "• Tier 1: At World's End: Choose a color. Opponents receive -1 for each trait of that color in their trait pile. +2pt.",
+            "2": "• Tier 2: At World's End: Choose a color. Opponents receive -2 for each trait of that color in their trait pile. +4pt.",
+            "3": "• Tier 3: At World's End: Choose two colors. Opponents receive -2 for each trait of those colors in their trait pile. +7pt.",
+            "4": "• Tier 4: At World's End: Choose three colors. Opponents receive -3 for each trait of those colors in their trait pile. +10pt.",
+            "5": "• Tier 5: At World's End: Opponents receive -4 for each trait in their trait pile. +15pt."
+        }
+    },
+    {
+        "name": "VIRAL",
+        "tiers": {
+            "1": "• Tier 1: At World's End: Choose a color. Opponents receive -1 for each trait of that color in their trait pile. +2pt.",
+            "2": "• Tier 2: At World's End: Choose a color. Opponents receive -2 for each trait of that color in their trait pile. +4pt.",
+            "3": "• Tier 3: At World's End: Choose two colors. Opponents receive -2 for each trait of those colors in their trait pile. +7pt.",
+            "4": "• Tier 4: At World's End: Choose three colors. Opponents receive -3 for each trait of those colors in their trait pile. +10pt.",
+            "5": "• Tier 5: At World's End: Opponents receive -4 for each trait in their trait pile. +15pt."
+        }
+    },
+    {
+        "name": "APEX PREDATOR",
+        "tiers": {
+            "1": "• Tier 1: +4 if you have more traits in your trait pile than your opponents. Ties don't count. +4pt.",
+            "2": "• Tier 2: +7 if you have more traits in your trait pile than your opponents. Ties don't count. +6pt.",
+            "3": "• Tier 3: +10 if you have more traits in your trait pile than your opponents. Ties count in your favor. +9pt.",
+            "4": "• Tier 4: +15 if you have more traits in your trait pile than at least one opponent. +12pt.",
+            "5": "• Tier 5: +20 if you have more traits in your trait pile than at least one opponent. You also receive +1 for each trait over your closest opponent. +15pt."
+        }
+    },
+    {
+        "name": "CARNOSAUR JAW",
+        "tiers": {
+            "1": "• Tier 1: To play, you must discard 2 red traits from your trait pile. +9pt.",
+            "2": "• Tier 2: To play, you must discard 1 red trait from your trait pile. +12pt.",
+            "3": "• Tier 3: To play, you must discard 1 trait of any color from your trait pile. +15pt.",
+            "4": "• Tier 4: No requirement to play. +18pt.",
+            "5": "• Tier 5: No requirement to play. Gain +2 for each red trait in your trait pile. +22pt."
+        }
+    },
+    {
+        "name": "HYPER-INTELLIGENCE",
+        "tiers": {
+            "1": "• Tier 1: At World's End: Choose a color. Opponents discard 1 trait from their trait pile at random. +4pt.",
+            "2": "• Tier 2: At World's End: Choose a color. Opponents discard 2 traits from their trait pile at random. +7pt.",
+            "3": "• Tier 3: At World's End: Choose two colors. Opponents discard 2 traits of those colors from their trait pile. +10pt.",
+            "4": "• Tier 4: At World's End: Choose three colors. Opponents discard 3 traits of those colors from their trait pile. +13pt.",
+            "5": "• Tier 5: At World's End: Opponents discard 5 traits from their trait pile. You choose which traits they discard. +16pt."
+        }
+    },
+    {
+        "name": "INDOMITABLE",
+        "tiers": {
+            "1": "• Tier 1: -2 gene pool. +8pt.",
+            "2": "• Tier 2: -1 gene pool. +11pt.",
+            "3": "• Tier 3: No gene pool penalty. +14pt.",
+            "4": "• Tier 4: +1 gene pool. +17pt.",
+            "5": "• Tier 5: +2 gene pool. +20pt."
+        }
+    },
+    {
+        "name": "INDOMITABLE",
+        "tiers": {
+            "1": "• Tier 1: -2 gene pool. +8pt.",
+            "2": "• Tier 2: -1 gene pool. +11pt.",
+            "3": "• Tier 3: No gene pool penalty. +14pt.",
+            "4": "• Tier 4: +1 gene pool. +17pt.",
+            "5": "• Tier 5: +2 gene pool. +20pt."
+        }
+    },
+    {
+        "name": "MIMICRY",
+        "tiers": {
+            "1": "• Tier 1: If you only play 1 trait on your turns, you may play 1 trait with a face value of 1 after you stabilize; ignore its action. +1pt.",
+            "2": "• Tier 2: If you only play 1 trait on your turns, you may play 1 trait with a face value of 2 or lower after you stabilize; ignore its action. +4pt.",
+            "3": "• Tier 3: If you only play 1 trait on your turns, you may play 1 trait with a face value of 3 or lower after you stabilize; you may choose to use its action. +7pt.",
+            "4": "• Tier 4: If you play any number of traits on your turns, you may play 1 trait with a face value of 4 or lower after you stabilize; you may choose to use its action. +10pt.",
+            "5": "• Tier 5: If you play any number of traits on your turns, you may play 2 traits of any value after you stabilize; you may choose to use their actions. +13pt."
+        }
+    },
+    {
+        "name": "REMARKABLE",
+        "tiers": {
+            "1": "• Tier 1: To play, you must hold 3 or fewer cards. All your friends pass their hands right not you and stabilize. Then suppress your hand. +1pt.",
+            "2": "• Tier 2: To play, you must hold 4 or fewer cards. All your friends pass their hands right not you and stabilize. Then suppress your hand. +4pt.",
+            "3": "• Tier 3: To play, you must hold 5 or fewer cards. All your friends pass their hands right not you and stabilize. Draw 2 cards. Then suppress your hand. +7pt.",
+            "4": "• Tier 4: To play, you must hold 6 or fewer cards. All your friends pass their hands right not you and stabilize. Draw 4 cards. Then suppress your hand. +10pt.",
+            "5": "• Tier 5: No requirement to play. All your friends pass their hands right not you and stabilize. Draw 6 cards. Then suppress your hand. +13pt."
+        }
+    },
+    {
+        "name": "SENTIENCE",
+        "tiers": {
+            "1": "• Tier 1: At World's End: Choose a color. +1 for all traits of that color in your trait pile. +2pt.",
+            "2": "• Tier 2: At World's End: Choose a color. +2 for all traits of that color in your trait pile. +5pt.",
+            "3": "• Tier 3: At World's End: Choose two colors. +2 for all traits of those colors in your trait pile. +8pt.",
+            "4": "• Tier 4: At World's End: Choose three colors. +3 for all traits of those colors in your trait pile. +11pt.",
+            "5": "• Tier 5: At World's End: +4 for all traits in your trait pile. +15pt."
+        }
+    },
+    {
+        "name": "SPOTS",
+        "tiers": {
+            "1": "• Tier 1: At World's End: Choose a color. All opponents reveal all cards of that color from their hand. Play one immediately; ignore actions. +5pt.",
+            "2": "• Tier 2: At World's End: Choose a color. All opponents reveal all cards of that color from their hand. Play two immediately; ignore actions. +8pt.",
+            "3": "• Tier 3: At World's End: Choose two colors. All opponents reveal all cards of those colors from their hand. Play two immediately; you may use their actions. +11pt.",
+            "4": "• Tier 4: At World's End: Choose three colors. All opponents reveal all cards of those colors from their hand. Play three immediately; you may use their actions. +14pt.",
+            "5": "• Tier 5: At World's End: All opponents reveal their entire hand. Play any five cards immediately; you may use their actions. +18pt."
+        }
+    },
+    {
+        "name": "AWESOME",
+        "tiers": {
+            "1": "• Tier 1: At World's End: Stabilize to 2; add 2 face values in your hand to your score (max +17). +1pt (redgreenbluepurple).",
+            "2": "• Tier 2: At World's End: Stabilize to 3; add 3 face values in your hand to your score (max +20). +4pt (redgreenbluepurple).",
+            "3": "• Tier 3: At World's End: Stabilize to 4; add 4 face values in your hand to your score (max +25). +7pt (redgreenbluepurple).",
+            "4": "• Tier 4: At World's End: Stabilize to 5; add 5 face values in your hand to your score (max +30). +10pt (redgreenbluepurple).",
+            "5": "• Tier 5: At World's End: Stabilize to 7; add all face values in your hand to your score (no maximum). +15pt (redgreenbluepurple)."
+        }
+    },
+    {
+        "name": "LILY PAD",
+        "tiers": {
+            "1": "• Tier 1: At World's End: Return up to 3 traits from your trait pile to your hand. +1 for each trait retuned this way. +2pt (greenblue).",
+            "2": "• Tier 2: At World's End: Return up to 4 traits from your trait pile to your hand. +2 for each trait retuned this way. +4pt (greenblue).",
+            "3": "• Tier 3: At World's End: Return up to 5 traits from your trait pile to your hand. +3 for each trait retuned this way. +7pt (greenblue).",
+            "4": "• Tier 4: At World's End: Return up to 7 traits from your trait pile to your hand. +4 for each trait retuned this way. +10pt (greenblue).",
+            "5": "• Tier 5: At World's End: Return any number of traits from your trait pile to your hand. +5 for each trait retuned this way. +15pt (greenblue)."
+        }
+    },
+    {
+        "name": "RAINBOW MAGIC",
+        "tiers": {
+            "1": "• Tier 1: You may return Rainbow Magic to your hand after you stabilize, then play one random card from your hand. Ignore restrictions and requirements. +3pt (redgreenbluepurple).",
+            "2": "• Tier 2: You may return Rainbow Magic to your hand after you stabilize, then play two random cards from your hand. Ignore restrictions and requirements. +6pt (redgreenbluepurple).",
+            "3": "• Tier 3: You may return Rainbow Magic to your hand after you stabilize, then play three random cards from your hand. Ignore restrictions and requirements. +9pt (redgreenbluepurple).",
+            "4": "• Tier 4: You may return Rainbow Magic to your hand after you stabilize, then play up to three cards of your choice from your hand. Ignore restrictions and requirements. +12pt (redgreenbluepurple).",
+            "5": "• Tier 5: You may return Rainbow Magic to your hand after you stabilize, then play any number of cards from your hand. Ignore restrictions and requirements. +15pt (redgreenbluepurple)."
+        }
+    },
+    {
+        "name": "WILD",
+        "tiers": {
+            "1": "• Tier 1: +4pt (greenredbluepurple).",
+            "2": "• Tier 2: +8pt (greenredbluepurple).",
+            "3": "• Tier 3: +12pt (greenredbluepurple).",
+            "4": "• Tier 4: +18pt (greenredbluepurple).",
+            "5": "• Tier 5: +25pt (greenredbluepurple)."
+        }
+    }
+]

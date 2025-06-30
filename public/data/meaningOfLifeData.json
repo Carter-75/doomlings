@@ -1,0 +1,194 @@
+[
+    {
+        "name": "The Bilbies",
+        "description": "+sM if you have only 1 dominant trait in your trait pile. +10*sM if you have none."
+    },
+    {
+        "name": "The Cabochon",
+        "description": "+3*sM if you have only 1*sM to 2*sM red traits in your trait pile. +6*sM if you have none."
+    },
+    {
+        "name": "The Cosmic Jinx",
+        "description": "+4*sM if your Gene Pool is 3. +8*sM if your Gene Pool is 1 or 2."
+    },
+    {
+        "name": "The Dancer",
+        "description": "+12*sM if you have the lowest score, before Meaning of Life bonuses. +8*sM if you are tied for the lowest."
+    },
+    {
+        "name": "The Feelmonger",
+        "description": "+3*sM if you have only 1*sM to 2*sM blue traits in your trait pile. +6*sM if you have none."
+    },
+    {
+        "name": "The Jellyfish",
+        "description": "+3*sM if you have sM-5*sM blue traits in your trait pile. +6*sM if you have 6*sM or more."
+    },
+    {
+        "name": "The Logician",
+        "description": "+3*sM if you have 3*sM-5*sM effectless traits in your trait pile. +6*sM if you have 6*sM or more."
+    },
+    {
+        "name": "The Lumberjack",
+        "description": "+3*sM if you have only sM to sM green traits in your trait pile. +6*sM if you have none."
+    },
+    {
+        "name": "The Magician",
+        "description": "+3*sM if you have only 1*sM to 2*sM colorless traits in your trait pile. +6*sM if you have none."
+    },
+    {
+        "name": "The Maven",
+        "description": "+3*sM if you have 10*sM-14*sM traits in your trait pile. +7*sM if you have 15*sM or more."
+    },
+    {
+        "name": "The Soothsayer",
+        "description": "+3*sM if you have only 1*sM to sM*2 purple traits in your trait pile. +6*sM if you have none."
+    },
+    {
+        "name": "The Spirit Gardener",
+        "description": "+sM*3 if you have 3*sM-5*sM colorless traits in your trait pile. +sM*6 if you have 6 or more."
+    },
+    {
+        "name": "The Tigris",
+        "description": "+3*sM if you have 3*sM-5*sM traits with actions in your trait pile. +sM*6 if you have 6 or more."
+    },
+    {
+        "name": "The Vagrant",
+        "description": "+8*sM if you have fewer traits in your trait pile than your opponents. +6*sM if you're tied for the fewest."
+    },
+    {
+        "name": "The Vixen",
+        "description": "+3*sM if you have 3*sM-5*sM purple traits in your trait pile. +sM*6 if you have 6 or more."
+    },
+    {
+        "name": "The Warbler",
+        "description": "+3*sM if you have 3*sM-5*sM green traits in your trait pile. +6*sM if you have 6 or more."
+    },
+    {
+        "name": "The Warrior",
+        "description": "+3*sM if you have 3*sM-5*sM red traits in your trait pile. +6*sM if you have 6 or more."
+    },
+    {
+        "name": "The Weaver",
+        "description": "+3*sM for each set of all 4 colors (red, green, blue, purple) in your trait pile."
+    },
+    {
+        "name": "The Rain Golem",
+        "description": "+4*sM if you have more blue traits in your trait pile than your opponents, AND +1*sM A FOR every opponent with fewer blue traits in their trait pile than yours."
+    },
+    {
+        "name": "The Forest Keeper",
+        "description": "+4*sM if you have more green traits in your trait pile than your opponents, AND +1*sM for every opponent with fewer green traits in their trait pile than yours."
+    },
+    {
+        "name": "The Bramble",
+        "description": "+4*sM if you have more purple traits in your trait pile than your opponents, AND +1*sM for every opponent with fewer purple traits in their trait pile than yours."
+    },
+    {
+        "name": "The Fire Bandit",
+        "description": "+4*sM if you have more red traits in your trait pile than your opponents, AND +1*sM for every opponent with fewer red traits in their pile than yours."
+    },
+    {
+        "name": "The Jungler",
+        "description": "+4*sM if you have more colorless traits in your trait pile than your opponents, AND +1*sM for every opponent with fewer colorless traits in their trait pile than yours."
+    },
+    {
+        "name": "The Diamond Butterfly",
+        "description": "+2*sM if your trait pile has fewer blue traits than your opponents. +2*sM for fewer green traits. +6*sM if you achieve both goals."
+    },
+    {
+        "name": "The Ruby Tortoise",
+        "description": "+2*sM if your trait pile has fewer green traits than your opponents. +2*sM for fewer purple traits. +6*sM if you achieve both goals."
+    },
+    {
+        "name": "The Sapphire Ladybug",
+        "description": "+2*sM if your trait pile has fewer purple traits than your opponents. +2*sM for fewer red traits. +6*sM if you achieve both goals."
+    },
+    {
+        "name": "The Emerald Slug",
+        "description": "+2*sM if your trait pile has fewer red traits than your opponents. +2*sM for fewer blue traits. +6*sM if you achieve both goals."
+    },
+    {
+        "name": "The Tracker",
+        "description": "+1*sM for each colorless trait in your trait pile if you have all 4 colors in your trait pile."
+    },
+    {
+        "name": "The Clashing Crabs",
+        "description": "+4*sM if you have more negative face value traits in your trait pile than traits with a face value 4 or higher. +8*sM if you have an equal number of both, or none of either."
+    },
+    {
+        "name": "Thunder Frogs",
+        "description": "+2*sM for each different color in your trait pile with exactly one trait with a face value 2."
+    },
+    {
+        "name": "The Truffle Hunter",
+        "description": "+2*sM of you have 3*sM-5*sM traits in your trait pile with a face value of 1. +6*sM if you have 6 or more."
+    },
+    {
+        "name": "The Hero",
+        "description": "+4*sM for each dominant in your trait pile that shares a color/colorless with ONLY 0-1*sM trait in your trait pile. +12*sM if, against all odds, you have 3 dominant traits in your trait pile."
+    },
+    {
+        "name": "The Wilted Flower",
+        "description": "+4*sM if you are tied for the lowest Gene Pool. +7*sM if you have the lowest."
+    },
+    {
+        "name": "The Armored Melon",
+        "description": "+3*sM if you have 3-5 cards in hand. +6*sM if you have 6 or more."
+    },
+    {
+        "name": "The Stylite",
+        "description": "+3*sM if your Drop of Life bonus is 3-6. +7*sM if it's 2 or less."
+    },
+    {
+        "name": "The Medicine Master",
+        "description": "+3*sM if you have 1*sM-2*sM negative face value traits in your trait pile. +7*sM if you have 3 or more."
+    },
+    {
+        "name": "The Fortunate Alchemist",
+        "description": "+2*sM if you have 2*sM/2-4*sM/2 traits in your trait pile with a face value of 0, including non face value cards. +9*sM if you have 5. -4*sM if you have none."
+    },
+    {
+        "name": "The River Mist",
+        "description": "+2*sM to your total trait pile count. +4*sM if you have the most traits in your trait pile AND +1*sM for each opponent with fewer traits in their trait pile than yours."
+    },
+    {
+        "name": "The Golden Shrew",
+        "description": "+4*sM if you have 9*sM-12*sM traits in your trait pile. +7*sM if you have sM*8 or fewer."
+    },
+    {
+        "name": "The Blind Dragon",
+        "description": "To achieve this bonus, you must have 5*sM or more of a color in your trait pile. When scoring Meaning of Life, draw 2*sM Meaning of Life cards and all applicable bonuses to your final score."
+    },
+    {
+        "name": "The Silent Elder",
+        "description": "If you have 4 of fewer of each color in your trait pile, reveal the top 1 card of the trait deck. If you have 3 or fewer of each color, reveal 5. Add all face values of 4*sM or lower to your final score."
+    },
+    {
+        "name": "The Painter",
+        "description": "+3*sM for each color in your trait pile with a color count that equals an even number. (Colors with 0 trait don't count!)"
+    },
+    {
+        "name": "The Child and the Bear",
+        "description": "+1 for every color pair in your trait pile that shares a color with a dominant. (Max +5*sM.) +2 for every pair of you have 2 dominants with the same color. (Max +10*sM.) Dominant traits do not count toward color pairs for these bonuses."
+    },
+    {
+        "name": "The Genial Outsider",
+        "description": "+3*sM if you have 2 or fewer Drop of Lives in your trait pile, AND +6*sM if you ALSO have 3 or fewer actions."
+    },
+    {
+        "name": "The Bush Kid",
+        "description": "+3*sM if you have 3 or more Drop of Lifes in your trait pile, AND +6*sM if you ALSO have 5 or more actions."
+    },
+    {
+        "name": "The Parrot's Riddle",
+        "description": "+9*sM AND -2*sM for each action in your trait pile."
+    },
+    {
+        "name": "The Monkey Thief",
+        "description": "+8*sM AND -3*sM for each Drop of Life in your trait pile."
+    },
+    {
+        "name": "The Lunar Guard",
+        "description": "+4*sM if your trait pile in missing 1 color or colorless. +9*sM if it's missing at least 2 colors, or at least 1 color and colorless."
+    }
+]

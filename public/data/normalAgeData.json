@@ -1,0 +1,310 @@
+[
+  {
+    "name": "Industrial Revolution",
+    "description": "On your turn: If you play an attachment, you may play another trait."
+  },
+  {
+    "name": "Age Of Stability",
+    "description": "You may stabilize to 5 immediately."
+  },
+  {
+    "name": "Return Of The Ancients",
+    "description": "Instead of taking your turn, you may draw and play 1 from the top 4 of the discard pile."
+  },
+  {
+    "name": "Thousand-Year Slumber",
+    "description": "Draw 1. If you play Slumbering this age, you may draw 4 and play another trait."
+  },
+  {
+    "name": "Open Portals",
+    "description": "Discard 2 from your hand, or 1 at random. (If this effect empties your hand, draw 3.)"
+  },
+  {
+    "name": "Age Of The Last Dragons",
+    "description": "Draw 3. Discard them OR all other cards in your hand."
+  },
+  {
+    "name": "Carbon Boom",
+    "description": "Draw 2 from the top of the discard pile. (If empty, draw from the trait deck.)"
+  },
+  {
+    "name": "Age Of The First Ferns",
+    "description": "If you have 7 or fewer traits in your trait pile, you may play 1 effectless trait now."
+  },
+    {
+        "name": "Birth of Life",
+        "description": "Set your gene pool to 5. Play one trait on your turn. Stabilize to end your turn."
+    },
+    {
+        "name": "Enlightenment",
+        "description": "You may discard up to 2 cards from your hand before you stabilize."
+    },
+    {
+        "name": "Arid Lands",
+        "description": "Players cannot play blue traits."
+    },
+    {
+        "name": "Tectonic Shift",
+        "description": "Players cannot play green traits."
+    },
+    {
+        "name": "Age of Peace",
+        "description": "Ignore all trait actions."
+    },
+    {
+        "name": "Glacial Drift",
+        "description": "You may only play traits with a face value of 3 or lower."
+    },
+    {
+        "name": "High Tides",
+        "description": "If you play an effectless trait, you may play another effectless trait."
+    },
+    {
+        "name": "Lunar Retreat",
+        "description": "Players cannot play purple traits."
+    },
+    {
+        "name": "Northern Winds",
+        "description": "Draw 1 card. Discard 1 card from your hand."
+    },
+    {
+        "name": "Sea Kingdoms",
+        "description": "Play 2 traits this turn. Ignore actions."
+    },
+    {
+        "name": "Age of Metadata",
+        "description": "Play this age with your hand revealed."
+    },
+    {
+        "name": "Ozmorian Winds",
+        "description": "After you stabilize, pass 1 card to your left at random."
+    },
+    {
+        "name": "Age of Wonder",
+        "description": "You must end your turn with 4 cards in your hand."
+    },
+    {
+        "name": "Alien Terraform",
+        "description": "You may discard dominant cards from your hand. If you do, then stabilize immediately."
+    },
+    {
+        "name": "Atmospheric Thickening",
+        "description": "Instead of taking this turn, play one trait from the top of the deck. Ignore its action. Do not stabilize. (If it has a requirement you cannot fulfill, discard the card.)"
+    },
+    {
+        "name": "Awakening",
+        "description": "Preview the next age before you take your turn."
+    },
+    {
+        "name": "Tropical Lands",
+        "description": "Players cannot play colorless traits."
+    },
+    {
+        "name": "Age of Dracula",
+        "description": "Discard 1 random card from your hand. If Vampirism is in your trait pile, steal 1 random card from an opponent's hand instead."
+    },
+    {
+        "name": "Age of Nietzsche",
+        "description": "Instead of stabilizing your turn, you may discard your hand and draw 3 cards."
+    },
+    {
+        "name": "Age of Reason",
+        "description": "Draw 3 cards. Keep 1, discard the other 2."
+    },
+    {
+        "name": "Comet Showers",
+        "description": "Discard 1 random card from your hand at random."
+    },
+    {
+        "name": "The Messiah",
+        "description": "Play this age in reverse: first player last and last player first."
+    },
+    {
+        "name": "Badlands",
+        "description": "Discard 1 card. Shuffle the discard pile, and deal 1 card face down to each player. Return any remaining cards to the discard pile."
+    },
+    {
+        "name": "Birth of a Hero",
+        "description": "If you hold Heroic, play it now without restriction."
+    },
+    {
+        "name": "Coastal Formations",
+        "description": "Draw one card after you stabilize."
+    },
+    {
+        "name": "Prosperity",
+        "description": "At the end of your turn, you may choose not to stabilize."
+    },
+    {
+        "name": "Reforestation",
+        "description": "Traits in your trait pile cannot be swapped, stolen, or discarded."
+    },
+    {
+        "name": "Temporal Sands",
+        "description": "Play the effect of the previous age. (Excluding catastrophes.)"
+    },
+    {
+        "name": "Natural Harmony",
+        "description": "You may not play a trait of the same color as the last trait played."
+    },
+    {
+        "name": "Flourish",
+        "description": "Draw 2 cards."
+    },
+    {
+        "name": "Joy",
+        "description": "Draw 1 card, or discard 2 cards."
+    },
+    {
+        "name": "Galactic Drift",
+        "description": "If you play a colorless trait, you may play another colorless trait."
+    },
+    {
+        "name": "Eclipse",
+        "description": "Players cannot play red traits."
+    },
+    {
+        "name": "Glimmering Gardens",
+        "description": "You may discard 1 trait from your trait pile."
+    },
+    {
+        "name": "The Living Library",
+        "description": "Before you stabilize, you may replay an action in your trait pile."
+    },
+    {
+        "name": "Backwoods Melodies",
+        "description": "Play all negative face value traits from your hand. (Excluding dominants.) Ignore actions."
+    },
+    {
+        "name": "Tangled Canopies",
+        "description": "Shuffle the discard pile into the trait deck."
+    },
+    {
+        "name": "Lingering Shadows",
+        "description": "Players cannot play multi-color traits."
+    },
+    {
+        "name": "Cleansing Rains",
+        "description": "You may discard any number of cards from your hand."
+    },
+    {
+        "name": "The Painted Valley",
+        "description": "Choose a color, then draw 1. If it is your chosen color, all opponents also draw 1."
+    },
+    {
+        "name": "Rustling Meadows",
+        "description": "You may discard 1 from your hand. If you do, draw one to replace it."
+    },
+    {
+        "name": "Age of Adventure",
+        "description": "Discard up to 4 from your hand. Draw 1. If it's a color you just discarded, you may play it now. (Excluding dominants.) Ignore actions."
+    },
+    {
+        "name": "Age of Certainty",
+        "description": "For this age, flip the deck upside down and draw cards face-up."
+    },
+    {
+        "name": "King of the Jungle",
+        "description": "All players reveal 1 card from their hand. If you show the highest face value, keep your cards. Otherwise, discard your hand and draw 3. (No ties!)"
+    },
+    {
+        "name": "Age of Envy",
+        "description": "At the end of your turn, stabilize to the size of the Gene Pool on your right."
+    },
+    {
+        "name": "Swamplands",
+        "description": "If you play any traits with actions, discard them after you stabilize, wherever they are."
+    },
+    {
+        "name": "Crackletown",
+        "description": "Choose a color. The player on your left passes you 1 of that color from their hand."
+    },
+    {
+        "name": "Star Tails",
+        "description": "Draw 3 cards. You may not draw any more cards this turn."
+    },
+    {
+        "name": "Ramblin' River Markets",
+        "description": "In turn order, choose a color. Neither you nor the player to your left may play that color this age."
+    },
+    {
+        "name": "Summer Solstice",
+        "description": "You may discard all red cards from your hand."
+    },
+    {
+        "name": "Slumberwood",
+        "description": "Players cannot play dominant traits."
+    },
+    {
+        "name": "Rainstorms",
+        "description": "You may discard all blue cards from your hand."
+    },
+    {
+        "name": "Misty Groves",
+        "description": "You may discard all green cards from your hand."
+    },
+    {
+        "name": "The Stranger",
+        "description": "Draw 1. You may play it immediately. (Excluding dominants.) Ignore actions."
+    },
+    {
+        "name": "Dueling Moons",
+        "description": "Place 1 from your hand on top of the trait deck, OR draw 1 from the bottom of the trait deck."
+    },
+    {
+        "name": "Age of Discovery",
+        "description": "Draw 3 cards."
+    },
+    {
+        "name": "Nostalgia",
+        "description": "You may return a trait in your trait pile to your hand."
+    },
+    {
+        "name": "Age of Doubt",
+        "description": "Players cannot play traits with a negative face value."
+    },
+    {
+        "name": "Lunar Advance",
+        "description": "You may discard all purple cards from your hand."
+    },
+    {
+        "name": "The Legend of Mokoko Village",
+        "description": "Draw 1. If Heroic is in your trait pile, you may play 2 traits on your turn if you ignore their actions."
+    },
+    {
+        "name": "Harlequin Falls",
+        "description": "Choose a color, then draw 3. Keep all of your chosen color and discard the rest."
+    },
+    {
+        "name": "Age of Solitude",
+        "description": "Suppress 1 card from your hand."
+    },
+    {
+        "name": "Fading Away",
+        "description": "After playing a trait and resolving its effect suppress it. (Excluding dominants.)"
+    },
+    {
+        "name": "A Quiet Moment",
+        "description": "Discard up to 3 from your hand. If you start your turn with an empty hand, draw 4."
+    },
+    {
+        "name": "Moonlight",
+        "description": "If your Gene Pool is 4 or higher, discard 1. If your Gene Pool is 3 or lower, draw 2."
+    },
+    {
+        "name": "Sunshine & Tea Parties",
+        "description": "Draw 1 and reveal it to all your friends."
+    },
+    {
+        "name": "Glitterstorm",
+        "description": "Discard 1, 2, or 3 cards from your hand at random. Then stabilize."
+    },
+    {
+        "name": "Age of Reverie",
+        "description": "Suppress 1 random card from hand then pass 1 left."
+    },
+    {
+        "name": "Unusual Friends",
+        "description": "If you play a Deepling, Moonling, or Glittering, draw 2."
+    }
+]
