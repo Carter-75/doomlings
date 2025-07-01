@@ -465,7 +465,7 @@ export default function Home() {
         return currentState;
     });
   };
-  
+
   const handleTrinketRemove = (playerName: string, trinketToRemove: Trinket) => {
     setTrinketState(currentState => {
         const currentHand = currentState.playerTrinkets[playerName] || [];
@@ -527,7 +527,7 @@ export default function Home() {
         }
     });
   };
-
+  
   const worldsEndTrinketButton = () => {
       // Placeholder for score calculation logic
       alert("Score calculation not implemented yet.");
@@ -655,7 +655,7 @@ export default function Home() {
             });
 
           return (
-            <div id="dominants" className="section-content">
+          <div id="dominants" className="section-content">
               <h2 className="section-title">Dominants</h2>
               <div className="player-control box">
                   <AnimatedButton 
@@ -674,22 +674,22 @@ export default function Home() {
                     />
                   </div>
               </div>
-              <div className="card-grid">
+            <div className="card-grid">
                 {processedDominants.map((dominant, index) => {
-                  const cardState = dominantCardStates[dominant.name] || { assignedTo: 'Assign', selectedTier: null };
-                  return (
-                      <DominantCard 
-                        key={`${dominant.name}-${index}`} 
-                        dominant={dominant}
-                        players={playerNames.slice(0, playerCount).filter(name => name.trim() !== '')}
-                        assignedTo={cardState.assignedTo}
-                        selectedTier={cardState.selectedTier}
-                        onChange={(change) => handleDominantCardChange(dominant.name, change)}
-                      />
-                  )
-                })}
-              </div>
+                const cardState = dominantCardStates[dominant.name] || { assignedTo: 'Assign', selectedTier: null };
+                return (
+                    <DominantCard 
+                      key={`${dominant.name}-${index}`} 
+                      dominant={dominant}
+                      players={playerNames.slice(0, playerCount).filter(name => name.trim() !== '')}
+                      assignedTo={cardState.assignedTo}
+                      selectedTier={cardState.selectedTier}
+                      onChange={(change) => handleDominantCardChange(dominant.name, change)}
+                    />
+                )
+              })}
             </div>
+          </div>
           )
         })()}
 
@@ -810,17 +810,17 @@ export default function Home() {
                     )}
 
                     {(viewingPlayer === pName || revealedMeanings[pName]) && hasCards && (
-                      <div className="meaning-cards-container">
+                  <div className="meaning-cards-container">
                         {playerMeanings[pName]?.map((card, cardIndex) => (
-                          <MeaningOfLifeCard 
+                      <MeaningOfLifeCard 
                             key={`${card.name}-${cardIndex}`}
-                            card={card}
+                        card={card} 
                             isSelected={selectedMeanings[pName] === card.name}
                             isRevealed={revealedMeanings[pName] || false}
                             onChoose={() => handleChooseMeaning(pName, card.name)}
                             isViewing={viewingPlayer === pName}
-                          />
-                        ))}
+                      />
+                    ))}
                       </div>
                     )}
                   </div>
@@ -834,7 +834,7 @@ export default function Home() {
 
         <div style={{ display: activeSection === 'trinkets' ? 'block' : 'none' }}>
             <h2 className="section-title">Trinkets</h2>
-             <div className="player-control box">
+            <div className="player-control box">
                 <AnimatedButton className="is-primary is-fullwidth" onClick={assignTrinkets}>Assign Trinkets</AnimatedButton>
                 {initialTrinketCount > 0 && (
                   <p className="has-text-centered mt-2">
@@ -855,22 +855,22 @@ export default function Home() {
                     <h3 className="title is-5 has-text-centered">{pName}</h3>
                     <div className="trinkets-container">
                         {currentTrinkets.map((trinket, tIndex) => (
-                            <TrinketCard 
+                                <TrinketCard
                                 key={`${trinket.name}-${tIndex}`}
-                                trinket={trinket}
+                                    trinket={trinket}
                                 onAdd={() => handleTrinketAdd(pName, trinket)}
                                 onRemove={() => handleTrinketRemove(pName, trinket)}
                                 onPocket={() => handleTrinketPocket(pName, trinket)}
                                 isPocketDisabled={currentTrinkets.length !== 1}
-                            />
-                        ))}
-                    </div>
+                                />
+                            ))}
+                        </div>
                     {pocketed.length > 0 && (
                       <div className="pocketed-trinkets mt-4">
                         <h4 className='title is-6'>Pocketed Points: {totalPoints}</h4>
-                      </div>
-                    )}
-                  </div>
+                          </div>
+                        )}
+                    </div>
                 )
               })}
             </div>

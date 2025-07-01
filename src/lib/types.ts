@@ -36,4 +36,4 @@ export interface DominantCardState {
 export interface TrinketState {
     deck: Trinket[];
     playerTrinkets: { [key: string]: Trinket[] };
-}
+} 

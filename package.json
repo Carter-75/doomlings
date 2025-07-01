@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbo",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -13,14 +13,20 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@awesome-cordova-plugins/app-rate": "^8.0.2",
     "bulma": "^1.0.1",
-    "next": "14.2.4",
+    "cordova-plugin-apprate": "^1.8.0",
+    "next": "^14.2.30",
     "react": "^18",
     "react-confetti": "^6.1.0",
     "react-dom": "^18",
     "react-use": "^17.5.0"
   },
   "devDependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/core": "^6.0.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

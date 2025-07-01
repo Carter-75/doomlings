@@ -27,3 +27,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Keystore file - Private! Do not commit.
+doomlings-companion-key.keystore
