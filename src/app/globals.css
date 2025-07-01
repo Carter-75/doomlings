@@ -566,50 +566,38 @@ section {
 
 .nav {
     display: flex;
-    justify-content: space-around;
-    background-color: rgba(0,0,0,0.5);
+    justify-content: center;
+    flex-wrap: wrap;
     padding: 10px 0;
+    margin-bottom: 20px;
+}
+
+.nav-button {
+    background: linear-gradient(145deg, #2c3e50, #34495e);
+    border: 2px solid #7f8c8d;
+    color: var(--primary-color);
+    padding: 10px 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
     border-radius: 5px;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
+    position: relative;
     overflow: hidden;
-    width: 100%;
+    flex-grow: 1;
+    text-align: center;
+    margin: 0 5px;
 }
 
-.nav > .nav-button:nth-child(4),
-.nav > .nav-button:nth-child(5) {
-  display: none;
+.nav-button:hover {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 0 15px var(--primary-color);
 }
 
-
-@media screen and (min-width: 500px) and (max-width: 767px) {
-    .nav {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-    }
-}
-
-
-@media screen and (min-width: 768px) {
-    .nav {
-        flex-direction: row;
-        width: auto;
-        display: inline-flex;
-        position: relative;
-        top: auto;
-    }
-
-    .nav > .nav-button:nth-child(1),
-    .nav > .nav-button:nth-child(2),
-    .nav > .nav-button:nth-child(3) {
-        display: inline-block;
-    }
-    .nav > .nav-button:nth-child(4),
-    .nav > .nav-button:nth-child(5) {
-        display: inline-block;
-    }
+.nav-button:active {
+    transform: scale(0.95);
 }
 
 .nav::before {
@@ -629,36 +617,6 @@ section {
         animation-duration: 4s;
     }
 }
-
-
-.nav > .nav-button {
-    background-color: transparent;
-    border: 2px solid var(--primary-color);
-    color: var(--primary-color);
-    padding: 10px 15px;
-    font-size: 1rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border-radius: 5px;
-    position: relative;
-    overflow: hidden;
-    flex-grow: 1;
-    text-align: center;
-    margin: 0 5px;
-}
-
-.nav > .nav-button:hover {
-    background-color: var(--primary-color);
-    color: white;
-    box-shadow: 0 0 15px var(--primary-color);
-}
-
-.nav > .nav-button:active {
-    transform: scale(0.95);
-}
-
 
 .nav > .nav-button:nth-child(1),
 .nav > .nav-button:nth-child(2) {
@@ -684,15 +642,6 @@ section {
     animation: blueWaveSweep 4s infinite linear;
 }
 
-
-.nav > .nav-button:nth-child(1) {
-    border-color: var(--secondary-color);
-    color: var(--secondary-color);
-}
-.nav > .nav-button:nth-child(2) {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-}
 .nav > .nav-button:nth-child(3) {
     border-color: #9b59b6;
     color: #9b59b6;
@@ -1042,10 +991,27 @@ button::after {
 .pocket-btn { background-color: #8e44ad; }
 .pocket-btn:hover { background-color: #9b59b6; }
 
+.trinket-card .card-footer-item.button {
+    padding: 0.5em;
+    font-size: 0.85rem;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.columns.is-stretch {
+  align-items: stretch;
+}
+.columns.is-stretch .column {
+  display: flex;
+  flex-direction: column;
+}
+.columns.is-stretch .column .box {
+  flex-grow: 1;
+}
 
 .meaning-card {
-    background-color: rgba(155, 89, 182, 0.2);
-    border: 1px solid #9b59b6;
+    background-color: var(--background-light);
+    border: 1px solid var(--green-dark);
     cursor: pointer;
 }
 

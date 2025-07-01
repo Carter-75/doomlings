@@ -36,13 +36,14 @@ const GameTurn: React.FC<GameTurnProps> = ({
 }) => {
   return (
     <div id="gameTurn" className="section-content">
+      <h1 className="title is-2 has-text-centered page-title">Game Turn</h1>
       <div className="player-control box">
         <AnimatedButton className="is-primary is-fullwidth" onClick={onNextTurn}>
           Start Next Turn (New Age & Challenge)
         </AnimatedButton>
       </div>
 
-      <div className="columns is-variable is-2-mobile is-4-desktop">
+      <div className="columns is-variable is-2-mobile is-4-desktop is-stretch">
         <div className="column">
           <div className="age-config box">
             <h2 className="title is-4 has-text-centered">Challenge</h2>
