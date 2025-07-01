@@ -30,3 +30,9 @@ yarn-error.log*
 
 # Keystore file - Private! Do not commit.
 doomlings-companion-key.keystore
+
+# Keystore properties file - Private! Do not commit.
+/android/keystore.properties
+
+# Local properties file - machine-specific paths
+/android/local.properties

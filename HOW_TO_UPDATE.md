@@ -2,6 +2,8 @@
 
 This file contains the step-by-step workflow for creating a new version of your app for the Google Play Store after you have made changes to the code.
 
+**Important:** Before the final step, ensure your `doomlings-companion-key.keystore` is in the `android/app/` directory and that you have filled in your passwords in the `android/keystore.properties` file.
+
 ---
 
 ### The Update Workflow
@@ -12,32 +14,41 @@ Follow these steps in order every time you want to release an update.
 - Edit the pages, components, and styles in the `src` folder as you normally would.
 
 **Step 2: Build Your Web App**
-- After making your changes, you must compile the Next.js code into static files.
+- Compile the Next.js code into static files.
 - **Run this command:**
   ```powershell
   npm run build
   ```
 
 **Step 3: Sync Your Changes with the Android Project**
-- This command copies your newly built web files into the native Android project.
+- Copy your newly built web files into the native Android project.
 - **Run this command:**
   ```powershell
   npx cap sync android
   ```
 
 **Step 4: Build the New Signed `.aab` for the Play Store**
-- This is the final step to create the app bundle file that you will upload. It will require your keystore password.
-- **Run this command:**
+- This final step uses the Gradle wrapper to build and sign the app bundle.
+- **First, navigate into the android directory:**
   ```powershell
-  npx cap run android --prod --release
+  cd android
   ```
-
+- **Next, run the build command:**
+  ```powershell
+  ./gradlew bundleRelease
+  ```
+- **After, navigate back out:**
+  ```powershell
+  cd ..
+  ```
 ---
 
-### TL;DR - The Commands
+### TL;DR - The Commands (from project root)
 
 1.  `npm run build`
 2.  `npx cap sync android`
-3.  `npx cap run android --prod --release`
+3.  `cd android`
+4.  `./gradlew bundleRelease`
+5.  `cd ..`
 
 The final file will be located at: `android/app/build/outputs/bundle/release/app-release.aab` 
