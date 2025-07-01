@@ -5,42 +5,8 @@ import DominantCard from '@/components/DominantCard';
 import MeaningOfLifeCard from '@/components/MeaningOfLifeCard';
 import TrinketCard from '@/components/TrinketCard';
 import AnimatedButton from '@/components/AnimatedButton';
-import AssignDominantModal from '@/components/AssignDominantModal';
-
-interface DominantCardState {
-    assignedTo: string;
-    selectedTier: string | null;
-}
-
-// Define types for the data
-interface Rule {
-  title: string;
-  description: string;
-}
-
-interface Dominant {
-  name: string;
-  tiers: {
-    [key: string]: string;
-  };
-}
-
-interface Age {
-    name: string;
-    description: string;
-}
-
-interface Meaning {
-    name: string;
-    description: string;
-}
-
-interface Trinket {
-    name: string;
-    power: string;
-    objective: string;
-    points: number;
-}
+import GameTurn from '@/components/GameTurn';
+import { Rule, Age, Dominant, Meaning, Trinket, DominantCardState, TrinketState } from '@/lib/types';
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState('challenges');
@@ -322,27 +288,88 @@ export default function Home() {
         }
     }
 
-    let deck: Age[] = [];
-    deck.push(...shuffleArray([...normalAges]).slice(0, normalAgeCount));
-    deck.push(...shuffleArray([...merchantAges]).slice(0, merchantAgeCount));
-    let catastropheSelection = shuffleArray([...catastropheAges]).slice(0, catastropheAgeCount);
-    if (finalCatastropheMode && catastropheSelection.length > 0) {
-        const finalCatastrophe = catastropheSelection.pop();
-        deck.push(...catastropheSelection);
-        deck = shuffleArray(deck);
-        if(finalCatastrophe) deck.push(finalCatastrophe);
+    // --- Card Pool Preparation ---
+    let normalAgePool = [...normalAges];
+    const beginningCard = normalAgePool.find(age => age.name === "Birth of Life");
+    
+    let selectedNormalAges: Age[] = [];
+    if (normalAgeCount > 0 && beginningCard) {
+        if (normalAgeCount === 1) {
+            // If only 1 age is chosen, it must be the beginning card.
+            // selectedNormalAges remains empty.
+        } else {
+            normalAgePool = normalAgePool.filter(age => age.name !== "Birth of Life");
+            selectedNormalAges = shuffleArray(normalAgePool).slice(0, normalAgeCount - 1);
+        }
     } else {
-        deck.push(...catastropheSelection);
-        deck = shuffleArray(deck);
+        selectedNormalAges = shuffleArray(normalAgePool).slice(0, normalAgeCount);
     }
-    setCatastrophesInDeck(catastropheSelection);
-    setAgeDeck(deck);
+    
+    const selectedMerchantAges = shuffleArray([...merchantAges]).slice(0, merchantAgeCount);
+    const initialCatastropheSelection = shuffleArray([...catastropheAges]).slice(0, catastropheAgeCount);
+    
+    setCatastrophesInDeck(initialCatastropheSelection);
+    
+    let catastrophesToPlace = [...initialCatastropheSelection];
+    let finalCatastrophe: Age | null = null;
+    if (finalCatastropheMode && catastrophesToPlace.length > 0) {
+        finalCatastrophe = catastrophesToPlace.pop()!;
+    }
+
+    // --- Deck Construction with Spacing Logic ---
+    let workingDeck: Age[] = [];
+    const shuffledNormals = [...selectedNormalAges];
+    const shuffledMerchants = [...selectedMerchantAges];
+
+    // Layer 1: Space out merchants among normals
+    if (shuffledMerchants.length > 0) {
+        const merchSpacing = Math.max(0, Math.min(3, Math.floor(shuffledNormals.length / shuffledMerchants.length)));
+        shuffledMerchants.forEach(merchant => {
+            const chunk = shuffledNormals.splice(0, merchSpacing);
+            workingDeck.push(...chunk);
+            workingDeck.push(merchant);
+        });
+    }
+    workingDeck.push(...shuffledNormals); // Add remaining normals
+
+    // Layer 2: Space out catastrophes in the combined deck
+    const finalDeckSegment: Age[] = [];
+    if (catastrophesToPlace.length > 0) {
+        const catSpacing = Math.max(0, Math.min(5, Math.floor(workingDeck.length / catastrophesToPlace.length)));
+        catastrophesToPlace.forEach(catastrophe => {
+            const chunk = workingDeck.splice(0, catSpacing);
+            finalDeckSegment.push(...chunk);
+            finalDeckSegment.push(catastrophe);
+        });
+    }
+    finalDeckSegment.push(...workingDeck); // Add remaining cards
+
+    // --- Final Assembly ---
+    const newDeck: Age[] = [];
+    if (normalAgeCount > 0 && beginningCard) {
+        newDeck.push(beginningCard);
+    }
+    newDeck.push(...finalDeckSegment);
+    if (finalCatastrophe) {
+        newDeck.push(finalCatastrophe);
+    }
+
+    setAgeDeck(newDeck);
     setCurrentAgeIndex(0);
     setShowCatastropheList(false);
   };
 
   const nextAge = () => setCurrentAgeIndex(i => Math.min(i + 1, ageDeck.length - 1));
   const previousAge = () => setCurrentAgeIndex(i => Math.max(i - 1, 0));
+
+  const handleNextTurn = () => {
+    if (currentAgeIndex >= ageDeck.length - 1) {
+        alert("The game is over!");
+        return;
+    }
+    rollNewAge();
+    nextAge();
+  }
 
   const assignMeaningCards = () => {
     if (Object.keys(playerMeanings).length > 0) {
@@ -532,6 +559,7 @@ export default function Home() {
 
   const currentAge = ageDeck.length > 0 ? ageDeck[currentAgeIndex] : null;
   const isCatastrophe = currentAge ? catastropheAges.some(c => c.name === currentAge.name) : false;
+  const isLastAge = ageDeck.length > 0 && currentAgeIndex === ageDeck.length - 1;
 
   const handleToggleViewPlayer = (playerName: string) => {
     setViewingPlayer(current => (current === playerName ? null : playerName));
@@ -564,6 +592,7 @@ export default function Home() {
           <button className="nav-button" onClick={() => showSection('ageSetup')}>Age Setup</button>
           <button className="nav-button" onClick={() => showSection('meaningOfLife')}>Meaning of Life</button>
           <button className="nav-button" onClick={() => showSection('trinkets')}>Trinkets</button>
+          <button className="nav-button" onClick={() => showSection('gameTurn')}>Game Turn</button>
         </div>
 
         {/* Sections */}
@@ -664,6 +693,24 @@ export default function Home() {
           )
         })()}
 
+        {activeSection === 'gameTurn' && (
+            <GameTurn
+                playerCount={playerCount}
+                playerNames={playerNames}
+                currentRule={currentRule}
+                challengePlayer={challengePlayer}
+                currentAge={currentAge}
+                isCatastrophe={isCatastrophe}
+                isLastAge={isLastAge}
+                trinketState={trinketState}
+                pocketedTrinkets={pocketedTrinkets}
+                onNextTurn={handleNextTurn}
+                handleTrinketAdd={handleTrinketAdd}
+                handleTrinketRemove={handleTrinketRemove}
+                handleTrinketPocket={handleTrinketPocket}
+            />
+        )}
+
         <div style={{ display: activeSection === 'ageSetup' ? 'block' : 'none' }}>
             <h2 className="section-title">Age Deck Setup</h2>
             <div className="age-config box">
@@ -725,6 +772,11 @@ export default function Home() {
             <div className={`age-display box has-text-centered ${isCatastrophe ? 'catastrophe-age' : ''}`}>
                 {currentAge ? (
                 <>
+                    {isLastAge && (
+                        <p className="has-text-weight-bold is-size-5" style={{ color: 'var(--gold-light)'}}>
+                            {isCatastrophe ? 'Final Catastrophe!' : 'The Last Age!'}
+                        </p>
+                    )}
                     <h4 className="title is-4">{currentAge.name}</h4>
                     <p>{currentAge.description}</p>
                 </>
