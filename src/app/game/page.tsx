@@ -5,7 +5,6 @@ import DominantCard from '@/components/DominantCard';
 import MeaningOfLifeCard from '@/components/MeaningOfLifeCard';
 import TrinketCard from '@/components/TrinketCard';
 import AnimatedButton from '@/components/AnimatedButton';
-import AssignDominantModal from '@/components/AssignDominantModal';
 
 interface DominantCardState {
     assignedTo: string;
