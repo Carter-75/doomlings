@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Preferences } from '@capacitor/preferences';
 
 // This is a placeholder for the real implementation
 const GoogleSignInButton = () => (
@@ -26,12 +27,17 @@ const SettingsPage = () => {
     const [showConfirm, setShowConfirm] = useState(false);
     const [fileToDelete, setFileToDelete] = useState<string | null>(null);
 
+    const [fileName, setFileName] = useState('');
+    const [savedFiles, setSavedFiles] = useState<string[]>([]);
+    const [message, setMessage] = useState('');
+
     useEffect(() => {
         const savedScaling = localStorage.getItem('uiScaling');
         if (savedScaling) {
             setScale(parseInt(savedScaling, 10));
         }
         fetchJsonFiles();
+        fetchSavedFiles();
     }, []);
 
     // Stub functions for now
@@ -137,6 +143,74 @@ const SettingsPage = () => {
         }
         setShowConfirm(false);
         setFileToDelete(null);
+    };
+
+    const fetchSavedFiles = async () => {
+        try {
+            const { keys } = await Preferences.keys();
+            const gameFiles = keys.filter(key => key.startsWith('gameState_'));
+            setSavedFiles(gameFiles.map(key => key.replace('gameState_', '')));
+        } catch (error) {
+            console.error('Error fetching saved files:', error);
+            setMessage('Error fetching saved files.');
+        }
+    };
+
+    const handleLoad = async (fileToLoad: string) => {
+        try {
+            const result = await Preferences.get({ key: `gameState_${fileToLoad}` });
+            if (result.value) {
+                localStorage.setItem('gameState', result.value);
+                setMessage(`Game state "${fileToLoad}" loaded successfully! You can now return to the game.`);
+            } else {
+                setMessage(`No data found for "${fileToLoad}".`);
+            }
+        } catch (error) {
+            console.error('Error loading game state:', error);
+            setMessage('Error loading game state.');
+        }
+    };
+
+    const handleSave = async () => {
+        if (!fileName.trim()) {
+            setMessage('Please enter a file name.');
+            return;
+        }
+
+        try {
+            const gameState = localStorage.getItem('gameState');
+            if (gameState) {
+                await Preferences.set({
+                    key: `gameState_${fileName}`,
+                    value: gameState,
+                });
+                setMessage(`Game state saved as "${fileName}"!`);
+                // Manually refresh the list to show the new file
+                fetchSavedFiles();
+                setFileName(''); // Clear input
+            } else {
+                setMessage('No game state found to save. Please play the game first.');
+            }
+        } catch (error) {
+            console.error('Error saving game state:', error);
+            setMessage('Error saving game state.');
+        }
+    };
+
+    const handleDelete = async (fileToDelete: string) => {
+        if (!confirm(`Are you sure you want to delete "${fileToDelete}"?`)) {
+            return;
+        }
+
+        try {
+            await Preferences.remove({ key: `gameState_${fileToDelete}` });
+            setMessage(`"${fileToDelete}" has been deleted.`);
+            // Manually refresh the list
+            fetchSavedFiles();
+        } catch (error) {
+            console.error('Error deleting file:', error);
+            setMessage('Error deleting file.');
+        }
     };
 
     return (
@@ -402,6 +476,63 @@ const SettingsPage = () => {
                                     )}
                                 </div>
                             ))}
+                        </div>
+                    </div>
+
+                    {/* Save & Load Game Section */}
+                    <div className="settings-section">
+                        <h2>Save & Load Game</h2>
+                        {message && 
+                            <div className="notification is-info is-light">
+                                <button className="delete" onClick={() => setMessage('')}></button>
+                                {message}
+                            </div>
+                        }
+
+                        <div className="box">
+                            <h3 className="subtitle">Save Current Game</h3>
+                            <div className="field has-addons">
+                                <div className="control is-expanded">
+                                    <input
+                                        className="input"
+                                        type="text"
+                                        placeholder="e.g., My Awesome Game"
+                                        value={fileName}
+                                        onChange={(e) => setFileName(e.target.value)}
+                                        onKeyPress={(e) => e.key === 'Enter' && handleSave()}
+                                    />
+                                </div>
+                                <div className="control">
+                                    <button className="button is-primary" onClick={handleSave} disabled={!fileName.trim()}>
+                                        Save
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="box">
+                            <h3 className="subtitle">Load Saved Game</h3>
+                            {savedFiles.length > 0 ? (
+                                <table className="table is-fullwidth is-hoverable">
+                                    <tbody>
+                                        {savedFiles.map((file) => (
+                                            <tr key={file}>
+                                                <td style={{ verticalAlign: 'middle' }}>{file}</td>
+                                                <td className="has-text-right">
+                                                    <button className="button is-success mr-2" onClick={() => handleLoad(file)}>
+                                                        Load
+                                                    </button>
+                                                    <button className="button is-danger is-light" onClick={() => handleDelete(file)}>
+                                                        Delete
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <p>No saved games found. Go play a game and save it!</p>
+                            )}
                         </div>
                     </div>
                 </div>

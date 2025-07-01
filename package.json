@@ -14,8 +14,11 @@
   "description": "",
   "dependencies": {
     "@awesome-cordova-plugins/app-rate": "^8.0.2",
+    "@capacitor/preferences": "^7.0.1",
     "bulma": "^1.0.1",
     "cordova-plugin-apprate": "^1.8.0",
+    "cordova-plugin-dialogs": "^2.0.2",
+    "cordova-plugin-nativestorage": "^2.3.2",
     "next": "^14.2.30",
     "react": "^18",
     "react-confetti": "^6.1.0",
@@ -23,10 +26,10 @@
     "react-use": "^17.5.0"
   },
   "devDependencies": {
-    "@capacitor/android": "^6.0.0",
+    "@capacitor/android": "^7.4.0",
     "@capacitor/assets": "^3.0.5",
-    "@capacitor/cli": "^6.0.0",
-    "@capacitor/core": "^6.0.0",
+    "@capacitor/cli": "^7.4.0",
+    "@capacitor/core": "^7.4.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
