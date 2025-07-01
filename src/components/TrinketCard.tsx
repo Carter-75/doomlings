@@ -9,11 +9,13 @@ interface Trinket {
 
 interface TrinketCardProps {
   trinket: Trinket;
+  onAdd: () => void;
   onRemove: () => void;
   onPocket: () => void;
+  isPocketDisabled: boolean;
 }
 
-const TrinketCard: React.FC<TrinketCardProps> = ({ trinket, onRemove, onPocket }) => {
+const TrinketCard: React.FC<TrinketCardProps> = ({ trinket, onAdd, onRemove, onPocket, isPocketDisabled }) => {
   return (
     <div className="trinket-card card">
         <div className="card-content">
@@ -25,8 +27,9 @@ const TrinketCard: React.FC<TrinketCardProps> = ({ trinket, onRemove, onPocket }
             </div>
         </div>
         <footer className="card-footer">
-            <a href="#" className="card-footer-item remove-btn" onClick={(e) => { e.preventDefault(); onRemove(); }}>Remove</a>
-            <a href="#" className="card-footer-item pocket-btn" onClick={(e) => { e.preventDefault(); onPocket(); }}>Pocket</a>
+            <button className="card-footer-item button add-btn" onClick={onAdd}>Add</button>
+            <button className="card-footer-item button remove-btn" onClick={onRemove}>Remove</button>
+            <button className="card-footer-item button pocket-btn" onClick={onPocket} disabled={isPocketDisabled}>Pocket</button>
         </footer>
     </div>
   );

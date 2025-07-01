@@ -10,9 +10,10 @@ interface MeaningOfLifeCardProps {
   isRevealed: boolean;
   isSelected: boolean;
   onChoose: () => void;
+  isViewing?: boolean;
 }
 
-const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({ card, isRevealed, isSelected, onChoose }) => {
+const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({ card, isRevealed, isSelected, onChoose, isViewing }) => {
   const cardClasses = [
     'meaning-card',
     isRevealed ? 'revealed' : '',
@@ -22,7 +23,7 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({ card, isRevealed,
   return (
     <div className={cardClasses} onClick={onChoose}>
       <h4 className="meaning-card-name">{card.name}</h4>
-      {isRevealed && <p>{card.description}</p>}
+      {(isRevealed || isViewing) && <p>{card.description}</p>}
     </div>
   );
 };

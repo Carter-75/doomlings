@@ -550,14 +550,16 @@ section {
 }
 
 .rule-display::before, .age-display::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at 50% 0, rgba(60, 160, 255, 0.3), transparent 70%);
-    animation: blueGlowPulse 4s infinite ease-in-out;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle, rgba(72, 163, 255, 0.1) 0%, rgba(72, 163, 255, 0) 70%);
+    border-radius: 8px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
     pointer-events: none;
 }
 
@@ -744,42 +746,6 @@ section {
     border: 1px solid var(--green-dark);
     border-radius: 4px;
     text-align: center;
-}
-
-.assign-dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.assign-button {
-    /* Add styles to match other buttons if needed */
-}
-
-.assign-dropdown-menu {
-    position: absolute;
-    bottom: 100%; /* Position above the button */
-    left: 0;
-    background-color: var(--background-light);
-    border: 1px solid var(--gold-dark);
-    border-radius: 4px;
-    z-index: 1000;
-    min-width: 100px;
-    margin-bottom: 5px; /* Space between menu and button */
-}
-
-.assign-dropdown-item {
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    color: var(--text-color);
-}
-
-.assign-dropdown-item:hover {
-    background-color: var(--green-dark);
-}
-
-.assign-dropdown-item.is-disabled {
-    color: var(--text-color-dark);
-    cursor: not-allowed;
 }
 
 @media screen and (max-width: 500px) {
@@ -1402,4 +1368,89 @@ button::after {
 
 @layer utilities {
     /* ... existing code ... */
+}
+
+.dropdown-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.styled-select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: #ff4500;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 30px 10px 15px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    transition: all 0.3s ease;
+}
+
+.styled-select:hover {
+    background-color: #ff6347;
+}
+
+.dropdown-wrapper::after {
+    content: '▼';
+    font-size: 0.8rem;
+    color: white;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+@media screen and (max-width: 500px) {
+    .dominant-card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .dominant-card .dominant-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .dominant-card .dominant-buttons button {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+}
+
+.catastrophe-age {
+    border-color: #e74c3c !important; /* A shade of red */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5), 0 0 10px rgba(231, 76, 60, 0.5) !important;
+}
+
+.catastrophe-age p {
+    color: #e74c3c; /* A shade of red */
+}
+
+.catastrophe-age::before {
+    background: radial-gradient(circle, rgba(231, 76, 60, 0.2) 0%, rgba(231, 76, 60, 0) 70%) !important;
+}
+
+.age-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.age-counter {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--gold-light);
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+}
+
+.age-counter .divider {
+    color: var(--text-color-dark);
+    margin: 0 0.5rem;
+    font-weight: normal;
 }
