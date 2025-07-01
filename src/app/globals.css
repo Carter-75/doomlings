@@ -827,8 +827,8 @@ button::after {
 }
 
 .nav-button {
-    padding: 10px 15px;
-    font-size: 0.9rem;
+    margin: 5px;
+    flex-grow: 0;
 }
 
 .nav-button:hover {
@@ -1328,6 +1328,29 @@ button::after {
         gap: 5px;
     }
     .trinket-btn {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .container {
+        padding: 0.5rem;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .dominant-card {
+        flex-direction: column;
+    }
+
+    .trinket-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .trinket-actions .button {
         width: 100%;
     }
 }
