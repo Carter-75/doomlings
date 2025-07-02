@@ -5,10 +5,16 @@ import DominantCard from '@/components/DominantCard';
 import MeaningOfLifeCard from '@/components/MeaningOfLifeCard';
 import TrinketCard from '@/components/TrinketCard';
 import AnimatedButton from '@/components/AnimatedButton';
+import GameTurn from '@/components/GameTurn';
 
 interface DominantCardState {
     assignedTo: string;
     selectedTier: string | null;
+}
+
+interface TrinketState {
+    deck: Trinket[];
+    playerTrinkets: { [key: string]: Trinket[] };
 }
 
 // Define types for the data
@@ -322,19 +328,50 @@ export default function Home() {
     }
 
     let deck: Age[] = [];
-    deck.push(...shuffleArray([...normalAges]).slice(0, normalAgeCount));
+    
+    // Find and add Birth of Life first if it exists in normalAges
+    const birthOfLife = normalAges.find(age => age.name === 'Birth of Life');
+    let availableNormalAges = normalAges.filter(age => age.name !== 'Birth of Life');
+    
+    // Add Birth of Life first if it exists and we want normal ages
+    if (birthOfLife && normalAgeCount > 0) {
+        deck.push(birthOfLife);
+        // Add remaining normal ages (one less since Birth of Life is already added)
+        if (normalAgeCount > 1) {
+            deck.push(...shuffleArray([...availableNormalAges]).slice(0, normalAgeCount - 1));
+        }
+    } else {
+        // If no Birth of Life or normalAgeCount is 0, add normal ages as usual
+        deck.push(...shuffleArray([...normalAges]).slice(0, normalAgeCount));
+    }
+    
+    // Add merchant ages
     deck.push(...shuffleArray([...merchantAges]).slice(0, merchantAgeCount));
+    
+    // Handle catastrophe ages
     let catastropheSelection = shuffleArray([...catastropheAges]).slice(0, catastropheAgeCount);
+    let allCatastrophesInDeck = [...catastropheSelection]; // Keep original list for tracking
+    
     if (finalCatastropheMode && catastropheSelection.length > 0) {
         const finalCatastrophe = catastropheSelection.pop();
         deck.push(...catastropheSelection);
-        deck = shuffleArray(deck);
+        // Shuffle everything except Birth of Life (first) and final catastrophe
+        const deckToShuffle = deck.slice(1); // Skip Birth of Life
+        const shuffledMiddle = shuffleArray(deckToShuffle);
+        deck = birthOfLife && normalAgeCount > 0 ? [birthOfLife, ...shuffledMiddle] : shuffleArray(deck);
         if(finalCatastrophe) deck.push(finalCatastrophe);
     } else {
         deck.push(...catastropheSelection);
-        deck = shuffleArray(deck);
+        // Shuffle everything except Birth of Life if it's first
+        if (birthOfLife && normalAgeCount > 0) {
+            const deckToShuffle = deck.slice(1); // Skip Birth of Life
+            const shuffledMiddle = shuffleArray(deckToShuffle);
+            deck = [birthOfLife, ...shuffledMiddle];
+        } else {
+            deck = shuffleArray(deck);
+        }
     }
-    setCatastrophesInDeck(catastropheSelection);
+    setCatastrophesInDeck(allCatastrophesInDeck);
     setAgeDeck(deck);
     setCurrentAgeIndex(0);
     setShowCatastropheList(false);
@@ -342,6 +379,13 @@ export default function Home() {
 
   const nextAge = () => setCurrentAgeIndex(i => Math.min(i + 1, ageDeck.length - 1));
   const previousAge = () => setCurrentAgeIndex(i => Math.max(i - 1, 0));
+
+  const handleNextTurn = () => {
+    // Roll new challenge
+    rollNewAge();
+    // Advance to next age
+    nextAge();
+  };
 
   const assignMeaningCards = () => {
     if (Object.keys(playerMeanings).length > 0) {
@@ -563,11 +607,30 @@ export default function Home() {
           <button className="nav-button" onClick={() => showSection('ageSetup')}>Age Setup</button>
           <button className="nav-button" onClick={() => showSection('meaningOfLife')}>Meaning of Life</button>
           <button className="nav-button" onClick={() => showSection('trinkets')}>Trinkets</button>
+          <button className="nav-button game-turn-button" onClick={() => showSection('gameTurn')}>Game Turn</button>
         </div>
 
         {/* Sections */}
-        <div style={{ display: activeSection === 'challenges' ? 'block' : 'none' }}>
-            <h1 className="section-title">Setup</h1>
+        {activeSection === 'gameTurn' && (
+          <GameTurn
+            playerCount={playerCount}
+            playerNames={playerNames}
+            currentRule={currentRule}
+            challengePlayer={challengePlayer}
+            currentAge={currentAge}
+            isCatastrophe={isCatastrophe}
+            isLastAge={currentAgeIndex === ageDeck.length - 1}
+            trinketState={trinketState}
+            pocketedTrinkets={pocketedTrinkets}
+            onNextTurn={handleNextTurn}
+            handleTrinketAdd={handleTrinketAdd}
+            handleTrinketRemove={handleTrinketRemove}
+            handleTrinketPocket={handleTrinketPocket}
+          />
+        )}
+
+        <div className="full-height-section" style={{ display: activeSection === 'challenges' ? 'block' : 'none' }}>
+            <h1 className="section-title">Challenges</h1>
             <div className="player-control box">
                 <div className="field">
                     <label className="label">Players: {playerCount}</label>
@@ -663,26 +726,123 @@ export default function Home() {
           )
         })()}
 
-        <div style={{ display: activeSection === 'ageSetup' ? 'block' : 'none' }}>
+        <div className="full-height-section" style={{ display: activeSection === 'ageSetup' ? 'block' : 'none' }}>
             <h2 className="section-title">Age Deck Setup</h2>
             <div className="age-config box">
                 <div className="field">
                     <label className="label">Normal Ages: {normalAgeCount}</label>
-                    <input type="range" className="slider" min="0" max={normalAges.length} value={normalAgeCount} onChange={(e) => setNormalAgeCount(parseInt(e.target.value, 10))} />
+                    <div className="age-input-container">
+                        <input type="range" className="slider" min="0" max={normalAges.length} value={normalAgeCount} onChange={(e) => setNormalAgeCount(parseInt(e.target.value, 10))} />
+                        <div className="age-number-wrapper">
+                            <input 
+                                type="number" 
+                                className="age-number-input" 
+                                min="0" 
+                                max={normalAges.length} 
+                                value={normalAgeCount} 
+                                onChange={(e) => setNormalAgeCount(Math.min(Math.max(0, parseInt(e.target.value, 10) || 0), normalAges.length))} 
+                            />
+                            <div className="age-spinner-buttons">
+                                <button 
+                                    type="button" 
+                                    className="age-spinner-btn age-spinner-up" 
+                                    onClick={() => setNormalAgeCount(Math.min(normalAgeCount + 1, normalAges.length))}
+                                    disabled={normalAgeCount >= normalAges.length}
+                                >
+                                    ▲
+                                </button>
+                                <button 
+                                    type="button" 
+                                    className="age-spinner-btn age-spinner-down" 
+                                    onClick={() => setNormalAgeCount(Math.max(normalAgeCount - 1, 0))}
+                                    disabled={normalAgeCount <= 0}
+                                >
+                                    ▼
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div className="field">
                     <label className="label">Merchant Ages: {merchantAgeCount}</label>
-                    <input type="range" className="slider" min="0" max={merchantAges.length} value={merchantAgeCount} onChange={(e) => setMerchantAgeCount(parseInt(e.target.value, 10))} />
+                    <div className="age-input-container">
+                        <input type="range" className="slider" min="0" max={merchantAges.length} value={merchantAgeCount} onChange={(e) => setMerchantAgeCount(parseInt(e.target.value, 10))} />
+                        <div className="age-number-wrapper">
+                            <input 
+                                type="number" 
+                                className="age-number-input" 
+                                min="0" 
+                                max={merchantAges.length} 
+                                value={merchantAgeCount} 
+                                onChange={(e) => setMerchantAgeCount(Math.min(Math.max(0, parseInt(e.target.value, 10) || 0), merchantAges.length))} 
+                            />
+                            <div className="age-spinner-buttons">
+                                <button 
+                                    type="button" 
+                                    className="age-spinner-btn age-spinner-up" 
+                                    onClick={() => setMerchantAgeCount(Math.min(merchantAgeCount + 1, merchantAges.length))}
+                                    disabled={merchantAgeCount >= merchantAges.length}
+                                >
+                                    ▲
+                                </button>
+                                <button 
+                                    type="button" 
+                                    className="age-spinner-btn age-spinner-down" 
+                                    onClick={() => setMerchantAgeCount(Math.max(merchantAgeCount - 1, 0))}
+                                    disabled={merchantAgeCount <= 0}
+                                >
+                                    ▼
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div className="field">
                     <label className="label">Catastrophe Ages: {catastropheAgeCount}</label>
-                    <input type="range" className="slider" min="0" max={catastropheAges.length} value={catastropheAgeCount} onChange={(e) => setCatastropheAgeCount(parseInt(e.target.value, 10))} />
+                    <div className="age-input-container">
+                        <input type="range" className="slider" min="0" max={catastropheAges.length} value={catastropheAgeCount} onChange={(e) => setCatastropheAgeCount(parseInt(e.target.value, 10))} />
+                        <div className="age-number-wrapper">
+                            <input 
+                                type="number" 
+                                className="age-number-input" 
+                                min="0" 
+                                max={catastropheAges.length} 
+                                value={catastropheAgeCount} 
+                                onChange={(e) => setCatastropheAgeCount(Math.min(Math.max(0, parseInt(e.target.value, 10) || 0), catastropheAges.length))} 
+                            />
+                            <div className="age-spinner-buttons">
+                                <button 
+                                    type="button" 
+                                    className="age-spinner-btn age-spinner-up" 
+                                    onClick={() => setCatastropheAgeCount(Math.min(catastropheAgeCount + 1, catastropheAges.length))}
+                                    disabled={catastropheAgeCount >= catastropheAges.length}
+                                >
+                                    ▲
+                                </button>
+                                <button 
+                                    type="button" 
+                                    className="age-spinner-btn age-spinner-down" 
+                                    onClick={() => setCatastropheAgeCount(Math.max(catastropheAgeCount - 1, 0))}
+                                    disabled={catastropheAgeCount <= 0}
+                                >
+                                    ▼
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div className="field">
-                    <label className="checkbox">
-                        <input type="checkbox" checked={finalCatastropheMode} onChange={(e) => setFinalCatastropheMode(e.target.checked)} />
-                        Final Catastrophe at End
-                    </label>
+                    <div className="catastrophe-toggle-container">
+                        <span className="catastrophe-toggle-label">Final Catastrophe at End</span>
+                        <label className="catastrophe-toggle">
+                            <input 
+                                type="checkbox" 
+                                checked={finalCatastropheMode} 
+                                onChange={(e) => setFinalCatastropheMode(e.target.checked)}
+                            />
+                            <span className="catastrophe-slider"></span>
+                        </label>
+                    </div>
                 </div>
                 <AnimatedButton className="is-primary is-fullwidth mt-4" onClick={generateAgeDeck}>Generate Age Deck</AnimatedButton>
                 {catastrophesInDeck.length > 0 && (
@@ -731,7 +891,7 @@ export default function Home() {
           </div>
         </div>
         
-        <div style={{ display: activeSection === 'meaningOfLife' ? 'block' : 'none' }}>
+        <div className="full-height-section" style={{ display: activeSection === 'meaningOfLife' ? 'block' : 'none' }}>
             <h2 className="section-title">Meaning of Life</h2>
             <div className="player-control box">
                 <AnimatedButton className="is-primary is-fullwidth" onClick={assignMeaningCards}>Assign Meaning of Life Cards</AnimatedButton>
@@ -779,7 +939,7 @@ export default function Home() {
             </div>
         </div>
 
-        <div style={{ display: activeSection === 'trinkets' ? 'block' : 'none' }}>
+        <div className="full-height-section" style={{ display: activeSection === 'trinkets' ? 'block' : 'none' }}>
             <h2 className="section-title">Trinkets</h2>
              <div className="player-control box">
                 <AnimatedButton className="is-primary is-fullwidth" onClick={assignTrinkets}>Assign Trinkets</AnimatedButton>
