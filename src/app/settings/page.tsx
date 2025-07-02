@@ -4,13 +4,29 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Preferences } from '@capacitor/preferences';
 
-// This is a placeholder for the real implementation
-const GoogleSignInButton = () => (
-    <div className="google-signin">
-        <button onClick={() => alert('Google Sign-In not implemented yet.')}>
-            Sign in with Google
-        </button>
-        <p>Sign in to sync your settings across devices.</p>
+// Cloud Sync Section - Coming Soon
+const CloudSyncSection = () => (
+    <div className="cloud-sync-section">
+        <div className="coming-soon-banner">
+            <h3>🚀 Coming Soon</h3>
+            <p>Cloud sync will allow you to:</p>
+            <ul>
+                <li>📱 Sync settings across devices</li>
+                <li>💾 Backup your game saves</li>
+                <li>🔄 Access your data anywhere</li>
+                <li>👥 Share configurations with friends</li>
+            </ul>
+            <p className="note">
+                <strong>Note:</strong> All sync features will be completely optional. 
+                The app will always work fully offline if you prefer.
+            </p>
+        </div>
+        <div className="sync-status">
+            <div className="status-indicator offline">
+                <span className="status-dot"></span>
+                <span>Offline Mode (Local Storage Only)</span>
+            </div>
+        </div>
     </div>
 );
 
@@ -395,20 +411,160 @@ const SettingsPage = () => {
             z-index: 999;
         }
 
-        .google-signin {
+        .cloud-sync-section {
             text-align: center;
-            margin: 20px 0;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
         }
-        .google-signin button {
-            background-color: #4285f4;
-            color: white;
+
+        .coming-soon-banner {
+            background: linear-gradient(135deg, rgba(60, 130, 247, 0.1), rgba(0, 255, 136, 0.1));
+            border: 1px solid rgba(60, 130, 247, 0.3);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .coming-soon-banner h3 {
+            color: #00ff88;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .coming-soon-banner p {
+            color: #e0e0e0;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .coming-soon-banner ul {
+            text-align: left;
+            max-width: 400px;
+            margin: 20px auto;
+            color: #ccc;
+        }
+
+        .coming-soon-banner li {
+            margin-bottom: 8px;
+            padding-left: 5px;
+        }
+
+        .coming-soon-banner .note {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #b0b0b0;
+        }
+
+        .sync-status {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
+            border-radius: 25px;
+            font-weight: bold;
+        }
+
+        .status-indicator.offline {
+            background: rgba(128, 128, 128, 0.2);
+            border: 1px solid rgba(128, 128, 128, 0.3);
+            color: #ccc;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #888;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .app-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .info-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(60, 130, 247, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(60, 130, 247, 0.2);
+        }
+
+        .info-card h3 {
+            color: #3c82f7;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .info-card p {
+            color: #fff;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .info-card small {
+            color: #ccc;
+            font-size: 0.85em;
+        }
+
+        .advanced-settings {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .setting-item {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(60, 130, 247, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .setting-item label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #fff;
+            font-weight: bold;
             cursor: pointer;
+        }
+
+        .setting-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #3c82f7;
+        }
+
+        .setting-item small {
+            display: block;
+            color: #ccc;
+            margin-top: 8px;
+            margin-left: 30px;
+            font-size: 0.9em;
+            line-height: 1.4;
         }
             `}</style>
             
@@ -438,10 +594,10 @@ const SettingsPage = () => {
                         <button className="action-btn" onClick={applyScale}>Apply Scale</button>
                     </div>
 
-                    {/* Google Sign-In Section */}
+                    {/* Cloud Sync Section */}
                     <div className="settings-section">
                         <h2>Cloud Sync</h2>
-                        <GoogleSignInButton />
+                        <CloudSyncSection />
                     </div>
 
                     {/* JSON Editor Section */}
@@ -476,6 +632,61 @@ const SettingsPage = () => {
                                     )}
                                 </div>
                             ))}
+                        </div>
+                    </div>
+
+                    {/* App Information Section */}
+                    <div className="settings-section">
+                        <h2>App Information</h2>
+                        <div className="app-info-grid">
+                            <div className="info-card">
+                                <h3>📱 Version</h3>
+                                <p>1.3.0</p>
+                                <small>Android 15 compatible with enhanced UI</small>
+                            </div>
+                            <div className="info-card">
+                                <h3>🎮 Game Support</h3>
+                                <p>Doomlings Board Game</p>
+                                <small>Official companion app</small>
+                            </div>
+                            <div className="info-card">
+                                <h3>💾 Storage</h3>
+                                <p>Local Device Only</p>
+                                <small>No cloud storage required</small>
+                            </div>
+                            <div className="info-card">
+                                <h3>🔒 Privacy</h3>
+                                <p>100% Private</p>
+                                <small>No data collection</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Advanced Settings Section */}
+                    <div className="settings-section">
+                        <h2>Advanced Settings</h2>
+                        <div className="advanced-settings">
+                            <div className="setting-item">
+                                <label>
+                                    <input type="checkbox" defaultChecked />
+                                    <span>Enable animations and transitions</span>
+                                </label>
+                                <small>Disable for better performance on older devices</small>
+                            </div>
+                            <div className="setting-item">
+                                <label>
+                                    <input type="checkbox" defaultChecked />
+                                    <span>Show tooltips and help text</span>
+                                </label>
+                                <small>Display helpful hints throughout the app</small>
+                            </div>
+                            <div className="setting-item">
+                                <label>
+                                    <input type="checkbox" />
+                                    <span>Developer mode</span>
+                                </label>
+                                <small>Show additional debugging information</small>
+                            </div>
                         </div>
                     </div>
 
@@ -538,8 +749,23 @@ const SettingsPage = () => {
                 </div>
             </div>
             
-            <footer style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
-                <Link href="/">Home</Link>
+            <footer style={{ 
+                textAlign: 'center', 
+                padding: '30px 0', 
+                marginTop: '40px',
+                borderTop: '1px solid rgba(255, 255, 255, 0.1)'
+            }}>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', flexWrap: 'wrap' }}>
+                    <Link href="/" style={{ color: '#ccc', textDecoration: 'none', transition: 'color 0.3s ease' }}>
+                        🏠 Home
+                    </Link>
+                    <Link href="/contact" style={{ color: '#ccc', textDecoration: 'none', transition: 'color 0.3s ease' }}>
+                        📧 Contact
+                    </Link>
+                    <Link href="/privacy-policy" style={{ color: '#ccc', textDecoration: 'none', transition: 'color 0.3s ease' }}>
+                        🔒 Privacy Policy
+                    </Link>
+                </div>
             </footer>
         </>
     );
