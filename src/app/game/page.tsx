@@ -64,6 +64,7 @@ export default function Home() {
   const [playerCount, setPlayerCount] = useState(2);
   const [playerNames, setPlayerNames] = useState<string[]>(Array(6).fill(''));
   const [catastropheMode, setCatastropheMode] = useState(false);
+  const [manualCatastropheOverride, setManualCatastropheOverride] = useState(false);
   const [currentRule, setCurrentRule] = useState<Rule | null>(null);
   const [challengePlayer, setChallengePlayer] = useState<string | null>(null);
 
@@ -111,6 +112,7 @@ export default function Home() {
         playerCount,
         playerNames,
         catastropheMode,
+        manualCatastropheOverride,
         currentRule,
         challengePlayer,
         ageDeck,
@@ -139,6 +141,7 @@ export default function Home() {
     playerCount,
     playerNames,
     catastropheMode,
+    manualCatastropheOverride,
     currentRule,
     challengePlayer,
     ageDeck,
@@ -172,6 +175,7 @@ export default function Home() {
             setPlayerCount(parseInt(savedState.playerCount, 10) || 2);
             setPlayerNames(savedState.playerNames || Array(6).fill(''));
             setCatastropheMode(savedState.catastropheMode || false);
+            setManualCatastropheOverride(savedState.manualCatastropheOverride || false);
             setCurrentRule(savedState.currentRule || null);
             setChallengePlayer(savedState.challengePlayer || null);
             setAgeDeck(savedState.ageDeck || []);
@@ -261,6 +265,8 @@ export default function Home() {
       isMounted.current = false;
     }
   }, []);
+
+
 
   const handlePlayerNameChange = (index: number, name: string) => {
     const newPlayerNames = [...playerNames];
@@ -381,10 +387,17 @@ export default function Home() {
   const previousAge = () => setCurrentAgeIndex(i => Math.max(i - 1, 0));
 
   const handleNextTurn = () => {
+    // Clear manual override when advancing to next age (allow auto-toggle again)
+    setManualCatastropheOverride(false);
     // Roll new challenge
     rollNewAge();
     // Advance to next age
     nextAge();
+  };
+
+  const handleManualCatastropheToggle = (checked: boolean) => {
+    setCatastropheMode(checked);
+    setManualCatastropheOverride(true);
   };
 
   const assignMeaningCards = () => {
@@ -576,6 +589,16 @@ export default function Home() {
   const currentAge = ageDeck.length > 0 ? ageDeck[currentAgeIndex] : null;
   const isCatastrophe = currentAge ? catastropheAges.some(c => c.name === currentAge.name) : false;
 
+  // Effect to auto-toggle catastrophe mode based on current age (only if no manual override)
+  useEffect(() => {
+    if (currentAge && !manualCatastropheOverride) {
+      const shouldBeCatastropheMode = catastropheAges.some(c => c.name === currentAge.name);
+      if (shouldBeCatastropheMode !== catastropheMode) {
+        setCatastropheMode(shouldBeCatastropheMode);
+      }
+    }
+  }, [currentAge, catastropheAges, catastropheMode, manualCatastropheOverride]);
+
   const handleToggleViewPlayer = (playerName: string) => {
     setViewingPlayer(current => (current === playerName ? null : playerName));
   };
@@ -626,6 +649,7 @@ export default function Home() {
             handleTrinketAdd={handleTrinketAdd}
             handleTrinketRemove={handleTrinketRemove}
             handleTrinketPocket={handleTrinketPocket}
+            catastropheMode={catastropheMode}
           />
         )}
 
@@ -637,10 +661,29 @@ export default function Home() {
                     <input type="range" className="slider" min="2" max="6" value={playerCount} onChange={(e) => handlePlayerCountChange(parseInt(e.target.value, 10))} />
                 </div>
                 <div className="field">
-                    <label className="checkbox">
-                        <input type="checkbox" checked={catastropheMode} onChange={(e) => setCatastropheMode(e.target.checked)} />
-                        Catastrophe Mode
-                    </label>
+                    <div className={`catastrophe-toggle-container ${catastropheMode ? 'active' : ''}`}>
+                        <span className="catastrophe-toggle-label">
+                            🔥 Catastrophe Mode {catastropheMode ? '(ACTIVE)' : ''}
+                        </span>
+                        <label className="catastrophe-toggle">
+                            <input 
+                                type="checkbox" 
+                                checked={catastropheMode} 
+                                onChange={(e) => handleManualCatastropheToggle(e.target.checked)}
+                            />
+                            <span className="catastrophe-slider"></span>
+                        </label>
+                    </div>
+                                         {currentAge && isCatastrophe && !manualCatastropheOverride && (
+                         <div className="catastrophe-auto-notice">
+                             ⚡ Auto-enabled due to current Catastrophe Age
+                         </div>
+                     )}
+                     {manualCatastropheOverride && (
+                         <div className="catastrophe-auto-notice" style={{background: 'linear-gradient(145deg, #9b59b6, #8e44ad)'}}>
+                             🎛️ Manual Override Active (resets on next turn)
+                         </div>
+                     )}
                 </div>
                 <div className="field">
                     {Array.from({ length: playerCount }).map((_, index) => (
@@ -653,9 +696,9 @@ export default function Home() {
                 <div className="field">
                     <AnimatedButton className="is-primary is-fullwidth" onClick={rollNewAge}>Roll New Challenge</AnimatedButton>
                 </div>
-                <div className="age-display mt-4 has-text-centered">
+                <div className={`age-display mt-4 has-text-centered ${catastropheMode ? 'catastrophe-mode' : ''}`}>
                     {currentRule && (
-                        <div className="rule-display">
+                        <div className={`rule-display ${catastropheMode ? 'catastrophe-mode' : ''}`}>
                             {challengePlayer && (
                                 <h3 className="challenge-player-title">For: {challengePlayer}</h3>
                             )}

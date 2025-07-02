@@ -641,7 +641,7 @@ const SettingsPage = () => {
                         <div className="app-info-grid">
                             <div className="info-card">
                                 <h3>📱 Version</h3>
-                                <p>2.0.0</p>
+                                <p>2.1.0</p>
                                 <small>Android 15 compatible with enhanced UI</small>
                             </div>
                             <div className="info-card">

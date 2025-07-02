@@ -265,7 +265,7 @@ export default function HomePage() {
         </div>
 
         <div className="version-badge">
-          v2.0 • Android 15 Ready
+          v2.1 • Android 15 Ready
         </div>
 
         <div className="container">

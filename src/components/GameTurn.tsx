@@ -17,6 +17,7 @@ interface GameTurnProps {
   handleTrinketAdd: (playerName: string, trinket: Trinket) => void;
   handleTrinketRemove: (playerName: string, trinket: Trinket) => void;
   handleTrinketPocket: (playerName: string, trinket: Trinket) => void;
+  catastropheMode: boolean;
 }
 
 const GameTurn: React.FC<GameTurnProps> = ({
@@ -33,6 +34,7 @@ const GameTurn: React.FC<GameTurnProps> = ({
   handleTrinketAdd,
   handleTrinketRemove,
   handleTrinketPocket,
+  catastropheMode,
 }) => {
   return (
     <div id="gameTurn" className="section-content">
@@ -47,9 +49,9 @@ const GameTurn: React.FC<GameTurnProps> = ({
         <div className="column">
           <div className="age-config box">
             <h2 className="title is-4 has-text-centered">Challenge</h2>
-            <div className="age-display mt-4 has-text-centered">
+            <div className={`age-display mt-4 has-text-centered ${catastropheMode ? 'catastrophe-mode' : ''}`}>
               {currentRule ? (
-                <div className="rule-display">
+                <div className={`rule-display ${catastropheMode ? 'catastrophe-mode' : ''}`}>
                   {challengePlayer && (
                     <h3 className="challenge-player-title">For: {challengePlayer}</h3>
                   )}
