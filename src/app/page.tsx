@@ -290,6 +290,11 @@ export default function HomePage() {
                   <p>Get help, report issues, or request features with comprehensive support options</p>
                 </Link>
                 
+                <Link href="/multiplayer" className="feature-card">
+                  <h3>🌐 Multiplayer</h3>
+                  <p>Play the full Doomlings card game online with friends in real-time multiplayer matches</p>
+                </Link>
+                
                 <Link href="/privacy-policy" className="feature-card">
                   <h3>🔒 Privacy</h3>
                   <p>Learn about our privacy-first approach and Android 15 compatibility</p>
