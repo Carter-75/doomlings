@@ -117,14 +117,14 @@ export async function POST(request: NextRequest) {
         });
         
       case 'get-room-state':
-        const room = gameState.rooms.get(data.roomId);
-        if (!room) {
+        const roomForState = gameState.rooms.get(data.roomId);
+        if (!roomForState) {
           return NextResponse.json({ success: false, error: 'Room not found' });
         }
         
         return NextResponse.json({
           success: true,
-          room
+          room: roomForState
         });
         
       case 'set-player-ready':
