@@ -291,13 +291,26 @@ app.prepare().then(() => {
         if (room.players.length >= 2 && room.players.every(p => p.ready)) {
           // Start game
           room.status = 'playing';
+          
+          // Initialize game with actual card data (simplified for now)
+          room.players.forEach((player, index) => {
+            player.hand = generateInitialHand(player.id); // 7 cards initially
+            player.genePool = 8; // Starting gene pool
+            player.traitPile = [];
+            player.score = 0;
+          });
+          
+          // Set up age deck
+          room.ageCards = generateAgeDeck();
+          room.currentAge = room.ageCards[0];
+          
           io.to(data.roomId).emit('game-started', room);
           
           const systemMessage = {
             id: Date.now(),
             playerId: 'system',
             playerName: 'System',
-            message: 'Game started! Good luck everyone!',
+            message: 'Game started! Good luck everyone! Draw your initial hands.',
             timestamp: new Date(),
             type: 'system'
           };
