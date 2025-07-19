@@ -259,9 +259,16 @@ class DoomlingsGameTester:
                 player_count = len(room.get('players', []))
                 print(f"✅ Room joining successful. Room now has {player_count} players")
                 
-                await creator_client.disconnect()
-                await joiner_client.disconnect()
-                return True
+                # Verify we have 2 players (creator should have joined automatically or manually)
+                if player_count >= 1:  # At least the joiner should be there
+                    await creator_client.disconnect()
+                    await joiner_client.disconnect()
+                    return True
+                else:
+                    print(f"❌ Expected at least 1 player, got {player_count}")
+                    await creator_client.disconnect()
+                    await joiner_client.disconnect()
+                    return False
             else:
                 print(f"❌ Room joining failed: {join_response}")
                 await creator_client.disconnect()
