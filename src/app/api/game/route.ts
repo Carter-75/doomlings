@@ -56,11 +56,21 @@ export async function POST(request: NextRequest) {
         });
       
       case 'create-room':
+        // Ensure player exists, if not create them
+        let hostPlayerId = data.playerId;
+        if (!gameState.players.has(hostPlayerId)) {
+          gameState.players.set(hostPlayerId, {
+            id: hostPlayerId,
+            name: data.playerName || 'Player',
+            lastSeen: Date.now()
+          });
+        }
+
         const roomId = generateRoomCode();
         const room = {
           id: roomId,
           name: data.roomName,
-          hostId: data.playerId,
+          hostId: hostPlayerId,
           players: [],
           maxPlayers: data.maxPlayers,
           isPrivate: data.isPrivate,
