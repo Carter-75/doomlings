@@ -330,10 +330,10 @@ export class CardDatabase {
         triggers: [{ event: 'world_end', priority: 1000 }],
         primitives: [
           { 
-            type: 'world_end_trigger', 
+            type: 'add_points' as any, 
             amount: 1, 
-            target: 'all_players', 
-            duration: 'instant', 
+            target: 'all_players' as any, 
+            duration: 'instant' as any, 
             stackable: false 
           }
         ],
