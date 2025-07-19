@@ -25,13 +25,7 @@ const nextConfig = {
       },
     ];
   },
-  // Allow cross-origin requests from preview domains
-  experimental: {
-    allowedDevOrigins: [
-      'localhost:3000',
-      'doomlings-arena.preview.emergentagent.com'
-    ]
-  },
+  // Remove experimental config that's not valid
   // Removed output: 'export' to enable Socket.IO server
 };
 
