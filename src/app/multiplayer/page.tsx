@@ -156,8 +156,10 @@ const MultiplayerPage = () => {
   };
 
   const handleEndTurn = () => {
-    // TODO: Implement end turn logic
-    console.log('End turn clicked');
+    // Implement end turn logic
+    if (currentRoom) {
+      // Future implementation: handle turn end logic
+    }
   };
 
   const handleLeaveGame = () => {
