@@ -23,7 +23,6 @@ const MultiplayerPage = () => {
     
     // Set up socket listeners
     socketManager.onRoomUpdated((room) => {
-      console.log('Room updated received:', room); // Debug log
       setCurrentRoom(room);
       if (currentView === 'menu' && room && room.players.find((p: any) => p.name === socketManager.getPlayerName())) {
         setCurrentView('lobby');
@@ -32,23 +31,19 @@ const MultiplayerPage = () => {
     });
 
     socketManager.onGameStarted((room) => {
-      console.log('Game started received:', room); // Debug log
       setCurrentRoom(room);
       setCurrentView('game');
     });
 
     socketManager.onGameUpdated((room) => {
-      console.log('Game updated received:', room); // Debug log
       setCurrentRoom(room);
     });
 
     socketManager.onChatMessage((message) => {
-      console.log('Chat message received:', message); // Debug log
       setChatMessages(prev => [...prev, message]);
     });
 
     socketManager.onRoomListUpdated((rooms) => {
-      console.log('Room list updated:', rooms); // Debug log
       setPublicRooms(rooms);
     });
 
