@@ -266,7 +266,7 @@ const DoomlingGameInterface: React.FC<GameProps> = ({
             <div className="bg-white/10 backdrop-blur rounded-lg p-4 mb-4">
               <h2 className="text-xl font-bold text-white mb-4">Your Hand</h2>
               <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto">
-                {sampleCards.map((card) => (
+                {playerHand.map((card) => (
                   <div
                     key={card.id}
                     onClick={() => handleCardClick(card.id)}
