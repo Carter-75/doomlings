@@ -45,9 +45,9 @@ export interface TriggerCondition {
 }
 
 export interface EffectPrimitive {
-  type: 'draw' | 'discard' | 'play_additional' | 'steal_trait' | 'swap_trait' | 'modify_gene_pool' |
+  type: 'draw' | 'discard' | 'force_discard' | 'play_additional' | 'steal_trait' | 'swap_trait' | 'modify_gene_pool' |
         'pass_hand' | 'skip_stabilize' | 'force_stabilize' | 'prevent_play' | 'add_points' |
-        'multiply_points' | 'copy_effect' | 'temporal_replay' | 'reveal_age' | 'search_deck';
+        'multiply_points' | 'copy_effect' | 'temporal_replay' | 'reveal_age' | 'search_deck' | 'world_end_trigger';
   amount?: number;
   target: 'self' | 'all_players' | 'opponents' | 'choose_player' | 'trait_pile' | 'hand' | 'deck';
   condition?: EffectCondition;
@@ -71,7 +71,7 @@ export interface OngoingModifier {
 
 export interface WorldEndBonus {
   type: 'color_count' | 'dominant_bonus' | 'variety_synergy' | 'species_synergy' | 'hand_empty' |
-        'gene_pool_final' | 'catastrophe_survived' | 'treasure_collection' | 'set_collection';
+        'gene_pool_final' | 'catastrophe_survived' | 'treasure_collection' | 'set_collection' | 'fixed_bonus';
   calculation: 'per_card' | 'threshold' | 'exponential' | 'fixed';
   value: number;
   condition?: {
