@@ -493,8 +493,8 @@ export class CardDatabase {
         primitives: [],
         ongoingModifiers: [],
         worldEndBonuses: [{
-          type: 'treasure_collection',
-          calculation: 'per_card',
+          type: 'treasure_collection' as any,
+          calculation: 'per_card' as any,
           value: 2,
           condition: { requirement: 'treasure_count' }
         }],
