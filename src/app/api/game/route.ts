@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ success: false, error: 'Room not found' });
         }
         
-        const playerInRoom = readyRoom.players.find(p => p.id === data.playerId);
+        const playerInRoom = readyRoom.players.find((p: any) => p.id === data.playerId);
         if (!playerInRoom) {
           return NextResponse.json({ success: false, error: 'Player not in room' });
         }
