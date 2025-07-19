@@ -546,6 +546,12 @@ class DoomlingsGameTester:
             client = await self.setup_client("error_test")
             await client.connect(self.server_url)
             
+            # Register player first for valid tests
+            player_response = await client.call('join-as-player', "ErrorTester", timeout=5)
+            if not player_response or not player_response.get('success'):
+                print("❌ Failed to register player for error test")
+                return False
+            
             # Test 1: Try to join non-existent room
             join_data = {
                 'roomId': 'NONEXISTENT',
@@ -559,13 +565,17 @@ class DoomlingsGameTester:
                 if 'not found' in error_msg.lower():
                     print("✅ Error handling for non-existent room works")
                 else:
-                    print(f"❌ Unexpected error message: {error_msg}")
+                    print(f"❌ Unexpected error message for non-existent room: {error_msg}")
                     return False
             else:
                 print("❌ Should have failed to join non-existent room")
                 return False
             
-            # Test 2: Try to create room without being registered
+            # Test 2: Create a new client to test unregistered player
+            unregistered_client = await self.setup_client("unregistered_test")
+            await unregistered_client.connect(self.server_url)
+            
+            # Try to create room without being registered
             room_data = {
                 'roomName': 'Error Test Room',
                 'maxPlayers': 4,
@@ -573,20 +583,23 @@ class DoomlingsGameTester:
                 'gameSettings': {'expansions': ['base']}
             }
             
-            room_response = await client.call('create-room', room_data, timeout=5)
+            room_response = await unregistered_client.call('create-room', room_data, timeout=5)
             
             if room_response and not room_response.get('success'):
                 error_msg = room_response.get('error', '')
                 if 'not registered' in error_msg.lower():
                     print("✅ Error handling for unregistered player works")
                 else:
-                    print(f"❌ Unexpected error message: {error_msg}")
+                    print(f"❌ Unexpected error message for unregistered player: {error_msg}")
+                    await unregistered_client.disconnect()
                     return False
             else:
                 print("❌ Should have failed to create room without registration")
+                await unregistered_client.disconnect()
                 return False
             
             await client.disconnect()
+            await unregistered_client.disconnect()
             print("✅ Error handling tests successful")
             return True
                 
