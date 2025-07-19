@@ -380,28 +380,31 @@ const MultiplayerPage = () => {
               </h2>
               
               <div className="space-y-3">
-                {currentRoom.players.map((player: any, index: number) => (
-                  <div key={player.id} className="flex justify-between items-center bg-white/5 rounded p-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="text-2xl">
-                        {player.id === currentRoom.hostId ? '👑' : '🎮'}
-                      </div>
-                      <div>
-                        <div className="text-white font-bold">{player.name}</div>
-                        <div className="text-gray-300 text-sm">
-                          {player.id === socketManager.getPlayerId() ? '(You)' : ''}
+                {currentRoom.players.map((player: any, index: number) => {
+                  const isCurrentPlayer = player.id === socketManager.getPlayerId();
+                  return (
+                    <div key={player.id} className="flex justify-between items-center bg-white/5 rounded p-3">
+                      <div className="flex items-center space-x-3">
+                        <div className="text-2xl">
+                          {player.id === currentRoom.hostId ? '👑' : '🎮'}
+                        </div>
+                        <div>
+                          <div className="text-white font-bold">
+                            {player.name}
+                            {isCurrentPlayer && <span className="text-blue-400 ml-2">(You)</span>}
+                          </div>
                         </div>
                       </div>
+                      <div className={`px-2 py-1 rounded text-sm font-bold ${
+                        player.ready 
+                          ? 'bg-green-500/20 text-green-200 border border-green-500' 
+                          : 'bg-red-500/20 text-red-200 border border-red-500'
+                      }`}>
+                        {player.ready ? 'Ready' : 'Not Ready'}
+                      </div>
                     </div>
-                    <div className={`px-2 py-1 rounded text-sm font-bold ${
-                      player.ready 
-                        ? 'bg-green-500/20 text-green-200 border border-green-500' 
-                        : 'bg-red-500/20 text-red-200 border border-red-500'
-                    }`}>
-                      {player.ready ? 'Ready' : 'Not Ready'}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
                 
                 {/* Empty slots */}
                 {Array.from({ length: currentRoom.maxPlayers - currentRoom.players.length }).map((_, index) => (
