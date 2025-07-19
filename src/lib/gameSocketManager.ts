@@ -22,9 +22,7 @@ class GameSocketManager {
         return;
       }
 
-      this.socket = io({
-        path: '/api/socketio'
-      });
+      this.socket = io();
 
       this.socket.on('connect', () => {
         console.log('Connected to game server');
