@@ -36,9 +36,24 @@ async def debug_test():
             print(f"   First player hand size: {len(player.get('hand', []))}")
             print(f"   First player gene pool: {player.get('genePool')}")
     
+    # Add handler for hyphenated event name
+    @client.on('game-started')
+    async def game_started_hyphen(data):
+        print(f"🎮 Game started (hyphen)! Room: {data.get('id')}")
+        print(f"   Players: {len(data.get('players', []))}")
+        if data.get('players'):
+            player = data['players'][0]
+            print(f"   First player hand size: {len(player.get('hand', []))}")
+            print(f"   First player gene pool: {player.get('genePool')}")
+    
     @client.event
     async def chat_message(data):
         print(f"💬 Chat: {data.get('playerName')}: {data.get('message')}")
+    
+    # Add handler for hyphenated event name
+    @client.on('chat-message')
+    async def chat_message_hyphen(data):
+        print(f"💬 Chat (hyphen): {data.get('playerName')}: {data.get('message')}")
     
     # Add generic event handler to catch all events
     @client.event
