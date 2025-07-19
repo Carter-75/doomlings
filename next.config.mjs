@@ -13,7 +13,7 @@ const nextConfig = {
       },
     ];
   },
-  output: 'export',
+  // Removed output: 'export' to enable Socket.IO server
 };
 
 export default nextConfig;
