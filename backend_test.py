@@ -631,7 +631,7 @@ class DoomlingsGameTester:
             # Set up event listener for room updates
             room_updated = False
             
-            @client1.event
+            @client1.on('room-updated')
             async def room_updated_event(data):
                 nonlocal room_updated
                 room_updated = True
