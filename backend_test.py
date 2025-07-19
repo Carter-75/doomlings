@@ -374,10 +374,20 @@ class DoomlingsGameTester:
             
             room_id = room_response.get('roomId')
             
+            # Join the room after creating it
+            join_data = {
+                'roomId': room_id,
+                'playerName': 'GameStatePlayer'
+            }
+            join_response = await client.call('join-room', join_data, timeout=5)
+            if not join_response or not join_response.get('success'):
+                print("❌ Failed to join room for game state test")
+                return False
+            
             # Set up event listener for game start
             game_data = None
             
-            @client.event
+            @client.on('game-started')
             async def game_started_event(data):
                 nonlocal game_data
                 game_data = data
@@ -392,7 +402,7 @@ class DoomlingsGameTester:
             await client.emit('player-ready', ready_data)
             
             # Wait for game to start
-            await asyncio.sleep(2)
+            await asyncio.sleep(3)
             
             if game_data:
                 players = game_data.get('players', [])
