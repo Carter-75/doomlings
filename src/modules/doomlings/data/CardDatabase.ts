@@ -556,10 +556,10 @@ export class CardDatabase {
     const randomEffect = effects[Math.floor(Math.random() * effects.length)];
     
     return [{
-      type: randomEffect,
+      type: randomEffect as any,
       amount: Math.floor(Math.random() * 3) + 1,
-      target: Math.random() < 0.5 ? 'self' : 'opponents',
-      duration: 'instant',
+      target: (Math.random() < 0.5 ? 'self' : 'opponents') as any,
+      duration: 'instant' as any,
       stackable: false
     }];
   }
