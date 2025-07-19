@@ -103,9 +103,15 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ success: false, error: 'Game already started' });
         }
         
-        const player = gameState.players.get(data.playerId);
+        // Ensure player exists, get from data if not in gameState
+        let player = gameState.players.get(data.playerId);
         if (!player) {
-          return NextResponse.json({ success: false, error: 'Player not found' });
+          player = {
+            id: data.playerId,
+            name: data.playerName || 'Player',
+            lastSeen: Date.now()
+          };
+          gameState.players.set(data.playerId, player);
         }
         
         if (!targetRoom.players.find((p: any) => p.id === data.playerId)) {
