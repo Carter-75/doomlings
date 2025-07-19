@@ -320,8 +320,8 @@ app.prepare().then(() => {
         player.ready = data.ready;
         io.to(data.roomId).emit('room-updated', room);
         
-        // Check if all players are ready
-        if (room.players.length >= 2 && room.players.every(p => p.ready)) {
+        // Check if all players are ready (minimum 1 for demo)
+        if (room.players.length >= 1 && room.players.every(p => p.ready)) {
           // Start game
           room.status = 'playing';
           
