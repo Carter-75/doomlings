@@ -168,9 +168,5 @@ export interface ExpansionCounts {
   discrepancies: string[];
 }
 
-// Export all types
-export type {
-  CardSchema as Card,
-  CardCollection,
-  ExpansionCounts
-};
+// Export main Card type alias
+export type Card = CardSchema;
