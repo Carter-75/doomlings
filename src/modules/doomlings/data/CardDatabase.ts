@@ -55,23 +55,23 @@ export class CardDatabase {
     const baseCards: Card[] = [];
 
     // Birth of Life (1 card)
-    baseCards.push({
+    const birthOfLife = {
       id: 'birth-001',
       slug: 'birth-of-life',
       name: 'Birth of Life',
       set: 'base',
-      expansionGroup: 'base',
-      type: 'birth_of_life',
-      rarity: 'unique',
+      expansionGroup: 'base' as const,
+      type: 'birth_of_life' as const,
+      rarity: 'unique' as const,
       pointValue: 0,
       dominantLimitImpact: 0,
-      triggers: [{ event: 'on_play', priority: 100 }],
+      triggers: [{ event: 'on_play' as const, priority: 100 }],
       primitives: [
         { 
-          type: 'modify_gene_pool', 
+          type: 'modify_gene_pool' as const, 
           amount: 5, 
-          target: 'all_players', 
-          duration: 'permanent', 
+          target: 'all_players' as const, 
+          duration: 'permanent' as const, 
           stackable: false 
         }
       ],
@@ -80,9 +80,16 @@ export class CardDatabase {
       restrictions: [],
       textPlaceholder: 'Sets initial conditions for all players. Gene Pool begins at 5.',
       textHashSHA256: this.hashText('Birth of Life establishes the foundation...'),
-      licensingStatus: 'placeholder',
-      version: '1.0.0'
-    } as BirthOfLifeCard);
+      licensingStatus: 'placeholder' as const,
+      version: '1.0.0',
+      baselineEffect: {
+        initialGenePools: 5,
+        initialHandSize: 5,
+        playPattern: 'one_trait_then_stabilize' as const,
+        setupInstructions: ['Each player starts with 5 Gene Pool', 'Draw initial hand of 5 cards']
+      }
+    };
+    baseCards.push(birthOfLife as any);
 
     // Age Cards (approximately 15)
     const ages = this.generateAgeCards();
