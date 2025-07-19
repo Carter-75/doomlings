@@ -46,23 +46,23 @@ class DoomlingsGameTester:
         async def disconnect():
             print(f"Client {client_id} disconnected from server")
             
-        @client.event
+        @client.on('player-registered')
         async def player_registered(data):
             print(f"Client {client_id} registered as player: {data}")
             
-        @client.event
+        @client.on('room-updated')
         async def room_updated(data):
             print(f"Client {client_id} received room update: {data.get('id', 'unknown')} with {len(data.get('players', []))} players")
             
-        @client.event
+        @client.on('game-started')
         async def game_started(data):
             print(f"Client {client_id} received game started event for room: {data.get('id', 'unknown')}")
             
-        @client.event
+        @client.on('game-updated')
         async def game_updated(data):
             print(f"Client {client_id} received game update for room: {data.get('id', 'unknown')}")
             
-        @client.event
+        @client.on('chat-message')
         async def chat_message(data):
             print(f"Client {client_id} received chat: {data.get('playerName', 'Unknown')}: {data.get('message', '')}")
         
