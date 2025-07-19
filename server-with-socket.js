@@ -374,9 +374,43 @@ app.prepare().then(() => {
       io.to(data.roomId).emit('chat-message', chatMessage);
     });
 
-    // Handle getting public rooms
-    socket.on('get-public-rooms', (callback) => {
-      if (callback) callback(getPublicRooms());
+    // Handle card playing
+    socket.on('play-card', (data) => {
+      const playerId = socketPlayers.get(socket.id);
+      const room = rooms.get(data.roomId);
+      
+      if (!room || !playerId || room.status !== 'playing') return;
+      
+      const currentPlayer = room.players[room.currentPlayerIndex];
+      if (currentPlayer.id !== playerId) return;
+      
+      // Find and remove card from hand
+      const cardIndex = currentPlayer.hand.findIndex(card => card.id === data.cardId);
+      if (cardIndex === -1) return;
+      
+      const playedCard = currentPlayer.hand.splice(cardIndex, 1)[0];
+      
+      // Add to trait pile
+      currentPlayer.traitPile.push(playedCard);
+      
+      // Update score (simplified)
+      currentPlayer.score += playedCard.points || 0;
+      
+      // Move to next player
+      room.currentPlayerIndex = (room.currentPlayerIndex + 1) % room.players.length;
+      
+      // Send game update
+      io.to(data.roomId).emit('game-updated', room);
+      
+      const systemMessage = {
+        id: Date.now(),
+        playerId: 'system',
+        playerName: 'System',
+        message: `${currentPlayer.name} played ${playedCard.name}`,
+        timestamp: new Date(),
+        type: 'system'
+      };
+      io.to(data.roomId).emit('chat-message', systemMessage);
     });
 
     // Handle disconnect
