@@ -22,9 +22,33 @@ class GameSocketManager {
         return;
       }
 
-      // Use the current window location for Socket.IO connection
-      const serverUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
-      this.socket = io(serverUrl);
+      // Determine the correct Socket.IO server URL
+      let serverUrl = 'http://localhost:3000'; // Default for local development
+      
+      if (typeof window !== 'undefined') {
+        const hostname = window.location.hostname;
+        
+        if (hostname === 'doomlings.vercel.app') {
+          // Production Vercel deployment - use Railway server
+          serverUrl = 'https://doomlings-socket-production.up.railway.app';
+        } else if (hostname.includes('.vercel.app')) {
+          // Preview deployments - use Railway server
+          serverUrl = 'https://doomlings-socket-production.up.railway.app';
+        } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
+          // Local development
+          serverUrl = window.location.origin;
+        } else {
+          // Other domains (like preview environments)
+          serverUrl = 'https://doomlings-socket-production.up.railway.app';
+        }
+      }
+
+      console.log(`Connecting to Socket.IO server: ${serverUrl}`);
+      this.socket = io(serverUrl, {
+        transports: ['websocket', 'polling'],
+        timeout: 20000,
+        forceNew: true
+      });
 
       this.socket.on('connect', () => {
         console.log('Connected to game server');
