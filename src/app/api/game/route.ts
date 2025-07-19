@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
         
         // Check if all players are ready to start game
         const minPlayers = 1; // Allow single player for testing
-        if (readyRoom.players.length >= minPlayers && readyRoom.players.every(p => p.ready)) {
+        if (readyRoom.players.length >= minPlayers && readyRoom.players.every((p: any) => p.ready)) {
           readyRoom.status = 'playing';
           readyRoom.currentPlayerIndex = 0;
           
