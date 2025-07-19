@@ -23,7 +23,7 @@ class GameSocketManager {
       }
 
       this.socket = io({
-        path: '/api/socket'
+        path: '/api/socketio'
       });
 
       this.socket.on('connect', () => {
