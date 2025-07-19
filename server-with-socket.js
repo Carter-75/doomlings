@@ -413,6 +413,11 @@ app.prepare().then(() => {
       io.to(data.roomId).emit('chat-message', systemMessage);
     });
 
+    // Handle getting public rooms
+    socket.on('get-public-rooms', (callback) => {
+      if (callback) callback(getPublicRooms());
+    });
+
     // Handle disconnect
     socket.on('disconnect', () => {
       console.log('Client disconnected:', socket.id);
