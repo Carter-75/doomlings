@@ -296,10 +296,10 @@ export class CardDatabase {
         triggers: [{ event: 'on_play', priority: 100 }],
         primitives: [
           { 
-            type: 'discard' as any, 
+            type: 'force_discard', 
             amount: 3, 
-            target: 'all_players' as any, 
-            duration: 'instant' as any, 
+            target: 'all_players', 
+            duration: 'instant', 
             stackable: false 
           }
         ],
