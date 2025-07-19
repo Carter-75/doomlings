@@ -2,7 +2,7 @@
 // Implements Master Spec Requirements 3, 4, 21, 22, 23, 33
 
 import { Card, CardCollection, ExpansionCounts, AgeCard, CatastropheCard, TreasureCard, BirthOfLifeCard } from '../types/Card';
-import crypto from 'crypto';
+import { createHash } from 'crypto';
 
 export class CardDatabase {
   private static instance: CardDatabase;
