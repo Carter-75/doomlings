@@ -62,9 +62,16 @@ class VercelGameManager {
                 this.emit('room-updated', result.room);
               }
             }
+          } else if (result.error === 'Room not found') {
+            // Room was deleted, stop polling
+            console.log('Room no longer exists, stopping polling');
+            this.stopPolling();
+            this.currentRoomId = null;
+            this.lastRoomState = null;
           }
         } catch (error) {
           console.error('Polling error:', error);
+          // Don't stop polling on network errors, just log them
         }
       }
     }, 2000); // Poll every 2 seconds
