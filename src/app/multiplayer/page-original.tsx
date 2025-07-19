@@ -31,23 +31,23 @@ const MultiplayerPage = () => {
       }
     });
 
-    socketManager.onGameStarted((room) => {
+    socketManager.onGameStarted((room: any) => {
       console.log('Game started received:', room); // Debug log
       setCurrentRoom(room);
       setCurrentView('game');
     });
 
-    socketManager.onGameUpdated((room) => {
+    socketManager.onGameUpdated((room: any) => {
       console.log('Game updated received:', room); // Debug log
       setCurrentRoom(room);
     });
 
-    socketManager.onChatMessage((message) => {
+    socketManager.onChatMessage((message: any) => {
       console.log('Chat message received:', message); // Debug log
       setChatMessages(prev => [...prev, message]);
     });
 
-    socketManager.onRoomListUpdated((rooms) => {
+    socketManager.onRoomListUpdated((rooms: any) => {
       console.log('Room list updated:', rooms); // Debug log
       setPublicRooms(rooms);
     });
