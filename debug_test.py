@@ -90,7 +90,11 @@ async def debug_test():
             
             # Wait for events
             print("\n5. Waiting for game start...")
-            await asyncio.sleep(5)
+            await asyncio.sleep(3)
+            
+            # Check room status manually
+            print("\n6. Checking if we missed any events...")
+            await asyncio.sleep(2)
         
         await client.disconnect()
         
