@@ -36,6 +36,22 @@ async def debug_test():
             print(f"   First player hand size: {len(player.get('hand', []))}")
             print(f"   First player gene pool: {player.get('genePool')}")
     
+    @client.event
+    async def chat_message(data):
+        print(f"💬 Chat: {data.get('playerName')}: {data.get('message')}")
+    
+    # Add generic event handler to catch all events
+    @client.event
+    async def connect_error(data):
+        print(f"❌ Connection error: {data}")
+    
+    # Catch all other events
+    original_emit = client.emit
+    async def debug_emit(event, data=None, namespace=None, callback=None, timeout=60):
+        print(f"📤 Emitting: {event} with data: {data}")
+        return await original_emit(event, data, namespace, callback, timeout)
+    client.emit = debug_emit
+    
     try:
         await client.connect("http://localhost:3000")
         
