@@ -6,6 +6,7 @@ import RulesEngine from '../engine/RulesEngine';
 import CardDatabase from '../data/CardDatabase';
 import AgeDeckBuilder from '../engine/AgeDeckBuilder';
 import { DoomlingsPRNG } from '../utils/DeterministicRandom';
+import { createHash } from 'crypto';
 
 export interface GameServerConfig {
   maxConcurrentGames: number;
