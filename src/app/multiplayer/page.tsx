@@ -117,10 +117,8 @@ const MultiplayerPage = () => {
   const handleQuickMatch = async (maxPlayers: number) => {
     setIsConnecting(true);
     try {
-      const response = await socketManager.quickMatch(maxPlayers);
-      setCurrentRoom(response.room);
-      setCurrentView('lobby');
-      setChatMessages([]);
+      await socketManager.quickMatch(maxPlayers);
+      // The socket events will handle the UI updates
     } catch (error) {
       setError(`Failed to find match: ${error}`);
     } finally {
