@@ -22,7 +22,9 @@ class GameSocketManager {
         return;
       }
 
-      this.socket = io();
+      // Use the current window location for Socket.IO connection
+      const serverUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
+      this.socket = io(serverUrl);
 
       this.socket.on('connect', () => {
         console.log('Connected to game server');
