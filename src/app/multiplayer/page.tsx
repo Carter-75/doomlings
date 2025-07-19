@@ -25,7 +25,7 @@ const MultiplayerPage = () => {
     socketManager.onRoomUpdated((room) => {
       console.log('Room updated received:', room); // Debug log
       setCurrentRoom(room);
-      if (currentView === 'menu' && room && room.players.find(p => p.name === socketManager.getPlayerName())) {
+      if (currentView === 'menu' && room && room.players.find((p: any) => p.name === socketManager.getPlayerName())) {
         setCurrentView('lobby');
         setChatMessages([]);
       }
