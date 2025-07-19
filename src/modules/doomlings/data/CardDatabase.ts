@@ -558,7 +558,7 @@ export class CardDatabase {
   }
 
   private hashText(text: string): string {
-    return crypto.createHash('sha256').update(text).digest('hex');
+    return createHash('sha256').update(text).digest('hex');
   }
 
   // PUBLIC API METHODS
