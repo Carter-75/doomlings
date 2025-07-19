@@ -176,6 +176,7 @@ app.prepare().then(() => {
       socket.join(data.roomId);
 
       // Send room update to all players in room
+      console.log(`Broadcasting room update to room ${data.roomId} with ${room.players.length} players`);
       io.to(data.roomId).emit('room-updated', room);
       
       // Send system message
