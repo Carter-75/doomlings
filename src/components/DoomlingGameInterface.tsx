@@ -44,9 +44,9 @@ const DoomlingGameInterface: React.FC<GameProps> = ({
   const [showCardDetails, setShowCardDetails] = useState<Card | null>(null);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   
-  const currentPlayer = room.players.find((p: Player) => p.id === currentPlayerId);
-  const isCurrentTurn = room.players[room.currentPlayerIndex]?.id === currentPlayerId;
-  const currentTurnPlayer = room.players[room.currentPlayerIndex];
+  const currentPlayer = room?.players?.find((p: Player) => p.id === currentPlayerId);
+  const isCurrentTurn = room?.players?.[room?.currentPlayerIndex]?.id === currentPlayerId;
+  const currentTurnPlayer = room?.players?.[room?.currentPlayerIndex];
 
   // Enhanced sample cards with better variety
   const sampleCards: Card[] = [
