@@ -532,8 +532,8 @@ export class CardDatabase {
         primitives: [],
         ongoingModifiers: [],
         worldEndBonuses: [{
-          type: 'fixed',
-          calculation: 'fixed',
+          type: 'set_collection' as any,
+          calculation: 'fixed' as any,
           value: 5
         }],
         restrictions: [],
