@@ -503,14 +503,9 @@ export class CardDatabase {
         licensingStatus: 'placeholder',
         version: '1.0.0',
         treasureEffect: {
-          type: 'point_bonus',
+          type: 'point_bonus' as any,
           value: Math.floor(Math.random() * 3) + 1,
-          condition: {
-            type: 'world_end',
-            operator: 'eq',
-            value: 1,
-            target: 'self'
-          }
+          condition: undefined
         },
         revealTrigger: 'world_end'
       });
