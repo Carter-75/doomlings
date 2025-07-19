@@ -672,8 +672,9 @@ class DoomlingsGameTester:
             return results
             
         finally:
-            # Stop server
-            self.stop_server()
+            # Only stop server if we started it
+            if self.server_process:
+                self.stop_server()
     
     def print_summary(self, results: Dict[str, bool]):
         """Print test summary"""
