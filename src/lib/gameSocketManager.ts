@@ -29,29 +29,32 @@ class GameSocketManager {
         const hostname = window.location.hostname;
         
         if (hostname === 'doomlings.vercel.app') {
-          // Production Vercel deployment - use Railway server
-          serverUrl = 'https://doomlings-socket-production.up.railway.app';
+          // Production Vercel deployment - use public demo server
+          serverUrl = 'https://doomlings-socket-demo.glitch.me';
         } else if (hostname.includes('.vercel.app')) {
-          // Preview deployments - use Railway server
-          serverUrl = 'https://doomlings-socket-production.up.railway.app';
+          // Preview deployments - use public demo server
+          serverUrl = 'https://doomlings-socket-demo.glitch.me';
         } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
-          // Local development
+          // Local development - use local server
           serverUrl = window.location.origin;
         } else {
-          // Other domains (like preview environments)
-          serverUrl = 'https://doomlings-socket-production.up.railway.app';
+          // Other domains - use public demo server
+          serverUrl = 'https://doomlings-socket-demo.glitch.me';
         }
       }
 
-      console.log(`Connecting to Socket.IO server: ${serverUrl}`);
+      console.log(`🎮 Connecting to Doomlings game server: ${serverUrl}`);
       this.socket = io(serverUrl, {
         transports: ['websocket', 'polling'],
         timeout: 20000,
-        forceNew: true
+        forceNew: true,
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000
       });
 
       this.socket.on('connect', () => {
-        console.log('Connected to game server');
+        console.log('✅ Connected to Doomlings game server successfully!');
         resolve(this.socket!);
       });
 
