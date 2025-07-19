@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ success: false, error: 'Player not found' });
         }
         
-        if (!targetRoom.players.find(p => p.id === data.playerId)) {
+        if (!targetRoom.players.find((p: any) => p.id === data.playerId)) {
           targetRoom.players.push({
             id: data.playerId,
             name: player.name,
