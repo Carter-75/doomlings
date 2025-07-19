@@ -497,7 +497,7 @@ export class DoomlingGameServer {
   private generateStateHash(gameState: GameState): string {
     // Generate deterministic hash of game state for desync detection
     const stateString = JSON.stringify(gameState, null, 0);
-    return require('crypto').createHash('sha256').update(stateString).digest('hex');
+    return createHash('sha256').update(stateString).digest('hex');
   }
 
   private getPlayerGameView(gameState: GameState, playerId: string): Partial<GameState> {
