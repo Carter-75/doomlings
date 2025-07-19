@@ -611,7 +611,7 @@ const MultiplayerPage = () => {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {chatMessages.map((msg, index) => (
+                    {chatMessages.map((msg: any, index: number) => (
                       <div key={index} className={`${
                         msg.type === 'system' 
                           ? 'text-center' 
