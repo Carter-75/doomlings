@@ -322,8 +322,9 @@ app.prepare().then(() => {
         player.ready = data.ready;
         io.to(data.roomId).emit('room-updated', room);
         
-        // Check if all players are ready (minimum 1 for demo, 2 for real game)
-        if (room.players.length >= 1 && room.players.every(p => p.ready)) {
+        // Check if all players are ready (minimum 2 for real multiplayer, 1 for testing)
+        const minPlayers = room.maxPlayers === 1 ? 1 : 2; // Allow single player for testing
+        if (room.players.length >= minPlayers && room.players.every(p => p.ready)) {
           // Start game
           room.status = 'playing';
           
