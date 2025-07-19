@@ -124,8 +124,13 @@ const MultiplayerPage = () => {
   const handleQuickMatch = async (maxPlayers: number) => {
     setIsConnecting(true);
     try {
-      await socketManager.quickMatch(maxPlayers);
-      // The socket events will handle the UI updates
+      const response = await socketManager.quickMatch(maxPlayers);
+      // For Vercel API fallback, we need to manually update the UI
+      if (response && response.room) {
+        setCurrentRoom(response.room);
+        setCurrentView('lobby');
+        setChatMessages([]);
+      }
     } catch (error) {
       setError(`Failed to find match: ${error}`);
     } finally {
