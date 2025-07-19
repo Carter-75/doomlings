@@ -426,7 +426,8 @@ app.prepare().then(() => {
       const playerId = socketPlayers.get(socket.id);
       if (playerId) {
         // Remove player from rooms
-        for (const [roomId, room] of rooms.entries()) {
+        const roomEntries = Array.from(rooms.entries());
+        for (const [roomId, room] of roomEntries) {
           const playerIndex = room.players.findIndex(p => p.id === playerId);
           if (playerIndex !== -1) {
             const playerName = room.players[playerIndex].name;
