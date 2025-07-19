@@ -215,7 +215,7 @@ class GameSocketManager {
   }
 
   // Event listeners - delegate to appropriate manager
-  onRoomUpdated(callback: Function) {
+  onRoomUpdated(callback: (...args: any[]) => void) {
     if (this.useVercelFallback && this.vercelManager) {
       this.vercelManager.onRoomUpdated(callback);
     } else {
@@ -223,7 +223,7 @@ class GameSocketManager {
     }
   }
 
-  onGameStarted(callback: Function) {
+  onGameStarted(callback: (...args: any[]) => void) {
     if (this.useVercelFallback && this.vercelManager) {
       this.vercelManager.onGameStarted(callback);
     } else {
@@ -231,7 +231,7 @@ class GameSocketManager {
     }
   }
 
-  onGameUpdated(callback: Function) {
+  onGameUpdated(callback: (...args: any[]) => void) {
     if (this.useVercelFallback && this.vercelManager) {
       this.vercelManager.onGameUpdated(callback);
     } else {
@@ -239,7 +239,7 @@ class GameSocketManager {
     }
   }
 
-  onChatMessage(callback: Function) {
+  onChatMessage(callback: (...args: any[]) => void) {
     if (this.useVercelFallback && this.vercelManager) {
       this.vercelManager.onChatMessage(callback);
     } else {
@@ -247,7 +247,7 @@ class GameSocketManager {
     }
   }
 
-  onRoomListUpdated(callback: Function) {
+  onRoomListUpdated(callback: (...args: any[]) => void) {
     if (this.useVercelFallback && this.vercelManager) {
       this.vercelManager.onRoomListUpdated(callback);
     } else {
