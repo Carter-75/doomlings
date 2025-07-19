@@ -548,7 +548,7 @@ const MultiplayerPage = () => {
                 })}
                 
                 {/* Empty slots */}
-                {Array.from({ length: currentRoom.maxPlayers - currentRoom.players.length }).map((_, index) => (
+                {Array.from({ length: currentRoom.maxPlayers - currentRoom.players.length }).map((_: any, index: number) => (
                   <div key={`empty-${index}`} className="p-4 rounded-xl border-2 border-dashed border-white/30 bg-white/5">
                     <div className="flex items-center space-x-4">
                       <div className="w-14 h-14 bg-gray-500/30 rounded-full flex items-center justify-center text-2xl">
