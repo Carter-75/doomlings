@@ -100,8 +100,7 @@ const MultiplayerPage = () => {
         }
       });
       
-      // Auto-join the created room
-      await socketManager.joinRoom(response.roomId);
+      // Room creation now automatically adds the player, no need to join separately
       setCurrentRoom(response.room);
       setCurrentView('lobby');
       setChatMessages([]);
