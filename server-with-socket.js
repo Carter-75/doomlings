@@ -2,24 +2,6 @@ const { createServer } = require('http');
 const { Server } = require('socket.io');
 const next = require('next');
 
-// Import the Doomlings game server
-const DoomlingGameServer = require('./src/modules/doomlings/multiplayer/GameServer').default;
-
-// Initialize Doomlings game server
-const gameServerConfig = {
-  maxConcurrentGames: 500,
-  turnTimeoutMs: 120000, // 2 minutes per turn
-  reconnectionGracePeriodMs: 30000, // 30 seconds
-  snapshotIntervalMs: 10000, // 10 seconds
-  enableTelemetry: true,
-  rateLimitConfig: {
-    roomCreationPerHour: 10,
-    actionsPerMinute: 60
-  }
-};
-
-const doomlingGameServer = new DoomlingGameServer(gameServerConfig);
-
 // Sample card data for game initialization
 const sampleCards = [
   { id: '1', name: 'Slumbering', type: 'dominant', color: 'purple', faceValue: 3, effect: 'At World\'s End: Choose effect based on discarded card color.', points: 6 },
