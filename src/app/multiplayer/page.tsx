@@ -356,7 +356,7 @@ const MultiplayerPage = () => {
                 Room: <span className="font-bold text-white">{currentRoom.id}</span>
               </span>
               <button
-                onClick={handleBackToMenu}
+                onClick={handleLeaveGame}
                 className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded transition-colors text-sm"
               >
                 Leave Room
