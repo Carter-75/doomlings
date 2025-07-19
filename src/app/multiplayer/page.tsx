@@ -22,7 +22,7 @@ const MultiplayerPage = () => {
     socketManager.offAllListeners();
     
     // Set up socket listeners
-    socketManager.onRoomUpdated((room) => {
+    socketManager.onRoomUpdated((room: any) => {
       setCurrentRoom(room);
       if (currentView === 'menu' && room && room.players.find((p: any) => p.name === socketManager.getPlayerName())) {
         setCurrentView('lobby');
@@ -30,20 +30,20 @@ const MultiplayerPage = () => {
       }
     });
 
-    socketManager.onGameStarted((room) => {
+    socketManager.onGameStarted((room: any) => {
       setCurrentRoom(room);
       setCurrentView('game');
     });
 
-    socketManager.onGameUpdated((room) => {
+    socketManager.onGameUpdated((room: any) => {
       setCurrentRoom(room);
     });
 
-    socketManager.onChatMessage((message) => {
+    socketManager.onChatMessage((message: any) => {
       setChatMessages(prev => [...prev, message]);
     });
 
-    socketManager.onRoomListUpdated((rooms) => {
+    socketManager.onRoomListUpdated((rooms: any) => {
       setPublicRooms(rooms);
     });
 
