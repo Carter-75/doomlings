@@ -304,10 +304,22 @@ const DoomlingGameInterface: React.FC<GameProps> = ({
             {/* Your Trait Pile */}
             <div className="bg-white/10 backdrop-blur rounded-lg p-4">
               <h2 className="text-lg font-bold text-white mb-3">Your Trait Pile</h2>
-              <div className="text-center text-gray-400 text-sm py-4">
-                No traits played yet
-              </div>
-              <div className="text-center text-yellow-400 font-bold">
+              {currentPlayer?.traitPile && currentPlayer.traitPile.length > 0 ? (
+                <div className="space-y-2 max-h-32 overflow-y-auto">
+                  {currentPlayer.traitPile.map((card: Card, index: number) => (
+                    <div key={index} className={`p-2 rounded border ${getCardColorClass(card.color)}`}>
+                      <div className="text-white font-bold text-sm">{card.name}</div>
+                      <div className="text-xs text-gray-300">{card.type.toUpperCase()}</div>
+                      <div className="text-right text-xs text-yellow-400">+{card.points} pts</div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center text-gray-400 text-sm py-4">
+                  No traits played yet
+                </div>
+              )}
+              <div className="text-center text-yellow-400 font-bold mt-3">
                 Current Score: {currentPlayer?.score || 0} points
               </div>
             </div>
