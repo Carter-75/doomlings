@@ -1,4 +1,7 @@
 @import 'bulma/css/bulma.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --green-light: #76c893;
