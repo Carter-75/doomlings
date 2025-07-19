@@ -622,10 +622,15 @@ class DoomlingsGameTester:
         print("🎮 Starting Doomlings Multiplayer Game Backend Tests")
         print("=" * 60)
         
-        # Start server
-        if not self.start_server():
-            print("❌ Failed to start server. Cannot run tests.")
-            return {}
+        # Check if server is already running
+        try:
+            response = requests.get(f"{self.server_url}/", timeout=5)
+            print("✅ Server is already running, proceeding with tests")
+        except:
+            # Start server if not running
+            if not self.start_server():
+                print("❌ Failed to start server. Cannot run tests.")
+                return {}
         
         try:
             # Wait for server to be fully ready
