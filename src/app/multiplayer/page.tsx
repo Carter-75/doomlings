@@ -488,48 +488,13 @@ const MultiplayerPage = () => {
 
   if (currentView === 'game' && currentRoom) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center mb-6">
-            <h1 className="text-4xl font-bold text-white mb-2">🎮 Game In Progress</h1>
-            <p className="text-xl text-gray-300">
-              Full game interface coming soon! This shows the game has started.
-            </p>
-          </div>
-          
-          <div className="max-w-4xl mx-auto bg-white/10 backdrop-blur rounded-lg p-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <h2 className="text-2xl font-bold text-white mb-4">Players</h2>
-                {currentRoom.players.map((player: any, index: number) => (
-                  <div key={player.id} className="flex justify-between items-center bg-white/5 rounded p-3 mb-2">
-                    <span className="text-white font-bold">{player.name}</span>
-                    <div className="text-right text-gray-300 text-sm">
-                      <div>Gene Pool: {player.genePool}</div>
-                      <div>Cards: {player.hand?.length || 0}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              <div>
-                <h2 className="text-2xl font-bold text-white mb-4">Game Status</h2>
-                <div className="text-gray-300 space-y-2">
-                  <div>Status: {currentRoom.status}</div>
-                  <div>Current Player: Player {currentRoom.currentPlayerIndex + 1}</div>
-                </div>
-                
-                <button
-                  onClick={handleBackToMenu}
-                  className="w-full mt-6 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-colors"
-                >
-                  Leave Game
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <DoomlingGameInterface
+        room={currentRoom}
+        currentPlayerId={socketManager.getPlayerId() || ''}
+        onPlayCard={handlePlayCard}
+        onEndTurn={handleEndTurn}
+        onLeaveGame={handleLeaveGame}
+      />
     );
   }
 
