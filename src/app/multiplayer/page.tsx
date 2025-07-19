@@ -144,6 +144,7 @@ const MultiplayerPage = () => {
       const newReadyState = !playerReady;
       setPlayerReady(newReadyState);
       socketManager.setPlayerReady(currentRoom.id, newReadyState);
+      console.log('Setting player ready:', newReadyState); // Debug log
     }
   };
 
