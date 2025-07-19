@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import GameSocketManager from '@/lib/gameSocketManager';
+import DoomlingGameInterface from '@/components/DoomlingGameInterface';
 
 const MultiplayerPage = () => {
   const [socketManager] = useState(() => GameSocketManager.getInstance());
