@@ -94,12 +94,10 @@ const DoomlingGameInterface: React.FC<GameProps> = ({
     }
   ];
 
-  // Initialize player hands if empty (demo purposes)
-  useEffect(() => {
-    if (!currentPlayer?.hand || currentPlayer.hand.length === 0) {
-      // In real game, this would come from server
-    }
-  }, [currentPlayer]);
+  // Use player's actual hand from server, fallback to sample cards for demo
+  const playerHand = currentPlayer?.hand && currentPlayer.hand.length > 0 
+    ? currentPlayer.hand 
+    : sampleCards;
 
   const handleCardClick = (cardId: string) => {
     if (!isCurrentTurn) return;
