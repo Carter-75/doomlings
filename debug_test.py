@@ -58,13 +58,22 @@ async def debug_test():
         if room_response and room_response.get('success'):
             room_id = room_response.get('roomId')
             
+            # Join the room after creating it
+            print(f"\n3. Joining room {room_id}...")
+            join_data = {
+                'roomId': room_id,
+                'playerName': 'DebugPlayer'
+            }
+            join_response = await client.call('join-room', join_data, timeout=5)
+            print(f"Join response: {join_response}")
+            
             # Set player ready
-            print(f"\n3. Setting player ready in room {room_id}...")
+            print(f"\n4. Setting player ready in room {room_id}...")
             ready_data = {'roomId': room_id, 'ready': True}
             await client.emit('player-ready', ready_data)
             
             # Wait for events
-            print("\n4. Waiting for game start...")
+            print("\n5. Waiting for game start...")
             await asyncio.sleep(5)
         
         await client.disconnect()
