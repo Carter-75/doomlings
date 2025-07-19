@@ -1,0 +1,235 @@
+{
+  "treasures": [
+    {
+      "name": "Golden Compass",
+      "type": "treasure",
+      "effect": "Draw 2 cards at the start of your turn.",
+      "points": 3,
+      "expansion": "treasures",
+      "rarity": "rare"
+    },
+    {
+      "name": "Crystal of Power",
+      "type": "treasure",
+      "effect": "Your Gene Pool cannot be reduced below 5.",
+      "points": 4,
+      "expansion": "treasures", 
+      "rarity": "epic"
+    },
+    {
+      "name": "Ancient Relic",
+      "type": "treasure",
+      "effect": "At World's End: +2 for each trait in your trait pile.",
+      "points": 5,
+      "expansion": "treasures",
+      "rarity": "legendary"
+    },
+    {
+      "name": "Mystic Orb",
+      "type": "treasure", 
+      "effect": "When you play a Dominant, draw 3 cards.",
+      "points": 3,
+      "expansion": "treasures",
+      "rarity": "rare"
+    },
+    {
+      "name": "Protective Amulet",
+      "type": "treasure",
+      "effect": "Ignore negative effects from Catastrophes.",
+      "points": 4,
+      "expansion": "treasures",
+      "rarity": "epic"
+    }
+  ],
+  "magicalMerchants": [
+    {
+      "name": "Merchant of Dreams",
+      "type": "trait",
+      "color": "purple",
+      "faceValue": 2,
+      "effect": "Draw 2 cards, then discard 1.",
+      "action": "Look at the top 3 cards of the deck.",
+      "expansion": "magical_merchants",
+      "points": 3
+    },
+    {
+      "name": "Trinket Trader",
+      "type": "trait", 
+      "color": "blue",
+      "faceValue": 1,
+      "effect": "Exchange 1 trinket with another player.",
+      "action": "Draw 1 card.",
+      "expansion": "magical_merchants",
+      "points": 2
+    }
+  ],
+  "glitterlings": [
+    {
+      "name": "Lucky Sparkle",
+      "type": "trait",
+      "color": "colorless", 
+      "faceValue": 0,
+      "effect": "Roll a die: 1-3: Draw 1 card, 4-6: Draw 2 cards.",
+      "action": "Random effect: 50% chance to play another trait.",
+      "expansion": "glitterlings",
+      "points": 2
+    },
+    {
+      "name": "Chaos Shimmer",
+      "type": "trait",
+      "color": "purple",
+      "faceValue": 3,
+      "effect": "All players draw 1 card, then discard 1 card.",
+      "action": "Random trade with another player.",
+      "expansion": "glitterlings", 
+      "points": 4
+    }
+  ],
+  "moonlings": [
+    {
+      "name": "Lunar Phase",
+      "type": "trait",
+      "color": "blue",
+      "faceValue": 2,
+      "effect": "Give 1 card from your hand to an opponent.",
+      "action": "If your Gene Pool is 5 or lower, draw 2 cards.",
+      "expansion": "moonlings",
+      "points": 3
+    },
+    {
+      "name": "Night Walker",
+      "type": "trait",
+      "color": "colorless",
+      "faceValue": 1,
+      "effect": "Opponents with higher Gene Pool than you discard 1 card.",
+      "action": "+1 for each opponent with higher Gene Pool.",
+      "expansion": "moonlings",
+      "points": 2
+    }
+  ],
+  "deeplings": [
+    {
+      "name": "Deep Suppressor",
+      "type": "trait",
+      "color": "red",
+      "faceValue": 2,
+      "effect": "Suppress 1 card from your hand.",
+      "action": "Suppressed cards are worth +1 point each.",
+      "expansion": "deeplings",
+      "points": 3
+    },
+    {
+      "name": "Abyssal Form",
+      "type": "trait",
+      "color": "purple", 
+      "faceValue": 3,
+      "effect": "Suppress up to 2 cards from your trait pile.",
+      "action": "Draw 1 card for each card suppressed this way.",
+      "expansion": "deeplings",
+      "points": 4
+    }
+  ],
+  "fuzelings": [
+    {
+      "name": "Fusion Burst",
+      "type": "trait",
+      "color": "colorless",
+      "faceValue": 2,
+      "effect": "Combine effects of Deeplings, Moonlings, and Glitterlings in play.",
+      "action": "Trigger random effect from each expansion type you have.",
+      "expansion": "fuzelings",
+      "points": 5
+    },
+    {
+      "name": "Chaotic Blend", 
+      "type": "trait",
+      "color": "red",
+      "faceValue": 3,
+      "effect": "Double all Drop of Life bonuses this turn.",
+      "action": "May trigger combo effects from mixed expansion traits.",
+      "expansion": "fuzelings",
+      "points": 4
+    }
+  ],
+  "newTraits": [
+    {
+      "name": "Quantum Leap",
+      "type": "trait",
+      "color": "blue",
+      "faceValue": 4,
+      "effect": "Skip to next age immediately.",
+      "action": "Draw 3 cards and play 1 immediately.",
+      "expansion": "base_extended",
+      "points": 6
+    },
+    {
+      "name": "Temporal Rift",
+      "type": "trait",
+      "color": "purple",
+      "faceValue": 3,
+      "effect": "Take an extra turn after this one.",
+      "action": "All players draw 1 card.",
+      "expansion": "base_extended", 
+      "points": 5
+    },
+    {
+      "name": "Genetic Amplifier",
+      "type": "trait",
+      "color": "green",
+      "faceValue": 2,
+      "effect": "Double the face value of the next trait you play.",
+      "action": "May play an additional trait this turn.",
+      "expansion": "base_extended",
+      "points": 4
+    }
+  ],
+  "newCatastrophes": [
+    {
+      "name": "The Great Reset",
+      "type": "catastrophe",
+      "effect": "All players shuffle their trait piles into the deck and draw 5 new cards.",
+      "worldsEnd": "Gene Pools reset to 8. All Dominants return to hand.",
+      "expansion": "imaginary_ends"
+    },
+    {
+      "name": "Reality Storm", 
+      "type": "catastrophe",
+      "effect": "All Glitterling effects trigger simultaneously.",
+      "worldsEnd": "Random redistribution of all trait piles among players.",
+      "expansion": "imaginary_ends"
+    },
+    {
+      "name": "Void Collapse",
+      "type": "catastrophe", 
+      "effect": "All suppressed cards are permanently removed from the game.",
+      "worldsEnd": "Deepling players gain +3 points for each card they had suppressed.",
+      "expansion": "imaginary_ends"
+    }
+  ],
+  "newAges": [
+    {
+      "name": "Age of Wonders",
+      "type": "age",
+      "description": "Treasure effects are doubled. All players may draw an extra card.",
+      "expansion": "imaginary_ends"
+    },
+    {
+      "name": "Merchant Renaissance", 
+      "type": "age",
+      "description": "Trinket trading is free. Merchants may activate twice per turn.",
+      "expansion": "imaginary_ends"
+    },
+    {
+      "name": "The Convergence",
+      "type": "age",
+      "description": "All expansion effects can trigger regardless of card type.",
+      "expansion": "imaginary_ends"
+    },
+    {
+      "name": "Dimensional Shift",
+      "type": "age", 
+      "description": "Players may choose to play cards from the suppression pile as if they were in hand.",
+      "expansion": "imaginary_ends"
+    }
+  ]
+}
