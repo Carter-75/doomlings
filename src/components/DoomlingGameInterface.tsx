@@ -420,7 +420,7 @@ const DoomlingGameInterface: React.FC<GameProps> = ({
             </h2>
             
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-3 lg:gap-4">
-              {playerHand.map((card) => (
+              {playerHand.map((card: Card) => (
                 <div
                   key={card.id}
                   onClick={() => handleCardClick(card.id)}
