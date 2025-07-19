@@ -18,8 +18,12 @@ const MultiplayerPage = () => {
   const [playerReady, setPlayerReady] = useState(false);
 
   useEffect(() => {
+    // Clear any existing listeners
+    socketManager.offAllListeners();
+    
     // Set up socket listeners
     socketManager.onRoomUpdated((room) => {
+      console.log('Room updated received:', room); // Debug log
       setCurrentRoom(room);
       if (currentView === 'menu' && room && room.players.find(p => p.name === socketManager.getPlayerName())) {
         setCurrentView('lobby');
@@ -28,29 +32,33 @@ const MultiplayerPage = () => {
     });
 
     socketManager.onGameStarted((room) => {
+      console.log('Game started received:', room); // Debug log
       setCurrentRoom(room);
       setCurrentView('game');
     });
 
     socketManager.onGameUpdated((room) => {
+      console.log('Game updated received:', room); // Debug log
       setCurrentRoom(room);
     });
 
     socketManager.onChatMessage((message) => {
+      console.log('Chat message received:', message); // Debug log
       setChatMessages(prev => [...prev, message]);
     });
 
     socketManager.onRoomListUpdated((rooms) => {
+      console.log('Room list updated:', rooms); // Debug log
       setPublicRooms(rooms);
     });
 
-    // Load public rooms
+    // Load public rooms on mount
     loadPublicRooms();
 
     return () => {
-      socketManager.offAllListeners();
+      // Don't remove listeners on unmount to persist across re-renders
     };
-  }, [socketManager]);
+  }, [socketManager, currentView]); // Add currentView as dependency
 
   const loadPublicRooms = async () => {
     try {
