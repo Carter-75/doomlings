@@ -171,10 +171,6 @@ export interface ExpansionCounts {
 // Export all types
 export type {
   CardSchema as Card,
-  AgeCard,
-  CatastropheCard, 
-  TreasureCard,
-  BirthOfLifeCard,
   CardCollection,
   ExpansionCounts
 };
