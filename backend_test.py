@@ -634,12 +634,19 @@ class DoomlingsGameTester:
             room_response = await client1.call('create-room', room_data, timeout=5)
             room_id = room_response.get('roomId')
             
+            # First client joins the room after creating it
+            join_data1 = {
+                'roomId': room_id,
+                'playerName': 'Player1'
+            }
+            await client1.call('join-room', join_data1, timeout=5)
+            
             # Second client joins room
-            join_data = {
+            join_data2 = {
                 'roomId': room_id,
                 'playerName': 'Player2'
             }
-            await client2.call('join-room', join_data, timeout=5)
+            await client2.call('join-room', join_data2, timeout=5)
             
             # Set up event listener for room updates
             room_updated = False
@@ -650,9 +657,12 @@ class DoomlingsGameTester:
                 room_updated = True
                 print(f"Room updated after disconnection: {len(data.get('players', []))} players remaining")
             
+            # Wait a moment to ensure both players are in the room
+            await asyncio.sleep(1)
+            
             # Disconnect second client
             await client2.disconnect()
-            await asyncio.sleep(1)
+            await asyncio.sleep(3)  # Longer wait for disconnection processing
             
             if room_updated:
                 print("✅ Disconnection handling successful")
