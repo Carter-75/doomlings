@@ -111,10 +111,10 @@ class GameSocketManager {
         playerName: this.playerName,
         maxPlayers 
       }, (response: any) => {
-        if (response.success) {
+        if (response && response.success) {
           resolve(response);
         } else {
-          reject(new Error(response.error));
+          reject(new Error(response?.error || 'Quick match failed'));
         }
       });
     });
