@@ -176,7 +176,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ success: false, error: 'Not your turn' });
         }
         
-        const cardIndex = currentPlayer.hand.findIndex(card => card.id === data.cardId);
+        const cardIndex = currentPlayer.hand.findIndex((card: any) => card.id === data.cardId);
         if (cardIndex === -1) {
           return NextResponse.json({ success: false, error: 'Card not found in hand' });
         }
