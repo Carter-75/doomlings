@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
           readyRoom.currentPlayerIndex = 0;
           
           // Deal initial hands
-          readyRoom.players.forEach(player => {
+          readyRoom.players.forEach((player: any) => {
             player.hand = generateInitialHand(player.id);
             player.traitPile = [];
             player.genePool = 8;
