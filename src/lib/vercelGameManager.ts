@@ -128,7 +128,7 @@ class VercelGameManager {
   }
 
   async quickMatch(maxPlayers: number) {
-    // For now, just create a public room
+    // For now, just create a public room with player auto-added
     return this.createRoom({
       roomName: `Quick Match ${maxPlayers}P`,
       maxPlayers,
