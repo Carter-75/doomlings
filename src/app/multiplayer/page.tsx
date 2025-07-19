@@ -20,6 +20,10 @@ const MultiplayerPage = () => {
     // Set up socket listeners
     socketManager.onRoomUpdated((room) => {
       setCurrentRoom(room);
+      if (currentView === 'menu' && room && room.players.find(p => p.name === socketManager.getPlayerName())) {
+        setCurrentView('lobby');
+        setChatMessages([]);
+      }
     });
 
     socketManager.onGameStarted((room) => {
