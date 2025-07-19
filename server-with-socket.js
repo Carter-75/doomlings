@@ -2,6 +2,39 @@ const { createServer } = require('http');
 const { Server } = require('socket.io');
 const next = require('next');
 
+// Sample card data for game initialization
+const sampleCards = [
+  { id: '1', name: 'Slumbering', type: 'dominant', color: 'purple', faceValue: 3, effect: 'At World\'s End: Choose effect based on discarded card color.', points: 6 },
+  { id: '2', name: 'Solar Powered', type: 'trait', color: 'green', faceValue: 2, effect: 'Attach. Value equals host\'s face value.', action: 'Draw 1 card.', points: 3 },
+  { id: '3', name: 'Fierce', type: 'trait', color: 'red', faceValue: 4, effect: 'Discard up to 2 traits from trait pile. Draw 2 for each.', points: 5 },
+  { id: '4', name: 'Echolocation', type: 'trait', color: 'blue', faceValue: 1, effect: 'Draw 1 card at start of each turn.', points: 4 },
+  { id: '5', name: 'Crystal of Power', type: 'treasure', effect: 'Gene Pool cannot be reduced below 5.', points: 4 },
+  { id: '6', name: 'Vampirism', type: 'trait', color: 'red', faceValue: 3, effect: 'Steal a trait from opponent\'s trait pile.', points: 3 },
+  { id: '7', name: 'Camouflage', type: 'trait', color: 'green', faceValue: 2, effect: '+1 gene pool. +2 for each card in hand.', points: 3 },
+  { id: '8', name: 'Ethereal', type: 'trait', color: 'blue', faceValue: 1, effect: 'May suppress cards instead of stabilizing.', points: 3 },
+  { id: '9', name: 'Pack Behavior', type: 'trait', color: 'colorless', faceValue: 2, effect: '+2 for every color pair in trait pile.', points: 5 },
+  { id: '10', name: 'Immunity', type: 'trait', color: 'purple', faceValue: 3, effect: '+3 for each negative face value trait.', points: 6 }
+];
+
+const sampleAges = [
+  { id: 'age1', name: 'Age of Evolution', type: 'age', description: 'All players may play an additional trait card this turn.' },
+  { id: 'age2', name: 'Age of Discovery', type: 'age', description: 'Draw 2 extra cards at start of turn.' },
+  { id: 'age3', name: 'Age of Conflict', type: 'age', description: 'Players with most traits gain +2 Gene Pool.' }
+];
+
+function generateInitialHand(playerId) {
+  // Give each player 5 random cards from the sample deck
+  const shuffled = [...sampleCards].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, 5).map(card => ({
+    ...card,
+    id: `${card.id}-${playerId}-${Date.now()}-${Math.random()}`
+  }));
+}
+
+function generateAgeDeck() {
+  return [...sampleAges];
+}
+
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost';
 const port = process.env.PORT || 3000;
