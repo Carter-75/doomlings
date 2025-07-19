@@ -355,12 +355,13 @@ const MultiplayerPage = () => {
               <span className="text-xl text-gray-300">
                 Room: <span className="font-bold text-white">{currentRoom.id}</span>
               </span>
-              <button
-                onClick={handleBackToMenu}
-                className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded transition-colors text-sm"
-              >
-                Leave Room
-              </button>
+  const handleBackToMenu = () => {
+    setCurrentView('menu');
+    setCurrentRoom(null);
+    setChatMessages([]);
+    setPlayerReady(false);
+    setError('');
+  };
             </div>
           </div>
 
