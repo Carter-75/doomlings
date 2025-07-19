@@ -271,6 +271,13 @@ export async function GET() {
     status: 'Doomlings API Running',
     timestamp: new Date().toISOString(),
     players: gameState.players.size,
-    rooms: gameState.rooms.size
+    rooms: gameState.rooms.size,
+    roomDetails: Array.from(gameState.rooms.values()).map(room => ({
+      id: room.id,
+      name: room.name,
+      playerCount: room.players.length,
+      maxPlayers: room.maxPlayers,
+      status: room.status
+    }))
   });
 }
