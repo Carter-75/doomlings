@@ -146,7 +146,18 @@ const MultiplayerPage = () => {
     }
   };
 
-  const handleBackToMenu = () => {
+  const handlePlayCard = (cardId: string) => {
+    if (currentRoom) {
+      socketManager.playCard(currentRoom.id, cardId);
+    }
+  };
+
+  const handleEndTurn = () => {
+    // TODO: Implement end turn logic
+    console.log('End turn clicked');
+  };
+
+  const handleLeaveGame = () => {
     setCurrentView('menu');
     setCurrentRoom(null);
     setChatMessages([]);
