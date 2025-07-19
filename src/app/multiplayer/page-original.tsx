@@ -22,7 +22,7 @@ const MultiplayerPage = () => {
     socketManager.offAllListeners();
     
     // Set up socket listeners
-    socketManager.onRoomUpdated((room) => {
+    socketManager.onRoomUpdated((room: any) => {
       console.log('Room updated received:', room); // Debug log
       setCurrentRoom(room);
       if (currentView === 'menu' && room && room.players.find((p: any) => p.name === socketManager.getPlayerName())) {
