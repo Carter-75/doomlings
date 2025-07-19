@@ -207,7 +207,8 @@ app.prepare().then(() => {
 
       // Find available public room with same max players
       let availableRoom = null;
-      for (const [roomId, room] of rooms.entries()) {
+      const roomEntries = Array.from(rooms.entries());
+      for (const [roomId, room] of roomEntries) {
         if (!room.isPrivate && 
             room.status === 'waiting' && 
             room.maxPlayers === data.maxPlayers &&
