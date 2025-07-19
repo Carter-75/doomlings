@@ -185,38 +185,93 @@ app.prepare().then(() => {
       }
 
       if (availableRoom) {
-        // Join existing room
+        // Join existing room directly
         const joinData = { 
           roomId: availableRoom.id, 
           playerName: data.playerName 
         };
-        socket.emit('join-room', joinData, callback);
+        
+        // Process join immediately
+        const player = {
+          id: playerId,
+          name: data.playerName,
+          socketId: socket.id,
+          ready: false,
+          hand: [],
+          traitPile: [],
+          genePool: 8,
+          dominants: [],
+          score: 0
+        };
+
+        availableRoom.players.push(player);
+        socket.join(availableRoom.id);
+
+        // Send room update to all players in room
+        io.to(availableRoom.id).emit('room-updated', availableRoom);
+        
+        // Send system message
+        const systemMessage = {
+          id: Date.now(),
+          playerId: 'system',
+          playerName: 'System',
+          message: `${data.playerName} joined the room`,
+          timestamp: new Date(),
+          type: 'system'
+        };
+        io.to(availableRoom.id).emit('chat-message', systemMessage);
+        
+        if (callback) callback({ success: true, room: availableRoom });
+
       } else {
         // Create new room
-        const roomData = {
-          roomName: `Quick Match ${data.maxPlayers}P`,
+        const roomId = generateRoomCode();
+        const room = {
+          id: roomId,
+          name: `Quick Match ${data.maxPlayers}P`,
+          hostId: playerId,
+          players: [],
           maxPlayers: data.maxPlayers,
           isPrivate: false,
+          status: 'waiting',
+          currentPlayerIndex: 0,
+          deck: [],
+          ageCards: [],
           gameSettings: {
             expansions: ['base'],
             catastropheMode: false,
             catastropheAges: 2,
             normalAges: 8,
             merchantAges: 2
-          }
+          },
+          createdAt: new Date()
         };
+
+        rooms.set(roomId, room);
         
-        socket.emit('create-room', roomData, (result) => {
-          if (result.success) {
-            // Auto-join the created room
-            socket.emit('join-room', {
-              roomId: result.roomId,
-              playerName: data.playerName
-            }, callback);
-          } else {
-            if (callback) callback(result);
-          }
-        });
+        // Add player to room
+        const player = {
+          id: playerId,
+          name: data.playerName,
+          socketId: socket.id,
+          ready: false,
+          hand: [],
+          traitPile: [],
+          genePool: 8,
+          dominants: [],
+          score: 0
+        };
+
+        room.players.push(player);
+        socket.join(roomId);
+
+        // Send room update
+        io.to(roomId).emit('room-updated', room);
+        
+        if (callback) callback({ success: true, room });
+        
+        // Add to public rooms
+        io.emit('room-list-updated', getPublicRooms());
       }
     });
 
