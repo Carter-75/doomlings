@@ -47,9 +47,9 @@ async def debug_test():
     
     # Catch all other events
     original_emit = client.emit
-    async def debug_emit(event, data=None, namespace=None, callback=None, timeout=60):
+    async def debug_emit(event, data=None, namespace=None, callback=None):
         print(f"📤 Emitting: {event} with data: {data}")
-        return await original_emit(event, data, namespace, callback, timeout)
+        return await original_emit(event, data, namespace, callback)
     client.emit = debug_emit
     
     try:
