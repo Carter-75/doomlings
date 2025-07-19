@@ -99,7 +99,8 @@ class VercelGameManager {
   async createRoom(data: any) {
     const result = await this.apiCall('create-room', {
       ...data,
-      playerId: this.playerId
+      playerId: this.playerId,
+      playerName: this.playerName
     });
     
     if (result.success) {
