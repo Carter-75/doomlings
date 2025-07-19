@@ -114,7 +114,8 @@ class VercelGameManager {
   async joinRoom(roomId: string) {
     const result = await this.apiCall('join-room', {
       roomId,
-      playerId: this.playerId
+      playerId: this.playerId,
+      playerName: this.playerName
     });
     
     if (result.success) {
