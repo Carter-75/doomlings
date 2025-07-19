@@ -71,7 +71,18 @@ export async function POST(request: NextRequest) {
           id: roomId,
           name: data.roomName,
           hostId: hostPlayerId,
-          players: [],
+          players: [
+            // Automatically add the creator as the first player
+            {
+              id: hostPlayerId,
+              name: data.playerName || 'Player',
+              ready: false,
+              hand: [],
+              traitPile: [],
+              genePool: 8,
+              score: 0
+            }
+          ],
           maxPlayers: data.maxPlayers,
           isPrivate: data.isPrivate,
           status: 'waiting',
