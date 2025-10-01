@@ -14,6 +14,7 @@ interface DominantCardProps {
   selectedTier: string | null;
   onChange: (change: { assignedTo?: string; selectedTier?: string | null }) => void;
   searchTerm?: string; // Optional search term for highlighting matches
+  resetTrigger?: number; // Trigger to force refresh of duplicate cards
 }
 
 interface CardCopy {
@@ -28,7 +29,8 @@ const DominantCard: React.FC<DominantCardProps> = ({
   assignedTo,
   selectedTier,
   onChange,
-  searchTerm = ''
+  searchTerm = '',
+  resetTrigger = 0
 }) => {
   const [cardCopies, setCardCopies] = useState<CardCopy[]>([]);
   const [showCopies, setShowCopies] = useState(false);
@@ -64,6 +66,14 @@ const DominantCard: React.FC<DominantCardProps> = ({
   useEffect(() => {
     localStorage.setItem(`dominant-copies-${dominant.name}`, JSON.stringify(cardCopies));
   }, [cardCopies, dominant.name]);
+
+  // Handle reset trigger - clear copies when parent triggers reset
+  useEffect(() => {
+    if (resetTrigger > 0) {
+      setCardCopies([]);
+      setShowCopies(false);
+    }
+  }, [resetTrigger]);
 
   const rollTier = () => {
     const tierKeys = Object.keys(dominant.tiers);

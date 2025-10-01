@@ -87,6 +87,7 @@ export default function Home() {
   // Dominant Card States
   const [dominantCardStates, setDominantCardStates] = useState<{ [cardName: string]: DominantCardState }>({});
   const [dominantSearchTerm, setDominantSearchTerm] = useState('');
+  const [dominantResetTrigger, setDominantResetTrigger] = useState(0);
 
   // Trinket State
   const [trinketState, setTrinketState] = useState<{
@@ -606,6 +607,14 @@ export default function Home() {
   const resetAllDominants = () => {
     if (window.confirm('Are you sure you want to reset all dominant card assignments and tiers?')) {
       setDominantCardStates({});
+      
+      // Also clear all duplicate cards from localStorage
+      allDominants.forEach(dominant => {
+        localStorage.removeItem(`dominant-copies-${dominant.name}`);
+      });
+      
+      // Force DominantCard components to refresh by updating trigger
+      setDominantResetTrigger(prev => prev + 1);
     }
   };
 
@@ -781,6 +790,7 @@ export default function Home() {
                         assignedTo={cardState.assignedTo}
                         selectedTier={cardState.selectedTier}
                         searchTerm={dominantSearchTerm}
+                        resetTrigger={dominantResetTrigger}
                         onChange={(change) => handleDominantCardChange(dominant.name, change)}
                       />
                   )
