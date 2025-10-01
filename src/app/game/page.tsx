@@ -606,6 +606,11 @@ export default function Home() {
   const resetAllDominants = () => {
     if (window.confirm('Are you sure you want to reset all dominant card assignments and tiers?')) {
       setDominantCardStates({});
+      
+      // Also clear all duplicate cards from localStorage
+      allDominants.forEach(dominant => {
+        localStorage.removeItem(`dominant-copies-${dominant.name}`);
+      });
     }
   };
 
