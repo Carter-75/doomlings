@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- Include game data for cloud backup -->
+        <include domain="sharedpref" path="game_data.xml" />
+        <include domain="sharedpref" path="user_preferences.xml" />
+        <include domain="file" path="game_saves/" />
+        
+        <!-- Exclude sensitive data from cloud backup -->
+        <exclude domain="sharedpref" path="secure_prefs.xml" />
+        <exclude domain="database" path="secure.db" />
+        <exclude domain="file" path="keys/" />
+        <exclude domain="file" path="cache/" />
+    </cloud-backup>
+    
+    <device-transfer>
+        <!-- Allow game data transfer between devices -->
+        <include domain="sharedpref" path="game_data.xml" />
+        <include domain="sharedpref" path="user_preferences.xml" />
+        <include domain="file" path="game_saves/" />
+        
+        <!-- Exclude sensitive data from device transfer -->
+        <exclude domain="sharedpref" path="secure_prefs.xml" />
+        <exclude domain="database" path="secure.db" />
+        <exclude domain="file" path="keys/" />
+    </device-transfer>
+</data-extraction-rules>
