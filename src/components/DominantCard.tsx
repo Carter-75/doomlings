@@ -13,6 +13,7 @@ interface DominantCardProps {
   assignedTo: string;
   selectedTier: string | null;
   onChange: (change: { assignedTo?: string; selectedTier?: string | null }) => void;
+  searchTerm?: string; // Optional search term for highlighting matches
 }
 
 interface CardCopy {
@@ -26,10 +27,19 @@ const DominantCard: React.FC<DominantCardProps> = ({
   players,
   assignedTo,
   selectedTier,
-  onChange 
+  onChange,
+  searchTerm = ''
 }) => {
   const [cardCopies, setCardCopies] = useState<CardCopy[]>([]);
   const [showCopies, setShowCopies] = useState(false);
+
+  // Check if any duplicates match the current search term
+  const hasMatchingDuplicates = cardCopies.some(copy => 
+    searchTerm && 
+    copy.assignedTo && 
+    copy.assignedTo !== 'Assign' && 
+    copy.assignedTo.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   // Load card copies from localStorage on component mount
   useEffect(() => {
@@ -42,6 +52,13 @@ const DominantCard: React.FC<DominantCardProps> = ({
       }
     }
   }, [dominant.name]);
+
+  // Auto-expand copies if they match the search term
+  useEffect(() => {
+    if (hasMatchingDuplicates && !showCopies) {
+      setShowCopies(true);
+    }
+  }, [hasMatchingDuplicates, showCopies]);
 
   // Save card copies to localStorage whenever they change
   useEffect(() => {
@@ -103,10 +120,13 @@ const DominantCard: React.FC<DominantCardProps> = ({
   const hasAssignedCards = assignedTo !== 'Assign' || cardCopies.some(copy => copy.assignedTo !== 'Assign');
 
   return (
-    <div className={`dominant-card ${hasAssignedCards ? 'is-assigned' : ''}`}>
+    <div className={`dominant-card ${hasAssignedCards ? 'is-assigned' : ''} ${hasMatchingDuplicates ? 'has-matching-duplicates' : ''}`}>
       {/* Main Card */}
       <div className="dominant-card-main">
-        <h3 className="dominant-name">{dominant.name}</h3>
+        <h3 className="dominant-name">
+          {dominant.name}
+          {hasMatchingDuplicates && <span className="match-indicator"> 🔍</span>}
+        </h3>
         <div className="tier-display">
           {selectedTier ? (
             <div>
@@ -208,10 +228,19 @@ const DominantCard: React.FC<DominantCardProps> = ({
         <div className="card-copies-container">
           <h4 className="copies-title">Duplicate Cards ({cardCopies.length})</h4>
           <div className="copies-grid">
-            {cardCopies.map((copy, index) => (
-              <div key={copy.id} className="copy-card">
-                <div className="copy-header">
-                  <span className="copy-label">Copy {index + 1}</span>
+            {cardCopies.map((copy, index) => {
+              const isMatching = searchTerm && 
+                                copy.assignedTo && 
+                                copy.assignedTo !== 'Assign' && 
+                                copy.assignedTo.toLowerCase().includes(searchTerm.toLowerCase());
+              
+              return (
+                <div key={copy.id} className={`copy-card ${isMatching ? 'search-match' : ''}`}>
+                  <div className="copy-header">
+                    <span className="copy-label">
+                      Copy {index + 1}
+                      {isMatching && <span className="match-indicator"> 🔍</span>}
+                    </span>
                   <button 
                     className="button button-small error" 
                     onClick={() => removeCopy(copy.id)}
@@ -278,9 +307,10 @@ const DominantCard: React.FC<DominantCardProps> = ({
                       ))}
                     </select>
                   </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
@@ -294,6 +324,12 @@ const DominantCard: React.FC<DominantCardProps> = ({
         .dominant-card.is-assigned {
           border-color: var(--success);
           box-shadow: 0 0 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .dominant-card.has-matching-duplicates {
+          background: rgba(255, 107, 53, 0.05);
+          border-color: var(--primary-orange);
+          box-shadow: 0 0 20px rgba(255, 107, 53, 0.2);
         }
 
         .dominant-card-controls {
@@ -346,6 +382,13 @@ const DominantCard: React.FC<DominantCardProps> = ({
           border: 1px solid rgba(214, 52, 71, 0.1);
           border-radius: var(--border-radius-small);
           padding: 1rem;
+          transition: all 0.3s ease;
+        }
+
+        .copy-card.search-match {
+          background: rgba(255, 107, 53, 0.1);
+          border-color: var(--primary-orange);
+          box-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
         }
 
         .copy-header {
@@ -358,6 +401,20 @@ const DominantCard: React.FC<DominantCardProps> = ({
         .copy-label {
           font-weight: 600;
           color: var(--secondary-orange);
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .match-indicator {
+          color: var(--primary-orange);
+          font-size: 0.9rem;
+          animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
         }
 
         .copy-tier-display {

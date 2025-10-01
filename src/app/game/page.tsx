@@ -723,10 +723,30 @@ export default function Home() {
             .filter(dominant => {
               const searchTerm = dominantSearchTerm.toLowerCase();
               if (!searchTerm) return true;
+              
+              // Check main card assignment
               const assignedPlayer = dominantCardStates[dominant.name]?.assignedTo || '';
+              
+              // Check duplicate card assignments from localStorage
+              let duplicateMatches = false;
+              try {
+                const savedCopies = localStorage.getItem(`dominant-copies-${dominant.name}`);
+                if (savedCopies) {
+                  const cardCopies = JSON.parse(savedCopies);
+                  duplicateMatches = cardCopies.some((copy: any) => 
+                    copy.assignedTo && 
+                    copy.assignedTo !== 'Assign' && 
+                    copy.assignedTo.toLowerCase().includes(searchTerm)
+                  );
+                }
+              } catch (error) {
+                // Ignore localStorage errors
+              }
+              
               return (
                 dominant.name.toLowerCase().includes(searchTerm) ||
-                (assignedPlayer !== 'Assign' && assignedPlayer.toLowerCase().includes(searchTerm))
+                (assignedPlayer !== 'Assign' && assignedPlayer.toLowerCase().includes(searchTerm)) ||
+                duplicateMatches
               );
             });
 
@@ -760,6 +780,7 @@ export default function Home() {
                         players={playerNames.slice(0, playerCount).filter(name => name.trim() !== '')}
                         assignedTo={cardState.assignedTo}
                         selectedTier={cardState.selectedTier}
+                        searchTerm={dominantSearchTerm}
                         onChange={(change) => handleDominantCardChange(dominant.name, change)}
                       />
                   )
