@@ -990,6 +990,7 @@ export default function Home() {
                             isRevealed={revealedMeanings[pName] || false}
                             onChoose={() => handleChooseMeaning(pName, card.name)}
                             isViewing={viewingPlayer === pName}
+                            canSelect={!revealedMeanings[pName]}
                           />
                         ))}
                       </div>
