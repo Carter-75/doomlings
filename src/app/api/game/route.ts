@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Configure for static export
+export const dynamic = 'force-static';
+
 // In-memory game state (Note: This will reset on serverless function restarts)
 // For production, you'd want to use a database like Supabase, PlanetScale, or Redis
 
