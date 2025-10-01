@@ -106,13 +106,13 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
         }
 
         .meaning-card.selected-card {
-          border-color: var(--success);
+          border-color: var(--primary-red);
           border-width: 3px;
           background: linear-gradient(135deg, 
-            rgba(76, 175, 80, 0.15), 
-            rgba(139, 195, 74, 0.15));
-          box-shadow: 0 0 25px rgba(76, 175, 80, 0.4),
-                      inset 0 0 0 2px rgba(76, 175, 80, 0.2);
+            rgba(214, 52, 71, 0.15), 
+            rgba(255, 107, 53, 0.15));
+          box-shadow: 0 0 25px rgba(214, 52, 71, 0.5),
+                      inset 0 0 0 2px rgba(214, 52, 71, 0.3);
           transform: translateY(-2px);
         }
 
@@ -145,7 +145,7 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
         }
 
         .selected-card .meaning-card-name {
-          color: var(--success);
+          color: var(--primary-red);
         }
 
         .revealed .meaning-card-name {
@@ -153,22 +153,22 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
         }
 
         .selection-badge {
-          background: var(--success);
+          background: var(--primary-red);
           color: white;
           padding: 0.2rem 0.6rem;
           border-radius: 12px;
           font-size: 0.7rem;
           font-weight: 600;
           letter-spacing: 0.5px;
-          animation: pulse-success 2s infinite;
+          animation: pulse-red 2s infinite;
         }
 
-        @keyframes pulse-success {
+        @keyframes pulse-red {
           0%, 100% { 
-            box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+            box-shadow: 0 0 0 0 rgba(214, 52, 71, 0.7);
           }
           70% { 
-            box-shadow: 0 0 0 8px rgba(76, 175, 80, 0);
+            box-shadow: 0 0 0 8px rgba(214, 52, 71, 0);
           }
         }
 
@@ -176,7 +176,7 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
           display: flex;
           align-items: center;
           gap: 0.5rem;
-          background: rgba(76, 175, 80, 0.1);
+          background: rgba(214, 52, 71, 0.1);
           padding: 0.5rem;
           border-radius: 8px;
           margin-top: 0.5rem;
@@ -187,7 +187,7 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
         }
 
         .selection-text {
-          color: var(--success);
+          color: var(--primary-red);
           font-weight: 600;
           font-size: 0.9rem;
         }
@@ -208,7 +208,7 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
         }
 
         .selected-indicator {
-          color: var(--success);
+          color: var(--primary-red);
         }
 
         .selected-icon {
@@ -226,7 +226,7 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
         .selected-text {
           font-weight: 700;
           font-size: 0.9rem;
-          color: var(--success);
+          color: var(--primary-red);
           margin-bottom: 0.3rem;
           letter-spacing: 1px;
         }
@@ -281,7 +281,7 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
         }
 
         .selected-card .meaning-description {
-          border-left-color: var(--success);
+          border-left-color: var(--primary-red);
         }
 
         .revealed .meaning-description {
