@@ -38,18 +38,21 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
   
   return (
     <div className={cardClasses} onClick={handleClick}>
-      <div className="meaning-card-header">
-        <h4 className="meaning-card-name">
-          {card.name}
-          {isSelected && <span className="selection-badge">✓ SELECTED</span>}
-        </h4>
-        {isSelected && !isRevealed && (
-          <div className="selection-indicator">
-            <span className="selection-icon">🎯</span>
-            <span className="selection-text">Your Choice</span>
-          </div>
-        )}
-      </div>
+      {/* Always show header for selected cards, or when viewing/revealed */}
+      {(isSelected || isRevealed || isViewing) && (
+        <div className="meaning-card-header">
+          <h4 className="meaning-card-name">
+            {card.name}
+            {isSelected && <span className="selection-badge">✓ SELECTED</span>}
+          </h4>
+          {isSelected && !isRevealed && (
+            <div className="selection-indicator">
+              <span className="selection-icon">🎯</span>
+              <span className="selection-text">Your Choice</span>
+            </div>
+          )}
+        </div>
+      )}
       
       {(isRevealed || isViewing) && (
         <div className="meaning-description">
@@ -104,10 +107,13 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
 
         .meaning-card.selected-card {
           border-color: var(--success);
+          border-width: 3px;
           background: linear-gradient(135deg, 
             rgba(76, 175, 80, 0.15), 
             rgba(139, 195, 74, 0.15));
-          box-shadow: 0 0 25px rgba(76, 175, 80, 0.4);
+          box-shadow: 0 0 25px rgba(76, 175, 80, 0.4),
+                      inset 0 0 0 2px rgba(76, 175, 80, 0.2);
+          transform: translateY(-2px);
         }
 
         .meaning-card.selection-locked {
@@ -194,6 +200,7 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
           background: rgba(0, 0, 0, 0.1);
           border-radius: 8px;
           padding: 1rem;
+          margin-top: auto;
         }
 
         .card-back-content {
