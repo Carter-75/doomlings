@@ -1,0 +1,17 @@
+Build Information
+==================
+Build Date: 2025-10-01_21-03-47
+Version: 2.2.0
+
+Files Generated:
+- app-release.aab (Android App Bundle)
+- app-release.apk (Android Package)
+
+Data Updates Included:
+- 77 Dominant cards with 5-tier systems
+- 40 Updated trinket cards
+- 48 Meaning of life cards
+- 11 Merchant age cards
+- 77 Reorganized age effects
+- 41 Catastrophe cards with worldsEnd effects
+- 7 Catastrophe rules (restored)
