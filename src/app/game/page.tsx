@@ -215,11 +215,11 @@ export default function Home() {
     const loadAllData = async () => {
         try {
             const [
-                normalRulesData, catastropheRulesData, dominantData, normalAgeData,
+                normalRulesData, dominantData, ageData,
                 merchantAgeData, catastropheData, meaningOfLifeData, trinketData
             ] = await Promise.all([
-                loadJson('/data/normalRules.json'), loadJson('/data/catastropheRules.json'),
-                loadJson('/data/dominantData.json'), loadJson('/data/normalAgeData.json'),
+                loadJson('/data/normalRules.json'),
+                loadJson('/data/dominantData.json'), loadJson('/data/ageData.json'),
                 loadJson('/data/merchantAgeData.json'), loadJson('/data/catastropheData.json'),
                 loadJson('/data/meaningOfLifeData.json'), loadJson('/data/trinketData.json')
             ]);
@@ -237,9 +237,9 @@ export default function Home() {
             };
 
             setRules(parseRules(normalRulesData, 'Rule'));
-            setCatastropheRules(parseRules(catastropheRulesData, 'Catastrophe Rule'));
+            setCatastropheRules([]); // No separate catastrophe rules file anymore
             setAllDominants(dominantData || []);
-            setNormalAges(normalAgeData || []);
+            setNormalAges(ageData || []);
             setMerchantAges(merchantAgeData || []);
             setCatastropheAges(catastropheData || []);
             setMeaningOfLife(meaningOfLifeData || []);
@@ -304,7 +304,7 @@ export default function Home() {
   const showSection = (sectionId: string) => setActiveSection(sectionId);
 
   const rollNewAge = () => {
-    const rulesToUse = catastropheMode ? catastropheRules : rules;
+    const rulesToUse = rules; // Use normal rules for all scenarios
     if (rulesToUse.length > 0) {
       const randomIndex = Math.floor(Math.random() * rulesToUse.length);
       setCurrentRule(rulesToUse[randomIndex]);
