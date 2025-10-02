@@ -46,6 +46,7 @@ export interface ExtendedCard {
 // Card Data Paths Configuration
 export const CARD_DATA_PATHS = {
   normalRules: '/data/normalRules.json',
+  catastropheRules: '/data/catastropheRules.json',
   ageData: '/data/ageData.json',
   dominantData: '/data/dominantData.json',
   merchantAgeData: '/data/merchantAgeData.json',
@@ -179,6 +180,9 @@ export class CardDataManager {
     switch (type) {
       case 'normalRules':
         return this.parseRules(rawData, 'Rule');
+      
+      case 'catastropheRules':
+        return this.parseRules(rawData, 'Catastrophe Rule');
       
       case 'dominantData':
         if (Array.isArray(rawData)) {

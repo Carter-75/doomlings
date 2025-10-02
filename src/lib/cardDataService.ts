@@ -62,6 +62,7 @@ class CardDataService {
       // Load all data files in parallel
       const [
         normalRulesData,
+        catastropheRulesData,
         ageData,
         dominantData,
         merchantAgeData,
@@ -71,6 +72,7 @@ class CardDataService {
         extendedCards
       ] = await Promise.all([
         this.loadJson('/data/normalRules.json'),
+        this.loadJson('/data/catastropheRules.json'),
         this.loadJson('/data/ageData.json'),
         this.loadJson('/data/dominantData.json'),
         this.loadJson('/data/merchantAgeData.json'),
@@ -89,7 +91,7 @@ class CardDataService {
         trinkets: this.processTrinkets(trinketData),
         treasures: this.processTreasures(extendedCards),
         rules: this.parseRules(normalRulesData, 'Rule'),
-        catastropheRules: [] // Catastrophe rules are now part of catastrophe data
+        catastropheRules: this.parseRules(catastropheRulesData, 'Catastrophe Rule')
       };
 
       return this.gameData;
