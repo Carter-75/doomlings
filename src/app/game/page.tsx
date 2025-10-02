@@ -725,9 +725,13 @@ export default function Home() {
             .sort((a, b) => {
               const aIsAssigned = (dominantCardStates[a.name]?.assignedTo || 'Assign') !== 'Assign';
               const bIsAssigned = (dominantCardStates[b.name]?.assignedTo || 'Assign') !== 'Assign';
+              
+              // First priority: assigned cards go to top
               if (aIsAssigned && !bIsAssigned) return -1;
               if (!aIsAssigned && bIsAssigned) return 1;
-              return 0;
+              
+              // Second priority: alphabetical order within each group
+              return a.name.localeCompare(b.name);
             })
             .filter(dominant => {
               const searchTerm = dominantSearchTerm.toLowerCase();
