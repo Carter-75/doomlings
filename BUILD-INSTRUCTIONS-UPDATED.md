@@ -29,6 +29,7 @@ cd path\to\doomlings
 Both scripts automatically:
 - ✅ **Detect Android SDK** - Finds your Android SDK installation automatically
 - ✅ **Create local.properties** - Sets up Android configuration if missing
+- ✅ **Generate keystores** - Creates secure signing certificates for production apps
 - ✅ **Clean and rebuild** - Complete project cleanup and fresh build
 - ✅ **Build AAB and APK** - Generates both Android App Bundle and APK files
 - ✅ **Backup management** - Backs up previous builds before creating new ones
@@ -47,7 +48,11 @@ Both scripts automatically:
    - Install Android SDK Build-Tools and Platform-Tools
    - Install at least one Android Platform (API level 21+)
 
-3. **Git** (for version control)
+3. **Java Development Kit (JDK)** (for keystore generation)
+   - Download from: https://adoptium.net/ or https://www.oracle.com/java/
+   - Required for `keytool` command used in keystore generation
+
+4. **Git** (for version control)
    - Download from: https://git-scm.com/
 
 ### Android SDK Setup
@@ -171,7 +176,19 @@ PowerShell.exe -ExecutionPolicy Bypass -File .\build-and-deploy.ps1
    npm install
    ```
 
-#### 5. Git authentication issues
+#### 5. Keystore and signing issues
+
+**First-time keystore setup:**
+- The script will automatically prompt you to create a keystore on first run
+- You'll be asked for passwords and your name - choose secure passwords
+- See `KEYSTORE-SETUP.md` for detailed keystore information
+
+**Common keystore problems:**
+- **"keytool: command not found"**: Install Java JDK and add to PATH
+- **"password was incorrect"**: Check `android/keystore.properties` file
+- **Signing errors**: Ensure keystore files exist in `android/` directory
+
+#### 6. Git authentication issues
 
 The script may fail to push to GitHub if you haven't configured authentication:
 

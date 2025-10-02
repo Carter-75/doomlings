@@ -253,7 +253,97 @@ sdk.dir=$sdkPathGradle
 
 Write-Host ""
 Write-Host "================================================" -ForegroundColor Cyan
-Write-Host "        STEP 3: BUILDING NEXT.JS APP" -ForegroundColor Cyan
+Write-Host "        STEP 3: KEYSTORE CONFIGURATION" -ForegroundColor Cyan
+Write-Host "================================================" -ForegroundColor Cyan
+
+Write-Status "Checking Android keystore configuration..." "INFO"
+
+$KeystorePropertiesFile = Join-Path $AndroidDir "keystore.properties"
+$KeystoreFile = Join-Path $AndroidDir "doomlings-companion-key.keystore"
+
+if (-not (Test-Path $KeystorePropertiesFile)) {
+    Write-Status "keystore.properties not found" "WARNING"
+    Write-Status "Setting up new keystore for app signing..." "INFO"
+    
+    Write-Host ""
+    # Prompt for keystore information
+    $keystorePassword = Read-Host "Enter keystore password (or press Enter for default)"
+    if ([string]::IsNullOrEmpty($keystorePassword)) {
+        $keystorePassword = "doomlings2024!"
+    }
+    
+    $keyPassword = Read-Host "Enter key password (or press Enter to use same as keystore)"
+    if ([string]::IsNullOrEmpty($keyPassword)) {
+        $keyPassword = $keystorePassword
+    }
+    
+    $keyAlias = Read-Host "Enter key alias (or press Enter for default)"
+    if ([string]::IsNullOrEmpty($keyAlias)) {
+        $keyAlias = "doomlings-key"
+    }
+    
+    $developerName = Read-Host "Enter your name"
+    if ([string]::IsNullOrEmpty($developerName)) {
+        $developerName = "Doomlings Developer"
+    }
+    
+    Write-Host ""
+    Write-Status "Generating new keystore..." "INFO"
+    
+    # Generate the keystore using keytool
+    $keytoolArgs = @(
+        "-genkey", "-v",
+        "-keystore", $KeystoreFile,
+        "-alias", $keyAlias,
+        "-keyalg", "RSA",
+        "-keysize", "2048",
+        "-validity", "10000",
+        "-storepass", $keystorePassword,
+        "-keypass", $keyPassword,
+        "-dname", "CN=$developerName, OU=Doomlings, O=Doomlings Companion, L=Unknown, S=Unknown, C=US"
+    )
+    
+    try {
+        & keytool $keytoolArgs
+        if ($LASTEXITCODE -eq 0) {
+            Write-Status "Keystore generated successfully" "SUCCESS"
+            
+            # Create keystore.properties file
+            Write-Status "Creating keystore.properties file..." "INFO"
+            $keystoreContent = @"
+# Keystore configuration for Doomlings Companion
+storeFile=doomlings-companion-key.keystore
+storePassword=$keystorePassword
+keyAlias=$keyAlias
+keyPassword=$keyPassword
+"@
+            Set-Content -Path $KeystorePropertiesFile -Value $keystoreContent -Encoding UTF8
+            
+            Write-Status "Keystore configuration completed" "SUCCESS"
+            Write-Status "Keystore location: $KeystoreFile" "INFO"
+            Write-Status "Properties file: $KeystorePropertiesFile" "INFO"
+        } else {
+            Write-Status "Failed to generate keystore" "ERROR"
+            Write-Status "Make sure you have Java/keytool available in PATH" "INFO"
+            Write-Status "Continuing with debug signing..." "INFO"
+        }
+    } catch {
+        Write-Status "Error running keytool: $($_.Exception.Message)" "ERROR"
+        Write-Status "Make sure Java SDK is installed and keytool is in PATH" "INFO"
+        Write-Status "Continuing with debug signing..." "INFO"
+    }
+} else {
+    Write-Status "keystore.properties already exists" "SUCCESS"
+    Get-Content $KeystorePropertiesFile | ForEach-Object { 
+        if (-not $_.StartsWith("#") -and $_.Contains("=")) {
+            Write-Host "  $_" -ForegroundColor Gray
+        }
+    }
+}
+
+Write-Host ""
+Write-Host "================================================" -ForegroundColor Cyan
+Write-Host "        STEP 4: BUILDING NEXT.JS APP" -ForegroundColor Cyan
 Write-Host "================================================" -ForegroundColor Cyan
 
 Write-Status "Installing/updating dependencies..." "INFO"
@@ -392,7 +482,7 @@ Write-Status "Build info created: $buildInfoFile" "SUCCESS"
 if (-not $SkipGit) {
     Write-Host ""
     Write-Host "================================================" -ForegroundColor Cyan
-    Write-Host "        STEP 8: GIT OPERATIONS" -ForegroundColor Cyan
+    Write-Host "        STEP 9: GIT OPERATIONS" -ForegroundColor Cyan
     Write-Host "================================================" -ForegroundColor Cyan
 
     # Configure Git user (if not already configured)

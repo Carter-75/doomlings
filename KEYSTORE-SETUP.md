@@ -1,0 +1,166 @@
+# Doomlings Companion - Keystore Setup Guide
+
+This guide explains how to set up Android keystores for signing your Doomlings Companion app builds.
+
+## 🔐 What is a Keystore?
+
+A keystore is a security certificate used to sign Android apps. It's required for:
+- **Production releases** (uploading to Google Play Store)
+- **App updates** (must be signed with the same key)
+- **Security verification** (proves the app comes from you)
+
+## 🚀 Automatic Keystore Generation
+
+The build scripts (`build-and-deploy.ps1` and `build-and-deploy.bat`) will automatically:
+
+1. **Check for existing keystore** in `android/keystore.properties`
+2. **Generate a new keystore** if none exists
+3. **Prompt for secure information** during generation
+4. **Create configuration files** automatically
+
+### First-Time Setup Process
+
+When you run the build script for the first time, you'll be prompted for:
+
+```
+Enter keystore password (or press Enter for default): [YOUR_SECURE_PASSWORD]
+Enter key password (or press Enter to use same as keystore): [YOUR_KEY_PASSWORD] 
+Enter key alias (or press Enter for default): [YOUR_KEY_ALIAS]
+Enter your name: [YOUR_NAME]
+```
+
+**Recommended Settings:**
+- **Keystore Password**: A strong, unique password (e.g., `MySecurePass2024!`)
+- **Key Password**: Same as keystore password or different (your choice)
+- **Key Alias**: `doomlings-release-key` or similar descriptive name
+- **Your Name**: Your real name or developer name
+
+## 📁 Generated Files
+
+The script creates these files in the `android/` directory:
+
+### `keystore.properties` (Configuration)
+```properties
+# Keystore configuration for Doomlings Companion
+storeFile=doomlings-companion-key.keystore
+storePassword=YourSecurePassword
+keyAlias=your-key-alias
+keyPassword=YourKeyPassword
+```
+
+### `doomlings-companion-key.keystore` (Binary Keystore File)
+- Binary file containing your signing certificate
+- **NEVER share this file publicly**
+- **BACKUP this file securely** - you can't regenerate it!
+
+## 🔒 Security & Backup Important
+
+### ⚠️ Critical Security Notes:
+
+1. **NEVER commit keystore files to Git**
+   - Already added to `.gitignore` for protection
+   - Keystore files contain private keys
+
+2. **BACKUP your keystore safely**
+   - Store in secure cloud storage (encrypted)
+   - Keep multiple backups in different locations
+   - **You cannot update your app without the original keystore**
+
+3. **Keep passwords secure**
+   - Use a password manager
+   - Don't share keystore passwords
+   - Consider using different passwords for extra security
+
+### 📦 Backup Checklist:
+
+Before releasing to production, backup these files securely:
+- ✅ `android/doomlings-companion-key.keystore`
+- ✅ `android/keystore.properties` (or just remember the passwords)
+- ✅ Store passwords in password manager
+- ✅ Test backup by copying to different location and building
+
+## 🛠️ Manual Keystore Creation
+
+If you prefer to create the keystore manually:
+
+### Using Command Line (keytool):
+
+```bash
+# Navigate to android directory
+cd android
+
+# Generate keystore (replace values with your own)
+keytool -genkey -v \
+  -keystore doomlings-companion-key.keystore \
+  -alias doomlings-release-key \
+  -keyalg RSA \
+  -keysize 2048 \
+  -validity 10000 \
+  -storepass YourKeystorePassword \
+  -keypass YourKeyPassword \
+  -dname "CN=Your Name, OU=Doomlings, O=Doomlings Companion, L=City, S=State, C=US"
+```
+
+### Using Android Studio:
+
+1. **Open Android Studio**
+2. **Build → Generate Signed Bundle/APK**
+3. **Create New Keystore**
+4. **Fill in the details**:
+   - Key store path: `android/doomlings-companion-key.keystore`
+   - Password: Your secure password
+   - Key alias: `doomlings-release-key`
+   - Key password: Your key password
+   - Certificate info: Your name and organization
+
+5. **Copy details to `keystore.properties`**
+
+## 🔄 Using Existing Keystore
+
+If you already have a keystore from previous versions:
+
+1. **Copy your keystore file** to `android/doomlings-companion-key.keystore`
+2. **Create `keystore.properties`** with your existing credentials:
+   ```properties
+   storeFile=doomlings-companion-key.keystore
+   storePassword=YourExistingPassword
+   keyAlias=YourExistingAlias
+   keyPassword=YourExistingKeyPassword
+   ```
+3. **Run the build script** - it will detect and use your existing keystore
+
+## 🚨 Troubleshooting
+
+### "keytool: command not found"
+- **Install Java JDK** (Java Development Kit)
+- **Add Java to PATH** environment variable
+- **Restart terminal/command prompt**
+
+### "Keystore was tampered with, or password was incorrect"
+- **Check password spelling** in `keystore.properties`
+- **Verify keystore file** is not corrupted
+- **Regenerate keystore** if necessary (will require new app version)
+
+### Build fails with signing errors
+- **Verify `keystore.properties` exists** in `android/` directory
+- **Check file paths** are correct (relative to android/ directory)
+- **Ensure keystore file exists** and is readable
+
+## 📱 Production Deployment
+
+For Google Play Store uploads:
+
+1. **Use Release Build**: The scripts generate production-ready AAB files
+2. **Upload AAB**: Use the `.aab` file from `builds/` directory
+3. **Keep Keystore Safe**: Google Play requires the same keystore for updates
+4. **Version Management**: Increment `versionCode` in `android/app/build.gradle`
+
+## 🔗 Additional Resources
+
+- [Android Developer Guide - Sign Your App](https://developer.android.com/studio/publish/app-signing)
+- [Google Play Console - Upload Your App](https://support.google.com/googleplay/android-developer/answer/9859348)
+- [Keystore Best Practices](https://developer.android.com/studio/publish/app-signing#secure-shared-keystore)
+
+---
+
+**Remember**: Your keystore is like the key to your house - keep it safe, back it up, and never share it! 🔐

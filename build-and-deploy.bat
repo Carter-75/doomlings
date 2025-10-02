@@ -118,7 +118,7 @@ if exist "%ANDROID_DIR%\build" (
 
 echo.
 echo ================================================
-echo         STEP 2: ANDROID SDK CONFIGURATION
+echo         STEP 2: ANDROID SDK CONFIGURATION  
 echo ================================================
 
 echo [INFO] Checking Android SDK configuration...
@@ -223,7 +223,60 @@ if not exist "%LOCAL_PROPERTIES_FILE%" (
 
 echo.
 echo ================================================
-echo         STEP 3: BUILDING NEXT.JS APP
+echo         STEP 3: KEYSTORE CONFIGURATION
+echo ================================================
+
+echo [INFO] Checking Android keystore configuration...
+
+:: Check if keystore.properties exists
+if not exist "%ANDROID_DIR%\keystore.properties" (
+    echo [WARNING] keystore.properties not found
+    echo [INFO] Setting up new keystore for app signing...
+    
+    :: Prompt user for keystore information
+    set /p "KEYSTORE_PASSWORD=Enter keystore password (or press Enter for default): "
+    if "%KEYSTORE_PASSWORD%"=="" set "KEYSTORE_PASSWORD=doomlings2024!"
+    
+    set /p "KEY_PASSWORD=Enter key password (or press Enter to use same as keystore): "
+    if "%KEY_PASSWORD%"=="" set "KEY_PASSWORD=%KEYSTORE_PASSWORD%"
+    
+    set /p "KEY_ALIAS=Enter key alias (or press Enter for default): "
+    if "%KEY_ALIAS%"=="" set "KEY_ALIAS=doomlings-key"
+    
+    set /p "DEVELOPER_NAME=Enter your name: "
+    if "%DEVELOPER_NAME%"=="" set "DEVELOPER_NAME=Doomlings Developer"
+    
+    :: Generate the keystore
+    echo [INFO] Generating new keystore...
+    keytool -genkey -v -keystore "%ANDROID_DIR%\doomlings-companion-key.keystore" -alias "%KEY_ALIAS%" -keyalg RSA -keysize 2048 -validity 10000 -storepass "%KEYSTORE_PASSWORD%" -keypass "%KEY_PASSWORD%" -dname "CN=%DEVELOPER_NAME%, OU=Doomlings, O=Doomlings Companion, L=Unknown, S=Unknown, C=US"
+    
+    if !errorlevel! equ 0 (
+        echo [SUCCESS] Keystore generated successfully
+        
+        :: Create keystore.properties file
+        echo [INFO] Creating keystore.properties file...
+        echo # Keystore configuration for Doomlings Companion > "%ANDROID_DIR%\keystore.properties"
+        echo storeFile=doomlings-companion-key.keystore >> "%ANDROID_DIR%\keystore.properties"
+        echo storePassword=%KEYSTORE_PASSWORD% >> "%ANDROID_DIR%\keystore.properties"
+        echo keyAlias=%KEY_ALIAS% >> "%ANDROID_DIR%\keystore.properties"
+        echo keyPassword=%KEY_PASSWORD% >> "%ANDROID_DIR%\keystore.properties"
+        
+        echo [SUCCESS] Keystore configuration completed
+        echo [INFO] Keystore location: %ANDROID_DIR%\doomlings-companion-key.keystore
+        echo [INFO] Properties file: %ANDROID_DIR%\keystore.properties
+    ) else (
+        echo [ERROR] Failed to generate keystore
+        echo [INFO] Make sure you have Java/keytool available in PATH
+        echo [INFO] Continuing with debug signing...
+    )
+) else (
+    echo [SUCCESS] keystore.properties already exists
+    type "%ANDROID_DIR%\keystore.properties"
+)
+
+echo.
+echo ================================================
+echo         STEP 4: BUILDING NEXT.JS APP
 echo ================================================
 
 echo [INFO] Installing/updating dependencies...
@@ -245,7 +298,7 @@ echo [SUCCESS] Next.js build completed
 
 echo.
 echo ================================================
-echo         STEP 4: SYNCING WITH CAPACITOR
+echo         STEP 5: SYNCING WITH CAPACITOR
 echo ================================================
 
 echo [INFO] Syncing with Capacitor Android...
@@ -259,7 +312,7 @@ echo [SUCCESS] Capacitor sync completed
 
 echo.
 echo ================================================
-echo         STEP 5: BUILDING ANDROID FILES
+echo         STEP 6: BUILDING ANDROID FILES
 echo ================================================
 
 :: Navigate to Android directory
@@ -302,7 +355,7 @@ if !errorlevel! neq 0 (
 
 echo.
 echo ================================================
-echo         STEP 6: COPYING BUILD FILES
+echo         STEP 7: COPYING BUILD FILES
 echo ================================================
 
 :: Navigate back to root
@@ -344,7 +397,7 @@ if "%APK_FAILED%"=="false" (
 
 echo.
 echo ================================================
-echo         STEP 7: CREATING BUILD INFO
+echo         STEP 8: CREATING BUILD INFO
 echo ================================================
 
 :: Create build info file
@@ -375,7 +428,7 @@ echo [SUCCESS] Build info created: %BUILD_INFO_FILE%
 
 echo.
 echo ================================================
-echo         STEP 8: GIT OPERATIONS
+echo         STEP 9: GIT OPERATIONS
 echo ================================================
 
 :: Configure Git user (if not already configured)
