@@ -335,53 +335,94 @@ export default function Home() {
     }
 
     let deck: Age[] = [];
+    let birthOfLifeAdded = false;
     
-    // Find and add Birth of Life first if it exists in normalAges
-    const birthOfLife = normalAges.find(age => age.name === 'Birth of Life');
-    let availableNormalAges = normalAges.filter(age => age.name !== 'Birth of Life');
+    // Find Birth of Life card (exact name match)
+    const birthOfLife = normalAges.find(age => age.name === 'The Birth of Life');
+    let availableNormalAges = normalAges.filter(age => age.name !== 'The Birth of Life');
     
-    // Add Birth of Life first if it exists and we want normal ages
+    // Add Birth of Life FIRST if it exists and we want at least 1 normal age
     if (birthOfLife && normalAgeCount > 0) {
         deck.push(birthOfLife);
+        birthOfLifeAdded = true;
+        
         // Add remaining normal ages (one less since Birth of Life is already added)
         if (normalAgeCount > 1) {
-            deck.push(...shuffleArray([...availableNormalAges]).slice(0, normalAgeCount - 1));
+            const shuffledNormalAges = shuffleArray([...availableNormalAges]);
+            deck.push(...shuffledNormalAges.slice(0, normalAgeCount - 1));
         }
-    } else {
-        // If no Birth of Life or normalAgeCount is 0, add normal ages as usual
-        deck.push(...shuffleArray([...normalAges]).slice(0, normalAgeCount));
+    } else if (normalAgeCount > 0) {
+        // If no Birth of Life found but we want normal ages, add them normally
+        const shuffledNormalAges = shuffleArray([...normalAges]);
+        deck.push(...shuffledNormalAges.slice(0, normalAgeCount));
     }
     
-    // Add merchant ages
-    deck.push(...shuffleArray([...merchantAges]).slice(0, merchantAgeCount));
+    // Add merchant ages (shuffled)
+    if (merchantAgeCount > 0) {
+        const shuffledMerchantAges = shuffleArray([...merchantAges]);
+        deck.push(...shuffledMerchantAges.slice(0, merchantAgeCount));
+    }
     
     // Handle catastrophe ages
-    let catastropheSelection = shuffleArray([...catastropheAges]).slice(0, catastropheAgeCount);
-    let allCatastrophesInDeck = [...catastropheSelection]; // Keep original list for tracking
+    let catastropheSelection: Age[] = [];
+    let allCatastrophesInDeck: Age[] = [];
+    
+    if (catastropheAgeCount > 0) {
+        catastropheSelection = shuffleArray([...catastropheAges]).slice(0, catastropheAgeCount);
+        allCatastrophesInDeck = [...catastropheSelection]; // Keep original list for tracking
+    }
     
     if (finalCatastropheMode && catastropheSelection.length > 0) {
+        // Reserve the last catastrophe for the end
         const finalCatastrophe = catastropheSelection.pop();
-        deck.push(...catastropheSelection);
-        // Shuffle everything except Birth of Life (first) and final catastrophe
-        const deckToShuffle = deck.slice(1); // Skip Birth of Life
-        const shuffledMiddle = shuffleArray(deckToShuffle);
-        deck = birthOfLife && normalAgeCount > 0 ? [birthOfLife, ...shuffledMiddle] : shuffleArray(deck);
-        if(finalCatastrophe) deck.push(finalCatastrophe);
-    } else {
-        deck.push(...catastropheSelection);
-        // Shuffle everything except Birth of Life if it's first
-        if (birthOfLife && normalAgeCount > 0) {
-            const deckToShuffle = deck.slice(1); // Skip Birth of Life
+        
+        // Add non-final catastrophes to the middle
+        if (catastropheSelection.length > 0) {
+            deck.push(...catastropheSelection);
+        }
+        
+        // Shuffle middle part (everything except Birth of Life if present, and final catastrophe)
+        if (birthOfLifeAdded) {
+            // Birth of Life stays first, shuffle the rest
+            const deckToShuffle = deck.slice(1); // Skip Birth of Life at position 0
             const shuffledMiddle = shuffleArray(deckToShuffle);
             deck = [birthOfLife, ...shuffledMiddle];
         } else {
+            // No Birth of Life, shuffle everything
+            deck = shuffleArray(deck);
+        }
+        
+        // Add final catastrophe at the end
+        if (finalCatastrophe) {
+            deck.push(finalCatastrophe);
+        }
+    } else {
+        // No final catastrophe mode, add all catastrophes and shuffle
+        if (catastropheSelection.length > 0) {
+            deck.push(...catastropheSelection);
+        }
+        
+        // Shuffle everything except Birth of Life if it's first
+        if (birthOfLifeAdded) {
+            const deckToShuffle = deck.slice(1); // Skip Birth of Life at position 0
+            const shuffledMiddle = shuffleArray(deckToShuffle);
+            deck = [birthOfLife, ...shuffledMiddle];
+        } else {
+            // No Birth of Life, shuffle everything
             deck = shuffleArray(deck);
         }
     }
+    
     setCatastrophesInDeck(allCatastrophesInDeck);
     setAgeDeck(deck);
     setCurrentAgeIndex(0);
     setShowCatastropheList(false);
+    
+    // Log for debugging (can be removed in production)
+    console.log('Generated Age Deck:', deck.map(age => age.name));
+    if (birthOfLifeAdded) {
+        console.log('Birth of Life is at position:', deck.findIndex(age => age.name === 'The Birth of Life'));
+    }
   };
 
   const nextAge = () => setCurrentAgeIndex(i => Math.min(i + 1, ageDeck.length - 1));
@@ -809,6 +850,19 @@ export default function Home() {
             <div className="age-config box">
                 <div className="field">
                     <label className="label">Normal Ages: {normalAgeCount}</label>
+                    {normalAgeCount > 0 && normalAges.some(age => age.name === 'The Birth of Life') && (
+                        <div className="birth-of-life-notice" style={{ 
+                            background: 'linear-gradient(145deg, #27ae60, #2ecc71)', 
+                            color: 'white', 
+                            padding: '8px 12px', 
+                            borderRadius: '6px', 
+                            fontSize: '0.9rem', 
+                            marginBottom: '8px',
+                            textAlign: 'center'
+                        }}>
+                            ✨ "The Birth of Life" will be the first age
+                        </div>
+                    )}
                     <div className="age-input-container">
                         <input type="range" className="slider" min="0" max={normalAges.length} value={normalAgeCount} onChange={(e) => setNormalAgeCount(parseInt(e.target.value, 10))} />
                         <div className="age-number-wrapper">
@@ -962,6 +1016,19 @@ export default function Home() {
             <div className={`age-display box has-text-centered ${isCatastrophe ? 'catastrophe-age' : ''}`}>
                 {currentAge ? (
                 <>
+                    {currentAge.name === 'The Birth of Life' && currentAgeIndex === 0 && (
+                        <div style={{ 
+                            background: 'linear-gradient(145deg, #f39c12, #e67e22)', 
+                            color: 'white', 
+                            padding: '6px 12px', 
+                            borderRadius: '20px', 
+                            fontSize: '0.8rem', 
+                            marginBottom: '12px',
+                            display: 'inline-block'
+                        }}>
+                            ✨ FIRST AGE ✨
+                        </div>
+                    )}
                     <h4 className="title is-4">{currentAge.name}</h4>
                     <p>{currentAge.description}</p>
                 </>
