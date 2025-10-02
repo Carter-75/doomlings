@@ -836,3 +836,200 @@ input[type="range"]::-moz-range-thumb {
   margin: 1rem 0;
   color: var(--success);
 }
+
+/* Iframe-specific styles using @layer directive */
+@layer components {
+  /* Base iframe mode styles */
+  .iframe-mode {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    height: 100%;
+    overflow-x: hidden;
+  }
+
+  .iframe-mode body {
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: 100vh;
+    height: 100%;
+  }
+
+  /* Portfolio site specific iframe styles */
+  .portfolio-iframe-mode {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    height: 100%;
+    overflow-x: hidden;
+    
+    /* Clean borders for portfolio display */
+    border: none;
+    border-radius: 12px;
+    
+    /* Shadow effects for portfolio showcase */
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Hide certain elements when in iframe mode */
+  .iframe-mode .header-external-links,
+  .iframe-mode .footer-links,
+  .iframe-mode .auth-modal,
+  .iframe-mode .deployment-modal {
+    display: none !important;
+  }
+
+  /* Adjust navigation for iframe mode */
+  .iframe-mode .nav {
+    padding: 0.5rem 1rem;
+    min-height: auto;
+    background: rgba(26, 26, 26, 0.95);
+    backdrop-filter: blur(10px);
+  }
+
+  /* Compact container in iframe */
+  .iframe-mode .container {
+    padding: 1rem;
+    max-width: none;
+    width: 100%;
+  }
+
+  /* Adjust main content for iframe */
+  .iframe-mode .main-content {
+    padding: 0;
+    margin: 0;
+  }
+
+  /* Compact cards in iframe */
+  .iframe-mode .card {
+    margin-bottom: 1rem;
+    padding: 1rem;
+  }
+
+  /* Smaller buttons in iframe */
+  .iframe-mode .button,
+  .iframe-mode button {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  /* Compact hero section for iframe */
+  .iframe-mode .hero-section {
+    padding: 1rem 0;
+  }
+
+  .iframe-mode .hero-section .title {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    margin-bottom: 1rem;
+  }
+
+  .iframe-mode .hero-section .subtitle {
+    font-size: clamp(0.875rem, 2vw, 1rem);
+    margin-bottom: 1.5rem;
+  }
+
+  /* Responsive iframe adjustments */
+  @media (max-width: 768px) {
+    .iframe-mode {
+      font-size: 14px;
+    }
+    
+    .iframe-mode .nav {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    
+    .iframe-mode .nav-button {
+      flex: 1;
+      min-width: calc(50% - 0.25rem);
+      font-size: 0.75rem;
+      padding: 0.5rem;
+    }
+    
+    .iframe-mode .grid {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+    
+    .iframe-mode .main-content {
+      padding: 0.5rem;
+    }
+    
+    .iframe-mode .container {
+      padding: 0.5rem;
+    }
+  }
+
+  /* Medium screen iframe adjustments */
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .iframe-mode .grid-auto {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+    
+    .iframe-mode .nav-button {
+      font-size: 0.875rem;
+    }
+  }
+
+  /* Large screen iframe adjustments */
+  @media (min-width: 1025px) {
+    .iframe-mode .container {
+      max-width: none;
+      padding: 1.5rem;
+    }
+    
+    .iframe-mode .grid-auto {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+  }
+
+  /* Dark theme adjustments for iframe */
+  .iframe-mode.dark {
+    --dark-bg: #0f0f0f;
+    --darker-bg: #050505;
+  }
+
+  /* Light theme for iframe (if needed) */
+  .iframe-mode.light {
+    --dark-bg: #ffffff;
+    --darker-bg: #f5f5f5;
+    --text-primary: #000000;
+    --text-secondary: #333333;
+  }
+
+  .iframe-mode.light body {
+    background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+  }
+
+  /* Portfolio embed specific adjustments */
+  .portfolio-iframe-mode .hero-section {
+    text-align: center;
+    padding: 1.5rem 0;
+  }
+
+  .portfolio-iframe-mode .title {
+    background: linear-gradient(135deg, var(--primary-red), var(--primary-orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Remove external navigation in iframe */
+  .iframe-mode .external-nav,
+  .iframe-mode .social-links,
+  .iframe-mode .download-buttons {
+    display: none !important;
+  }
+
+  /* Focus management in iframe */
+  .iframe-mode :focus-visible {
+    outline: 2px solid var(--primary-orange);
+    outline-offset: 1px;
+  }
+
+  /* Loading states in iframe */
+  .iframe-mode .loading::after {
+    border-top-color: var(--primary-orange);
+  }
+}

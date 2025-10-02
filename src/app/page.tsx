@@ -2,8 +2,11 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useIframe } from '@/lib/iframe-context';
 
 export default function HomePage() {
+  const { isIframe, isPortfolioEmbed } = useIframe();
+
   return (
     <div className="home-container">
       <div className="container">
@@ -31,12 +34,14 @@ export default function HomePage() {
                 </p>
               </Link>
               
-              <Link href="/contact" className="card">
-                <h3 className="text-center mb-2">📞 Contact</h3>
-                <p className="text-center">
-                  Get help, report issues, or request features with comprehensive support
-                </p>
-              </Link>
+              {!isIframe && (
+                <Link href="/contact" className="card">
+                  <h3 className="text-center mb-2">📞 Contact</h3>
+                  <p className="text-center">
+                    Get help, report issues, or request features with comprehensive support
+                  </p>
+                </Link>
+              )}
               
               <Link href="/multiplayer" className="card">
                 <h3 className="text-center mb-2">🌐 Multiplayer</h3>
@@ -45,23 +50,27 @@ export default function HomePage() {
                 </p>
               </Link>
               
-              <Link href="/privacy-policy" className="card">
-                <h3 className="text-center mb-2">🔒 Privacy</h3>
-                <p className="text-center">
-                  Learn about our privacy-first approach and Android compatibility
-                </p>
-              </Link>
+              {!isIframe && (
+                <Link href="/privacy-policy" className="card">
+                  <h3 className="text-center mb-2">🔒 Privacy</h3>
+                  <p className="text-center">
+                    Learn about our privacy-first approach and Android compatibility
+                  </p>
+                </Link>
+              )}
             </div>
 
           </div>
           
-          <div className="card mt-4">
-            <h3 className="text-center mb-2">🚀 Professional Android App</h3>
-            <p className="text-center">
-              Built with the latest Android 15 (API 35) target for enhanced security, performance, 
-              and Google Play compliance. Enjoy a safe and modern gaming experience.
-            </p>
-          </div>
+          {!isPortfolioEmbed && (
+            <div className="card mt-4">
+              <h3 className="text-center mb-2">🚀 Professional Android App</h3>
+              <p className="text-center">
+                Built with the latest Android 15 (API 35) target for enhanced security, performance, 
+                and Google Play compliance. Enjoy a safe and modern gaming experience.
+              </p>
+            </div>
+          )}
           
           <div className="card mt-4">
             <h2 className="text-center mb-3">Complete Game Management</h2>
