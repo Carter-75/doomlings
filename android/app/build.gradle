@@ -78,8 +78,11 @@ android {
             shrinkResources true
             signingConfig signingConfigs.release
             
-            // Optimization flags
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // Optimization flags and ProGuard rules
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro', 'consumer-rules.pro'
+            
+            // Additional R8 configuration for better compatibility
+            consumerProguardFiles 'consumer-rules.pro'
         }
     }
     
@@ -128,9 +131,14 @@ dependencies {
     // Security
     implementation 'androidx.security:security-crypto:1.1.0-alpha06'
     
+    // Annotation dependencies for R8/ProGuard compatibility
+    implementation 'com.google.errorprone:error_prone_annotations:2.24.1'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    
     // Capacitor
     implementation project(':capacitor-android')
     implementation project(':capacitor-cordova-android-plugins')
+    implementation project(':capacitor-preferences')
     
     // Testing
     testImplementation 'junit:junit:4.13.2'

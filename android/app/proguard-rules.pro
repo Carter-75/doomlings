@@ -78,3 +78,68 @@
     java.lang.Object writeReplace();
     java.lang.Object readResolve();
 }
+
+# Google Crypto Tink Library Rules
+-keep class com.google.crypto.tink.** { *; }
+-dontwarn com.google.crypto.tink.**
+-keepclassmembers class com.google.crypto.tink.** { *; }
+
+# Google Error Prone Annotations
+-dontwarn com.google.errorprone.annotations.**
+-keep class com.google.errorprone.annotations.** { *; }
+
+# JSR 305 Annotations (javax.annotation)
+-dontwarn javax.annotation.**
+-keep class javax.annotation.** { *; }
+
+# JSR 305 Nullable annotations
+-dontwarn javax.annotation.Nullable
+-dontwarn javax.annotation.CheckForNull
+-dontwarn javax.annotation.concurrent.GuardedBy
+
+# Additional missing annotation classes
+-dontwarn com.google.errorprone.annotations.CanIgnoreReturnValue
+-dontwarn com.google.errorprone.annotations.CheckReturnValue
+-dontwarn com.google.errorprone.annotations.Immutable
+-dontwarn com.google.errorprone.annotations.RestrictedApi
+
+# Keep all annotation classes to prevent R8 issues
+-keep @interface * { *; }
+-keepattributes RuntimeVisibleAnnotations
+-keepattributes RuntimeInvisibleAnnotations
+-keepattributes RuntimeVisibleParameterAnnotations
+-keepattributes RuntimeInvisibleParameterAnnotations
+
+# Capacitor Preferences Plugin (which uses Tink for encryption)
+-keep class com.capacitorjs.plugins.preferences.** { *; }
+-dontwarn com.capacitorjs.plugins.preferences.**
+
+# Additional safety rules for crypto libraries
+-keep class javax.crypto.** { *; }
+-keep class java.security.** { *; }
+-dontwarn javax.crypto.**
+-dontwarn java.security.**
+
+# R8 full mode compatibility
+-keepattributes LineNumberTable,SourceFile
+-renamesourcefileattribute SourceFile
+
+# Don't optimize away classes that might be used by reflection
+-keepclassmembers class * {
+    @com.google.errorprone.annotations.** *;
+    @javax.annotation.** *;
+}
+
+# Keep classes referenced from native code or through reflection
+-keep class * extends java.lang.Exception
+-keep class * extends java.lang.Error
+
+# Preserve the special static methods that are required in all enumeration classes
+-keepclassmembers class * extends java.lang.Enum {
+    <fields>;
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+# Alternative approach - disable R8 full mode if issues persist (less optimal but safer)
+# Add this to gradle.properties if still having issues: android.enableR8.fullMode=false
