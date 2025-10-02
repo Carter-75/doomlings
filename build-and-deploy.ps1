@@ -348,7 +348,7 @@ Write-Host "================================================" -ForegroundColor C
 
 Write-Status "Automatically incrementing version numbers..." "INFO"
 
-# Function to increment version number
+# Function to increment version number with smart semantic versioning
 function Update-Version {
     param(
         [string]$CurrentVersion
@@ -359,13 +359,31 @@ function Update-Version {
         $minor = [int]$matches[2]  
         $patch = [int]$matches[3]
         
-        # Increment patch version by 1
-        $patch++
+        # Smart semantic versioning logic
+        if ($patch -eq 9) {
+            # If patch is 9, increment minor and reset patch to 0
+            if ($minor -eq 9) {
+                # If minor is also 9, increment major and reset minor and patch to 0
+                $major++
+                $minor = 0
+                $patch = 0
+                Write-Status "Major version bump: $CurrentVersion -> $major.0.0" "INFO"
+            } else {
+                # Increment minor, reset patch to 0
+                $minor++
+                $patch = 0
+                Write-Status "Minor version bump: $CurrentVersion -> $major.$minor.0" "INFO"
+            }
+        } else {
+            # Normal patch increment
+            $patch++
+            Write-Status "Patch version bump: $CurrentVersion -> $major.$minor.$patch" "INFO"
+        }
         
         return "$major.$minor.$patch"
     } else {
-        Write-Status "Invalid version format: $CurrentVersion, defaulting to increment" "WARNING"
-        return "3.0.1"
+        Write-Status "Invalid version format: $CurrentVersion, defaulting to 3.0.0" "WARNING"
+        return "3.0.0"
     }
 }
 
@@ -525,7 +543,7 @@ Write-Host "================================================" -ForegroundColor C
 # Create build info file
 $buildInfoFile = Join-Path $BuildOutputDir "build-info.txt"
     # Get current version from build.gradle
-    $currentVersionName = "3.0.0"
+    $currentVersionName = "2.9.9"
     if ($gradleContent -and $gradleContent -match 'versionName "([^"]+)"') {
         $currentVersionName = $matches[1]
     }

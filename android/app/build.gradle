@@ -15,7 +15,7 @@ android {
         minSdkVersion 24
         targetSdkVersion 35
         versionCode 13
-        versionName "3.0.0"
+        versionName "2.9.9"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         
         // Vector drawable support

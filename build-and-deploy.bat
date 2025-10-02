@@ -286,16 +286,34 @@ powershell -Command "
 $buildGradlePath = '%ANDROID_DIR%\app\build.gradle'
 $packageJsonPath = '%ROOT_DIR%package.json'
 
-# Function to increment version
+# Function to increment version with smart semantic versioning
 function Update-Version {
     param([string]$version)
     if ($version -match '^(\d+)\.(\d+)\.(\d+)$') {
         $major = [int]$matches[1]
         $minor = [int]$matches[2]  
-        $patch = [int]$matches[3] + 1
+        $patch = [int]$matches[3]
+        
+        # Smart semantic versioning logic
+        if ($patch -eq 9) {
+            if ($minor -eq 9) {
+                # Major version bump: x.9.9 -> (x+1).0.0
+                $major++; $minor = 0; $patch = 0
+                Write-Host \"[INFO] Major version bump: $version -> $major.0.0\" -ForegroundColor Yellow
+            } else {
+                # Minor version bump: x.y.9 -> x.(y+1).0
+                $minor++; $patch = 0
+                Write-Host \"[INFO] Minor version bump: $version -> $major.$minor.0\" -ForegroundColor Yellow
+            }
+        } else {
+            # Patch version bump: x.y.z -> x.y.(z+1)
+            $patch++
+            Write-Host \"[INFO] Patch version bump: $version -> $major.$minor.$patch\" -ForegroundColor Yellow
+        }
+        
         return \"$major.$minor.$patch\"
     }
-    return '3.0.1'
+    return '3.0.0'
 }
 
 # Update build.gradle
@@ -463,7 +481,7 @@ echo ================================================
 :: Create build info file
 set BUILD_INFO_FILE=%BUILD_OUTPUT_DIR%\build-info.txt
 :: Extract current version from build.gradle
-set "CURRENT_VERSION=3.0.0"
+set "CURRENT_VERSION=2.9.9"
 for /f "tokens=2 delims==" %%a in ('findstr "versionName" "%ANDROID_DIR%\app\build.gradle"') do (
     set "CURRENT_VERSION=%%a"
     set "CURRENT_VERSION=!CURRENT_VERSION:"=!"
