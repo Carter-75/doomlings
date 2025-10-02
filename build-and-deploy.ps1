@@ -343,7 +343,76 @@ keyPassword=$keyPassword
 
 Write-Host ""
 Write-Host "================================================" -ForegroundColor Cyan
-Write-Host "        STEP 4: BUILDING NEXT.JS APP" -ForegroundColor Cyan
+Write-Host "        STEP 4: VERSION MANAGEMENT" -ForegroundColor Cyan
+Write-Host "================================================" -ForegroundColor Cyan
+
+Write-Status "Automatically incrementing version numbers..." "INFO"
+
+# Function to increment version number
+function Update-Version {
+    param(
+        [string]$CurrentVersion
+    )
+    
+    if ($CurrentVersion -match '^(\d+)\.(\d+)\.(\d+)$') {
+        $major = [int]$matches[1]
+        $minor = [int]$matches[2]  
+        $patch = [int]$matches[3]
+        
+        # Increment patch version by 1
+        $patch++
+        
+        return "$major.$minor.$patch"
+    } else {
+        Write-Status "Invalid version format: $CurrentVersion, defaulting to increment" "WARNING"
+        return "3.0.1"
+    }
+}
+
+# Update Android build.gradle version
+$BuildGradlePath = Join-Path $AndroidDir "app\build.gradle"
+if (Test-Path $BuildGradlePath) {
+    Write-Status "Updating Android version in build.gradle..." "INFO"
+    
+    $gradleContent = Get-Content $BuildGradlePath -Raw
+    
+    # Extract current versionCode and versionName
+    if ($gradleContent -match 'versionCode (\d+)') {
+        $currentVersionCode = [int]$matches[1]
+        $newVersionCode = $currentVersionCode + 1
+        $gradleContent = $gradleContent -replace 'versionCode \d+', "versionCode $newVersionCode"
+        Write-Status "Updated versionCode: $currentVersionCode -> $newVersionCode" "SUCCESS"
+    }
+    
+    if ($gradleContent -match 'versionName "([^"]+)"') {
+        $currentVersionName = $matches[1]
+        $newVersionName = Update-Version $currentVersionName
+        $gradleContent = $gradleContent -replace 'versionName "[^"]+"', "versionName `"$newVersionName`""
+        Write-Status "Updated versionName: $currentVersionName -> $newVersionName" "SUCCESS"
+    }
+    
+    # Write back to file
+    Set-Content -Path $BuildGradlePath -Value $gradleContent -NoNewline
+}
+
+# Update package.json version  
+$PackageJsonPath = Join-Path $RootDir "package.json"
+if (Test-Path $PackageJsonPath) {
+    Write-Status "Updating package.json version..." "INFO"
+    
+    $packageContent = Get-Content $PackageJsonPath -Raw
+    if ($packageContent -match '"version":\s*"([^"]+)"') {
+        $currentPackageVersion = $matches[1]
+        $newPackageVersion = Update-Version $currentPackageVersion
+        $packageContent = $packageContent -replace '"version":\s*"[^"]+"', "`"version`": `"$newPackageVersion`""
+        Set-Content -Path $PackageJsonPath -Value $packageContent -NoNewline
+        Write-Status "Updated package.json: $currentPackageVersion -> $newPackageVersion" "SUCCESS"
+    }
+}
+
+Write-Host ""
+Write-Host "================================================" -ForegroundColor Cyan
+Write-Host "        STEP 5: BUILDING NEXT.JS APP" -ForegroundColor Cyan
 Write-Host "================================================" -ForegroundColor Cyan
 
 Write-Status "Installing/updating dependencies..." "INFO"
@@ -365,7 +434,7 @@ Write-Status "Next.js build completed" "SUCCESS"
 
 Write-Host ""
 Write-Host "================================================" -ForegroundColor Cyan
-Write-Host "        STEP 4: SYNCING WITH CAPACITOR" -ForegroundColor Cyan
+Write-Host "        STEP 6: SYNCING WITH CAPACITOR" -ForegroundColor Cyan
 Write-Host "================================================" -ForegroundColor Cyan
 
 Write-Status "Syncing with Capacitor Android..." "INFO"
@@ -379,7 +448,7 @@ Write-Status "Capacitor sync completed" "SUCCESS"
 
 Write-Host ""
 Write-Host "================================================" -ForegroundColor Cyan
-Write-Host "        STEP 5: BUILDING ANDROID FILES" -ForegroundColor Cyan
+Write-Host "        STEP 7: BUILDING ANDROID FILES" -ForegroundColor Cyan
 Write-Host "================================================" -ForegroundColor Cyan
 
 # Navigate to Android directory
@@ -419,7 +488,7 @@ Pop-Location
 
 Write-Host ""
 Write-Host "================================================" -ForegroundColor Cyan
-Write-Host "        STEP 6: COPYING BUILD FILES" -ForegroundColor Cyan
+Write-Host "        STEP 8: COPYING BUILD FILES" -ForegroundColor Cyan
 Write-Host "================================================" -ForegroundColor Cyan
 
 # Copy AAB file
@@ -450,16 +519,22 @@ if (-not $apkFailed) {
 
 Write-Host ""
 Write-Host "================================================" -ForegroundColor Cyan
-Write-Host "        STEP 7: CREATING BUILD INFO" -ForegroundColor Cyan
+Write-Host "        STEP 9: CREATING BUILD INFO" -ForegroundColor Cyan
 Write-Host "================================================" -ForegroundColor Cyan
 
 # Create build info file
 $buildInfoFile = Join-Path $BuildOutputDir "build-info.txt"
+    # Get current version from build.gradle
+    $currentVersionName = "3.0.0"
+    if ($gradleContent -and $gradleContent -match 'versionName "([^"]+)"') {
+        $currentVersionName = $matches[1]
+    }
+
 $buildInfo = @"
 Build Information
 ==================
 Build Date: $timestamp
-Version: 2.2.0
+Version: $currentVersionName
 
 Files Generated:
 - app-release.aab (Android App Bundle)
@@ -482,7 +557,7 @@ Write-Status "Build info created: $buildInfoFile" "SUCCESS"
 if (-not $SkipGit) {
     Write-Host ""
     Write-Host "================================================" -ForegroundColor Cyan
-    Write-Host "        STEP 9: GIT OPERATIONS" -ForegroundColor Cyan
+    Write-Host "        STEP 10: GIT OPERATIONS" -ForegroundColor Cyan
     Write-Host "================================================" -ForegroundColor Cyan
 
     # Configure Git user (if not already configured)

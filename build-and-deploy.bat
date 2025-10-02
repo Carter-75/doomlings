@@ -276,7 +276,67 @@ if not exist "%ANDROID_DIR%\keystore.properties" (
 
 echo.
 echo ================================================
-echo         STEP 4: BUILDING NEXT.JS APP
+echo         STEP 4: VERSION MANAGEMENT
+echo ================================================
+
+echo [INFO] Automatically incrementing version numbers...
+
+:: Function to increment version - using PowerShell for easier string manipulation
+powershell -Command "
+$buildGradlePath = '%ANDROID_DIR%\app\build.gradle'
+$packageJsonPath = '%ROOT_DIR%package.json'
+
+# Function to increment version
+function Update-Version {
+    param([string]$version)
+    if ($version -match '^(\d+)\.(\d+)\.(\d+)$') {
+        $major = [int]$matches[1]
+        $minor = [int]$matches[2]  
+        $patch = [int]$matches[3] + 1
+        return \"$major.$minor.$patch\"
+    }
+    return '3.0.1'
+}
+
+# Update build.gradle
+if (Test-Path $buildGradlePath) {
+    Write-Host '[INFO] Updating Android version in build.gradle...' -ForegroundColor Cyan
+    $content = Get-Content $buildGradlePath -Raw
+    
+    if ($content -match 'versionCode (\d+)') {
+        $currentCode = [int]$matches[1]
+        $newCode = $currentCode + 1
+        $content = $content -replace 'versionCode \d+', \"versionCode $newCode\"
+        Write-Host \"[SUCCESS] Updated versionCode: $currentCode -> $newCode\" -ForegroundColor Green
+    }
+    
+    if ($content -match 'versionName \"([^\"]+)\"') {
+        $currentName = $matches[1]
+        $newName = Update-Version $currentName
+        $content = $content -replace 'versionName \"[^\"]+\"', \"versionName \`\"$newName\`\"\"
+        Write-Host \"[SUCCESS] Updated versionName: $currentName -> $newName\" -ForegroundColor Green
+    }
+    
+    Set-Content -Path $buildGradlePath -Value $content -NoNewline
+}
+
+# Update package.json
+if (Test-Path $packageJsonPath) {
+    Write-Host '[INFO] Updating package.json version...' -ForegroundColor Cyan
+    $content = Get-Content $packageJsonPath -Raw
+    if ($content -match '\"version\":\s*\"([^\"]+)\"') {
+        $currentVersion = $matches[1]
+        $newVersion = Update-Version $currentVersion
+        $content = $content -replace '\"version\":\s*\"[^\"]+\"', \"`\"version`\": `\"$newVersion`\"\"
+        Set-Content -Path $packageJsonPath -Value $content -NoNewline
+        Write-Host \"[SUCCESS] Updated package.json: $currentVersion -> $newVersion\" -ForegroundColor Green
+    }
+}
+"
+
+echo.
+echo ================================================
+echo         STEP 5: BUILDING NEXT.JS APP
 echo ================================================
 
 echo [INFO] Installing/updating dependencies...
@@ -298,7 +358,7 @@ echo [SUCCESS] Next.js build completed
 
 echo.
 echo ================================================
-echo         STEP 5: SYNCING WITH CAPACITOR
+echo         STEP 6: SYNCING WITH CAPACITOR
 echo ================================================
 
 echo [INFO] Syncing with Capacitor Android...
@@ -312,7 +372,7 @@ echo [SUCCESS] Capacitor sync completed
 
 echo.
 echo ================================================
-echo         STEP 6: BUILDING ANDROID FILES
+echo         STEP 7: BUILDING ANDROID FILES
 echo ================================================
 
 :: Navigate to Android directory
@@ -355,7 +415,7 @@ if !errorlevel! neq 0 (
 
 echo.
 echo ================================================
-echo         STEP 7: COPYING BUILD FILES
+echo         STEP 8: COPYING BUILD FILES
 echo ================================================
 
 :: Navigate back to root
@@ -397,15 +457,23 @@ if "%APK_FAILED%"=="false" (
 
 echo.
 echo ================================================
-echo         STEP 8: CREATING BUILD INFO
+echo         STEP 9: CREATING BUILD INFO
 echo ================================================
 
 :: Create build info file
 set BUILD_INFO_FILE=%BUILD_OUTPUT_DIR%\build-info.txt
+:: Extract current version from build.gradle
+set "CURRENT_VERSION=3.0.0"
+for /f "tokens=2 delims==" %%a in ('findstr "versionName" "%ANDROID_DIR%\app\build.gradle"') do (
+    set "CURRENT_VERSION=%%a"
+    set "CURRENT_VERSION=!CURRENT_VERSION:"=!"
+    set "CURRENT_VERSION=!CURRENT_VERSION: =!"
+)
+
 echo Build Information > "%BUILD_INFO_FILE%"
 echo ================== >> "%BUILD_INFO_FILE%"
 echo Build Date: %timestamp% >> "%BUILD_INFO_FILE%"
-echo Version: 2.2.0 >> "%BUILD_INFO_FILE%"
+echo Version: %CURRENT_VERSION% >> "%BUILD_INFO_FILE%"
 echo. >> "%BUILD_INFO_FILE%"
 echo Files Generated: >> "%BUILD_INFO_FILE%"
 echo - app-release.aab (Android App Bundle) >> "%BUILD_INFO_FILE%"
@@ -428,7 +496,7 @@ echo [SUCCESS] Build info created: %BUILD_INFO_FILE%
 
 echo.
 echo ================================================
-echo         STEP 9: GIT OPERATIONS
+echo         STEP 10: GIT OPERATIONS
 echo ================================================
 
 :: Configure Git user (if not already configured)
