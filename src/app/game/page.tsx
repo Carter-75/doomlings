@@ -78,6 +78,10 @@ export default function Home() {
   const [catastrophesInDeck, setCatastrophesInDeck] = useState<Age[]>([]);
   const [showCatastropheList, setShowCatastropheList] = useState(false);
 
+  // Age Multiplier State
+  const [ageMultiplierMode, setAgeMultiplierMode] = useState<'auto' | 'manual'>('auto');
+  const [manualAgeMultiplier, setManualAgeMultiplier] = useState(1);
+
   // Meaning of Life State
   const [playerMeanings, setPlayerMeanings] = useState<{ [key: string]: Meaning[] }>({});
   const [selectedMeanings, setSelectedMeanings] = useState<{ [key: string]: string | null }>({}); // playerName: cardName
@@ -133,6 +137,8 @@ export default function Home() {
         initialTrinketCount,
         catastrophesInDeck,
         showCatastropheList,
+        ageMultiplierMode,
+        manualAgeMultiplier,
       };
       localStorage.setItem('doomlingsGameState', JSON.stringify(gameState));
     };
@@ -162,6 +168,8 @@ export default function Home() {
     initialTrinketCount,
     catastrophesInDeck,
     showCatastropheList,
+    ageMultiplierMode,
+    manualAgeMultiplier,
     isInitialLoadComplete,
   ]);
 
@@ -202,6 +210,8 @@ export default function Home() {
             setInitialTrinketCount(savedState.initialTrinketCount || 0);
             setCatastrophesInDeck(savedState.catastrophesInDeck || []);
             setShowCatastropheList(savedState.showCatastropheList || false);
+            setAgeMultiplierMode(savedState.ageMultiplierMode || 'auto');
+            setManualAgeMultiplier(savedState.manualAgeMultiplier || 1);
         }
     };
     loadGameState();
@@ -605,10 +615,14 @@ export default function Home() {
   }
 
   const calculateScalingMultiplier = () => {
+    if (ageMultiplierMode === 'manual') {
+      return Math.min(Math.max(manualAgeMultiplier, 1), 10); // Constrain between 1x and 10x
+    }
+    
     const totalAges = normalAgeCount + merchantAgeCount + catastropheAgeCount;
-    // Using the same logic from the original script: (total ages / 20)
-    const baseSM = Math.max(1, totalAges / 20);
-    return baseSM;
+    // Auto mode: (total ages / 20), constrained between 1x and 10x
+    const autoSM = Math.max(1, totalAges / 20);
+    return Math.min(autoSM, 10);
   };
 
   const processDescription = (description: string, sM: number) => {
@@ -976,6 +990,73 @@ export default function Home() {
                         </label>
                     </div>
                 </div>
+                
+                {/* Age Multiplier Section */}
+                <div className="field mt-4">
+                    <label className="label">Meaning of Life Scaling Multiplier (sM): {calculateScalingMultiplier().toFixed(1)}x</label>
+                    <div className="age-multiplier-container">
+                        <div className="multiplier-mode-selector">
+                            <label className="radio-option">
+                                <input 
+                                    type="radio" 
+                                    name="multiplierMode" 
+                                    value="auto" 
+                                    checked={ageMultiplierMode === 'auto'}
+                                    onChange={(e) => setAgeMultiplierMode('auto')}
+                                />
+                                <span className="radio-label">Auto (based on {normalAgeCount + merchantAgeCount + catastropheAgeCount}/20 ages)</span>
+                            </label>
+                            <label className="radio-option">
+                                <input 
+                                    type="radio" 
+                                    name="multiplierMode" 
+                                    value="manual" 
+                                    checked={ageMultiplierMode === 'manual'}
+                                    onChange={(e) => setAgeMultiplierMode('manual')}
+                                />
+                                <span className="radio-label">Manual Control</span>
+                            </label>
+                        </div>
+                        
+                        {ageMultiplierMode === 'manual' && (
+                            <div className="multiplier-slider-container">
+                                <div className="slider-label-container">
+                                    <span className="slider-label">1x</span>
+                                    <span className="slider-current-value">{manualAgeMultiplier.toFixed(1)}x</span>
+                                    <span className="slider-label">10x</span>
+                                </div>
+                                <input 
+                                    type="range" 
+                                    className="multiplier-slider" 
+                                    min="1" 
+                                    max="10" 
+                                    step="0.1" 
+                                    value={manualAgeMultiplier} 
+                                    onChange={(e) => setManualAgeMultiplier(parseFloat(e.target.value))}
+                                />
+                                <div className="multiplier-info">
+                                    <span className="multiplier-description">
+                                        Controls how much sM values are scaled in Meaning of Life cards
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                        
+                        {ageMultiplierMode === 'auto' && (
+                            <div className="auto-multiplier-info">
+                                <div className="auto-info-content">
+                                    <span className="auto-description">
+                                        Automatically calculated as: Total Ages ÷ 20 = {((normalAgeCount + merchantAgeCount + catastropheAgeCount) / 20).toFixed(1)}x
+                                    </span>
+                                    <span className="auto-constraint">
+                                        (Constrained between 1x - 10x)
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+                
                 <AnimatedButton className="is-primary is-fullwidth mt-4" onClick={generateAgeDeck}>Generate Age Deck</AnimatedButton>
                 {catastrophesInDeck.length > 0 && (
                     <AnimatedButton
