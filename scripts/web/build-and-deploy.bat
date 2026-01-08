@@ -26,8 +26,13 @@ echo.
 echo Starting build process...
 echo.
 
+:: Resolve project root relative to scripts/web directory
+set SCRIPT_DIR=%~dp0
+for %%I in ("%SCRIPT_DIR%..") do set SCRIPTS_DIR=%%~fI
+for %%I in ("%SCRIPTS_DIR%..") do set ROOT_DIR=%%~fI
+set ROOT_DIR=%ROOT_DIR%\
+
 :: Set variables
-set ROOT_DIR=%~dp0
 set BUILD_OUTPUT_DIR=%ROOT_DIR%builds
 set BACKUP_DIR=%BUILD_OUTPUT_DIR%\backup
 set ANDROID_DIR=%ROOT_DIR%android

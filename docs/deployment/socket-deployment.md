@@ -1,5 +1,3 @@
-git commit -m "Deploy socket server"
-git push heroku main
 # Doomlings Socket.IO Server Deployment
 
 ## 🚀 Quick Deploy to Railway (Free)

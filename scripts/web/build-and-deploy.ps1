@@ -35,7 +35,7 @@ Write-Host "Starting build process..." -ForegroundColor Green
 Write-Host ""
 
 # Set variables
-$RootDir = $PSScriptRoot
+$RootDir = (Resolve-Path (Join-Path $PSScriptRoot ".." "..")).Path
 $BuildOutputDir = Join-Path $RootDir "builds"
 $BackupDir = Join-Path $BuildOutputDir "backup"
 $AndroidDir = Join-Path $RootDir "android"

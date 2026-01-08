@@ -1,4 +1,87 @@
-<<<<<<< HEAD
+# Doomlings Companion
+
+Commercial companion app for the Doomlings board game. The project ships a responsive Next.js experience, Capacitor-based Android build, and groundwork for a dedicated Socket.IO multiplayer gateway.
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18.17+ (LTS recommended)
+- npm 9+
+- Git configured with access to this repository
+- Android Studio or Android SDK + Java 17 for native builds
+
+### Install & Run (Web)
+
+```bash
+git clone https://github.com/Carter-75/doomlings.git
+cd doomlings
+npm install
+npm run dev
+```
+
+The development server runs on http://localhost:3000.
+
+## Build Workflows
+
+Comprehensive instructions live in docs:
+
+- docs/build/overview.md – consolidated automation + manual build guide
+- docs/android/release-guide.md – Play Store release checklist
+- docs/android/keystore-setup.md – creating and backing up signing keys
+
+### Windows Automation
+
+Automation scripts now reside in scripts/web/:
+
+```powershell
+./scripts/web/build-and-deploy.ps1 [-Force] [-SkipGit]
+```
+```cmd
+scripts\web\build-and-deploy.bat
+```
+
+Both scripts produce signed AAB/APK artifacts in builds/. Generated bundles are ignored by Git after this cleanup—store them externally.
+
+### Manual Cross-Platform Flow
+
+Refer to docs/build/overview.md for the step-by-step sequence (npm run clean, npm run build, npx cap sync android, Gradle release tasks).
+
+## Project Structure
+
+```
+android/                 Capacitor wrapper and Gradle project
+builds/                  Output directory for generated release bundles
+docs/
+  android/               Android-specific guides (release, keystore)
+  build/                 Build automation and manual workflow docs
+  deployment/            Backend/socket deployment notes
+  integration/           Embedding and third-party integration guides
+  product/               Feature deep-dives and enhancement summaries
+  testing/               QA reports and testing summaries
+public/                  Static assets and game data JSON
+resources/               Additional art/assets used by the app
+scripts/web/             Windows automation entry points
+src/                     Next.js application (app router, modules, lib)
+server-with-socket.js    WIP Socket.IO gateway for multiplayer
+standalone-socket-server.js  Standalone deployment script for Socket.IO
+```
+
+## Multiplayer Status
+
+Frontend flows for multiplayer are implemented; the production Socket.IO service is still being hardened. See docs/deployment/socket-deployment.md for Railway/Render bootstrap notes.
+
+## Testing & QA
+
+- docs/testing/backend-test-report.md – backend validation history
+- docs/testing/testing-summary.md – condensed QA overview
+
+## License & Distribution
+
+This repository is distributed under the Doomlings Companion Proprietary License (see LICENSE). Source code, assets, and generated builds may only be used via authorized deployments (https://doomlings.vercel.app) or approved tester programs. Do not redistribute or fork without written permission.
+
+---
+_Last updated: 2026-01-07_<<<<<<< HEAD
 # 🎲 DOOMlings Companion App
 
 A comprehensive digital companion for the **DOOMlings** board game, featuring card management, game tracking, and multiplayer functionality.

@@ -10,6 +10,9 @@
 /.next/
 /out/
 
+# Build tooling caches
+/.emergent/
+
 # Production
 /build
 
