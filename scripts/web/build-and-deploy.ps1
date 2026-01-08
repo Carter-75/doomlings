@@ -45,7 +45,6 @@ $LocalPropertiesFile = Join-Path $AndroidDir "local.properties"
 $SigningDir = Join-Path $AndroidDir "signing"
 $PepkJar = Join-Path $SigningDir "pepk.jar"
 $EncryptionKeyFile = Join-Path $SigningDir "encryption_public_key.pem"
-$EncryptionHexFile = Join-Path $SigningDir "encryption_key.hex"
 $SigningOutputDir = Join-Path $BuildOutputDir "signing"
 $EncryptedKeyZip = Join-Path $SigningOutputDir "doomlings-companion-encrypted-private-key.zip"
 $UploadCertOutput = Join-Path $SigningOutputDir "upload_certificate.pem"
@@ -592,34 +591,32 @@ if (-not (Test-Path $KeystoreStoreFile)) {
 }
 
 if ($canRunPepk -and -not [string]::IsNullOrWhiteSpace($KeystoreProps["storePassword"]) -and -not [string]::IsNullOrWhiteSpace($KeystoreProps["keyAlias"])) {
-    $encryptionHex = $null
-    if (Test-Path $EncryptionHexFile) {
-        $encryptionHex = (Get-Content -Path $EncryptionHexFile -Raw).Trim()
+    Write-Status "Generating encrypted private key package for Google Play..." "INFO"
+
+    if (Test-Path $EncryptedKeyZip) {
+        Remove-Item $EncryptedKeyZip -ErrorAction SilentlyContinue
     }
 
-    if ([string]::IsNullOrWhiteSpace($encryptionHex)) {
-        Write-Status "Encryption key hex missing. Paste the Play Console value into $EncryptionHexFile" "WARNING"
+    $javaArgs = @(
+        "-jar", $PepkJar,
+        "--keystore", $KeystoreStoreFile,
+        "--alias", $KeystoreProps["keyAlias"],
+        "--output", $EncryptedKeyZip,
+        "--keystore-pass", $KeystoreProps["storePassword"],
+        "--include-cert",
+        "--rsa-aes-encryption",
+        "--encryption-key-path", $EncryptionKeyFile
+    )
+
+    if (-not [string]::IsNullOrWhiteSpace($KeystoreProps["keyPassword"])) {
+        $javaArgs += @("--key-pass", $KeystoreProps["keyPassword"])
+    }
+
+    & java $javaArgs
+    if ($LASTEXITCODE -eq 0 -and (Test-Path $EncryptedKeyZip)) {
+        Write-Status "Encrypted private key written to $EncryptedKeyZip" "SUCCESS"
     } else {
-        Write-Status "Generating encrypted private key package for Google Play..." "INFO"
-        $javaArgs = @(
-            "-jar", $PepkJar,
-            "--keystore", $KeystoreStoreFile,
-            "--alias", $KeystoreProps["keyAlias"],
-            "--output", $EncryptedKeyZip,
-            "--encryptionkey", $encryptionHex,
-            "--keystore-pass", $KeystoreProps["storePassword"]
-        )
-
-        if (-not [string]::IsNullOrWhiteSpace($KeystoreProps["keyPassword"])) {
-            $javaArgs += @("--key-pass", $KeystoreProps["keyPassword"])
-        }
-
-        & java $javaArgs
-        if ($LASTEXITCODE -eq 0 -and (Test-Path $EncryptedKeyZip)) {
-            Write-Status "Encrypted private key written to $EncryptedKeyZip" "SUCCESS"
-        } else {
-            Write-Status "Failed to generate encrypted private key. Run pepk manually." "WARNING"
-        }
+        Write-Status "Failed to generate encrypted private key. Run pepk manually." "WARNING"
     }
 } else {
     Write-Status "Skipping encrypted private key export. Missing prerequisites." "WARNING"
