@@ -15,6 +15,7 @@
 
 # Production
 /build
+/builds/
 
 # Android build artifacts
 *.aab
@@ -30,6 +31,13 @@ __pycache__/
 # Misc
 .DS_Store
 *.pem
+/builds/signing/
+/android/app/doomlings-companion-key.keystore
+/android/app/doomlings-companion-key.jks
+
+# Google Play generated artifacts
+/builds/app-release.aab
+/builds/app-release.apk
 
 # Secrets
 .env
