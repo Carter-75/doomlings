@@ -39,6 +39,12 @@ set ANDROID_DIR=%ROOT_DIR%android
 set AAB_SOURCE=%ANDROID_DIR%\app\build\outputs\bundle\release\app-release.aab
 set APK_SOURCE=%ANDROID_DIR%\app\build\outputs\apk\release\app-release.apk
 set LOCAL_PROPERTIES_FILE=%ANDROID_DIR%\local.properties
+set SIGNING_DIR=%ANDROID_DIR%\signing
+set PEPK_JAR=%SIGNING_DIR%\pepk.jar
+set ENCRYPTION_KEY_FILE=%SIGNING_DIR%\encryption_public_key.pem
+set SIGNING_OUTPUT_DIR=%BUILD_OUTPUT_DIR%\signing
+set ENCRYPTED_KEY_ZIP=%SIGNING_OUTPUT_DIR%\doomlings-companion-encrypted-private-key.zip
+set UPLOAD_CERT_OUTPUT=%SIGNING_OUTPUT_DIR%\upload_certificate.pem
 
 :: Create timestamp for backup
 for /f "tokens=2 delims==" %%a in ('wmic OS Get localdatetime /value') do set "dt=%%a"
@@ -279,6 +285,38 @@ if not exist "%ANDROID_DIR%\keystore.properties" (
     type "%ANDROID_DIR%\keystore.properties"
 )
 
+set "KEYSTORE_PROPERTIES_FILE=%ANDROID_DIR%\keystore.properties"
+set "KS_STORE_FILE=%ANDROID_DIR%\app\doomlings-companion-key.keystore"
+set "KS_STORE_PASSWORD="
+set "KS_KEY_ALIAS="
+set "KS_KEY_PASSWORD="
+
+if exist "%KEYSTORE_PROPERTIES_FILE%" (
+    for /f "usebackq tokens=1,2 delims==" %%A in (`findstr /R /V "^[ ]*#" "%KEYSTORE_PROPERTIES_FILE%"`) do (
+        set "prop=%%~A"
+        set "value=%%~B"
+        if /I "!prop!"=="storeFile" set "KS_STORE_FILE=%%~B"
+        if /I "!prop!"=="storePassword" set "KS_STORE_PASSWORD=%%~B"
+        if /I "!prop!"=="keyAlias" set "KS_KEY_ALIAS=%%~B"
+        if /I "!prop!"=="keyPassword" set "KS_KEY_PASSWORD=%%~B"
+    )
+)
+
+if defined KS_STORE_FILE (
+    set "KS_STORE_FILE=!KS_STORE_FILE:/=\!"
+    set "TEMP_STORE_FILE=!KS_STORE_FILE!"
+    if not "!TEMP_STORE_FILE:~1,1!"==":" if not "!TEMP_STORE_FILE:~0,2!"=="\\" (
+        set "TEMP_STORE_FILE=%ANDROID_DIR%\!TEMP_STORE_FILE!"
+    )
+    set "KS_STORE_FILE=!TEMP_STORE_FILE!"
+) else (
+    set "KS_STORE_FILE=%ANDROID_DIR%\app\doomlings-companion-key.keystore"
+)
+
+if not defined KS_STORE_PASSWORD set "KS_STORE_PASSWORD="
+if not defined KS_KEY_ALIAS set "KS_KEY_ALIAS="
+if not defined KS_KEY_PASSWORD set "KS_KEY_PASSWORD=!KS_STORE_PASSWORD!"
+
 echo.
 echo ================================================
 echo         STEP 4: VERSION MANAGEMENT
@@ -480,7 +518,64 @@ if "%APK_FAILED%"=="false" (
 
 echo.
 echo ================================================
-echo         STEP 9: CREATING BUILD INFO
+echo         STEP 9: EXPORTING PLAY SIGNING FILES
+echo ================================================
+
+if not exist "%SIGNING_OUTPUT_DIR%" (
+    mkdir "%SIGNING_OUTPUT_DIR%"
+    echo [INFO] Created signing output directory: %SIGNING_OUTPUT_DIR%
+)
+
+set "CAN_RUN_PEPK=true"
+if not exist "%PEPK_JAR%" (
+    echo [WARNING] PEPK jar not found at %PEPK_JAR%
+    set "CAN_RUN_PEPK=false"
+)
+
+if not exist "%ENCRYPTION_KEY_FILE%" (
+    echo [WARNING] Encryption public key missing: %ENCRYPTION_KEY_FILE%
+    set "CAN_RUN_PEPK=false"
+)
+
+if not exist "%KS_STORE_FILE%" (
+    echo [WARNING] Keystore file missing: %KS_STORE_FILE%
+    set "CAN_RUN_PEPK=false"
+)
+
+if "%KS_STORE_PASSWORD%"=="" set "CAN_RUN_PEPK=false"
+if "%KS_KEY_ALIAS%"=="" set "CAN_RUN_PEPK=false"
+
+if "%CAN_RUN_PEPK%"=="true" (
+    echo [INFO] Generating encrypted private key package for Google Play...
+    set "PEPK_COMMAND=java -jar \"%PEPK_JAR%\" --keystore \"%KS_STORE_FILE%\" --alias \"%KS_KEY_ALIAS%\" --output \"%ENCRYPTED_KEY_ZIP%\" --rsa-aes-encryption --encryption-key-path \"%ENCRYPTION_KEY_FILE%\" --keystore-pass \"%KS_STORE_PASSWORD%\""
+    if not "%KS_KEY_PASSWORD%"=="" (
+        set "PEPK_COMMAND=%PEPK_COMMAND% --key-pass \"%KS_KEY_PASSWORD%\""
+    )
+    powershell -NoProfile -Command "%PEPK_COMMAND%"
+    if !errorlevel! equ 0 if exist "%ENCRYPTED_KEY_ZIP%" (
+        echo [SUCCESS] Encrypted private key written to %ENCRYPTED_KEY_ZIP%
+    ) else (
+        echo [WARNING] Failed to generate encrypted private key. Run pepk manually.
+    )
+) else (
+    echo [WARNING] Skipping encrypted private key export. Missing prerequisites.
+)
+
+if exist "%KS_STORE_FILE%" if not "%KS_KEY_ALIAS%"=="" if not "%KS_STORE_PASSWORD%"=="" (
+    echo [INFO] Exporting upload certificate (PEM)...
+    keytool -export -rfc -keystore "%KS_STORE_FILE%" -alias "%KS_KEY_ALIAS%" -file "%UPLOAD_CERT_OUTPUT%" -storepass "%KS_STORE_PASSWORD%" -keypass "%KS_KEY_PASSWORD%" >nul 2>&1
+    if !errorlevel! equ 0 if exist "%UPLOAD_CERT_OUTPUT%" (
+        echo [SUCCESS] Upload certificate exported to %UPLOAD_CERT_OUTPUT%
+    ) else (
+        echo [WARNING] Failed to export upload certificate automatically
+    )
+) else (
+    echo [INFO] Skipping upload certificate export.
+)
+
+echo.
+echo ================================================
+echo         STEP 10: CREATING BUILD INFO
 echo ================================================
 
 :: Create build info file
@@ -505,6 +600,12 @@ if "%APK_FAILED%"=="false" (
 ) else (
     echo - APK build failed, only AAB available >> "%BUILD_INFO_FILE%"
 )
+if exist "%ENCRYPTED_KEY_ZIP%" (
+    echo - doomlings-companion-encrypted-private-key.zip (Play signing package) >> "%BUILD_INFO_FILE%"
+)
+if exist "%UPLOAD_CERT_OUTPUT%" (
+    echo - upload_certificate.pem (Upload key certificate) >> "%BUILD_INFO_FILE%"
+)
 echo. >> "%BUILD_INFO_FILE%"
 echo Data Updates Included: >> "%BUILD_INFO_FILE%"
 echo - 77 Dominant cards with 5-tier systems >> "%BUILD_INFO_FILE%"
@@ -519,7 +620,7 @@ echo [SUCCESS] Build info created: %BUILD_INFO_FILE%
 
 echo.
 echo ================================================
-echo         STEP 10: GIT OPERATIONS
+echo         STEP 11: GIT OPERATIONS
 echo ================================================
 
 :: Configure Git user (if not already configured)
@@ -581,6 +682,18 @@ if exist "%BUILD_OUTPUT_DIR%\app-release.apk" (
     echo   ✓ app-release.apk (Android Package)
 ) else (
     echo   ✗ app-release.apk (Not generated)
+)
+
+if exist "%ENCRYPTED_KEY_ZIP%" (
+    echo   ✓ signing package: %ENCRYPTED_KEY_ZIP%
+) else (
+    echo   ✗ signing package (PEPK) not generated
+)
+
+if exist "%UPLOAD_CERT_OUTPUT%" (
+    echo   ✓ upload certificate: %UPLOAD_CERT_OUTPUT%
+) else (
+    echo   ✗ upload certificate export skipped
 )
 
 if exist "%BACKUP_DIR%" (

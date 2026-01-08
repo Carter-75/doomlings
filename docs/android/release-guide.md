@@ -41,6 +41,28 @@ Follow these steps in order every time you want to release an update.
   ```powershell
   cd ..
   ```
+
+**Step 5: Export the Files Google Play Asks For**
+- The automated scripts already call `pepk.jar` and `keytool` for you. After a successful run, check `builds/signing/` for:
+  - `doomlings-companion-encrypted-private-key.zip`
+  - `upload_certificate.pem`
+- If you need to run it manually, use the helpers stored in `android/signing/`:
+  ```powershell
+  New-Item builds/signing -ItemType Directory -Force | Out-Null
+  java -jar android/signing/pepk.jar `
+    --keystore android/app/doomlings-companion-key.keystore `
+    --alias doomlings-companion `
+    --output builds/signing/doomlings-companion-encrypted-private-key.zip `
+    --rsa-aes-encryption `
+    --encryption-key-path android/signing/encryption_public_key.pem `
+    --keystore-pass doomlings123 `
+    --key-pass doomlings123
+  keytool -export -rfc -keystore android/app/doomlings-companion-key.keystore `
+    -alias doomlings-companion `
+    -file builds/signing/upload_certificate.pem `
+    -storepass doomlings123 `
+    -keypass doomlings123
+  ```
 ---
 
 ### TL;DR - The Commands (from project root)
@@ -50,5 +72,6 @@ Follow these steps in order every time you want to release an update.
 3.  `cd android`
 4.  `./gradlew bundleRelease`
 5.  `cd ..`
+6.  (Optional) `./scripts/web/build-and-deploy.ps1 -SkipGit` or the `.bat` version to regenerate Play signing exports automatically.
 
 The final file will be located at: `android/app/build/outputs/bundle/release/app-release.aab`

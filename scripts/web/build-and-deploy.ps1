@@ -42,6 +42,12 @@ $AndroidDir = Join-Path $RootDir "android"
 $AabSource = Join-Path $AndroidDir "app\build\outputs\bundle\release\app-release.aab"
 $ApkSource = Join-Path $AndroidDir "app\build\outputs\apk\release\app-release.apk"
 $LocalPropertiesFile = Join-Path $AndroidDir "local.properties"
+$SigningDir = Join-Path $AndroidDir "signing"
+$PepkJar = Join-Path $SigningDir "pepk.jar"
+$EncryptionKeyFile = Join-Path $SigningDir "encryption_public_key.pem"
+$SigningOutputDir = Join-Path $BuildOutputDir "signing"
+$EncryptedKeyZip = Join-Path $SigningOutputDir "doomlings-companion-encrypted-private-key.zip"
+$UploadCertOutput = Join-Path $SigningOutputDir "upload_certificate.pem"
 
 # Create timestamp for backup
 $timestamp = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
@@ -341,6 +347,29 @@ keyPassword=$keyPassword
     }
 }
 
+$KeystoreProps = Get-PropertiesFromFile -Path $KeystorePropertiesFile
+$KeystoreStoreFile = Join-Path $AndroidDir "doomlings-companion-key.keystore"
+if ($KeystoreProps.ContainsKey("storeFile")) {
+    $storePathValue = $KeystoreProps["storeFile"]
+    if ([System.IO.Path]::IsPathRooted($storePathValue)) {
+        $KeystoreStoreFile = $storePathValue
+    } else {
+        $KeystoreStoreFile = Join-Path $AndroidDir $storePathValue
+    }
+}
+
+if (-not $KeystoreProps.ContainsKey("storePassword")) {
+    $KeystoreProps["storePassword"] = ""
+}
+
+if (-not $KeystoreProps.ContainsKey("keyAlias")) {
+    $KeystoreProps["keyAlias"] = ""
+}
+
+if (-not $KeystoreProps.ContainsKey("keyPassword") -or [string]::IsNullOrWhiteSpace($KeystoreProps["keyPassword"])) {
+    $KeystoreProps["keyPassword"] = $KeystoreProps["storePassword"]
+}
+
 Write-Host ""
 Write-Host "================================================" -ForegroundColor Cyan
 Write-Host "        STEP 4: VERSION MANAGEMENT" -ForegroundColor Cyan
@@ -537,7 +566,71 @@ if (-not $apkFailed) {
 
 Write-Host ""
 Write-Host "================================================" -ForegroundColor Cyan
-Write-Host "        STEP 9: CREATING BUILD INFO" -ForegroundColor Cyan
+Write-Host "        STEP 9: EXPORTING PLAY SIGNING FILES" -ForegroundColor Cyan
+Write-Host "================================================" -ForegroundColor Cyan
+
+if (-not (Test-Path $SigningOutputDir)) {
+    New-Item -Path $SigningOutputDir -ItemType Directory -Force | Out-Null
+    Write-Status "Created signing output directory: $SigningOutputDir" "INFO"
+}
+
+$canRunPepk = $true
+if (-not (Test-Path $PepkJar)) {
+    Write-Status "PEPK jar not found at $PepkJar" "WARNING"
+    $canRunPepk = $false
+}
+
+if (-not (Test-Path $EncryptionKeyFile)) {
+    Write-Status "Encryption public key missing: $EncryptionKeyFile" "WARNING"
+    $canRunPepk = $false
+}
+
+if (-not (Test-Path $KeystoreStoreFile)) {
+    Write-Status "Keystore file missing: $KeystoreStoreFile" "WARNING"
+    $canRunPepk = $false
+}
+
+if ($canRunPepk -and -not [string]::IsNullOrWhiteSpace($KeystoreProps["storePassword"]) -and -not [string]::IsNullOrWhiteSpace($KeystoreProps["keyAlias"])) {
+    Write-Status "Generating encrypted private key package for Google Play..." "INFO"
+    $javaArgs = @(
+        "-jar", $PepkJar,
+        "--keystore", $KeystoreStoreFile,
+        "--alias", $KeystoreProps["keyAlias"],
+        "--output", $EncryptedKeyZip,
+        "--rsa-aes-encryption",
+        "--encryption-key-path", $EncryptionKeyFile,
+        "--keystore-pass", $KeystoreProps["storePassword"]
+    )
+
+    if (-not [string]::IsNullOrWhiteSpace($KeystoreProps["keyPassword"])) {
+        $javaArgs += @("--key-pass", $KeystoreProps["keyPassword"])
+    }
+
+    & java $javaArgs
+    if ($LASTEXITCODE -eq 0 -and (Test-Path $EncryptedKeyZip)) {
+        Write-Status "Encrypted private key written to $EncryptedKeyZip" "SUCCESS"
+    } else {
+        Write-Status "Failed to generate encrypted private key. Run pepk manually." "WARNING"
+    }
+} else {
+    Write-Status "Skipping encrypted private key export. Missing prerequisites." "WARNING"
+}
+
+if (Test-Path $KeystoreStoreFile -and -not [string]::IsNullOrWhiteSpace($KeystoreProps["keyAlias"]) -and -not [string]::IsNullOrWhiteSpace($KeystoreProps["storePassword"])) {
+    Write-Status "Exporting upload certificate (PEM) for Google Play..." "INFO"
+    & keytool -export -rfc -keystore $KeystoreStoreFile -alias $KeystoreProps["keyAlias"] -file $UploadCertOutput -storepass $KeystoreProps["storePassword"] -keypass $KeystoreProps["keyPassword"] 2>$null
+    if ($LASTEXITCODE -eq 0 -and (Test-Path $UploadCertOutput)) {
+        Write-Status "Upload certificate exported to $UploadCertOutput" "SUCCESS"
+    } else {
+        Write-Status "Failed to export upload certificate automatically" "WARNING"
+    }
+} else {
+    Write-Status "Skipping upload certificate export." "INFO"
+}
+
+Write-Host ""
+Write-Host "================================================" -ForegroundColor Cyan
+Write-Host "        STEP 10: CREATING BUILD INFO" -ForegroundColor Cyan
 Write-Host "================================================" -ForegroundColor Cyan
 
 # Create build info file
@@ -575,7 +668,7 @@ Write-Status "Build info created: $buildInfoFile" "SUCCESS"
 if (-not $SkipGit) {
     Write-Host ""
     Write-Host "================================================" -ForegroundColor Cyan
-    Write-Host "        STEP 10: GIT OPERATIONS" -ForegroundColor Cyan
+    Write-Host "        STEP 11: GIT OPERATIONS" -ForegroundColor Cyan
     Write-Host "================================================" -ForegroundColor Cyan
 
     # Configure Git user (if not already configured)
@@ -649,6 +742,19 @@ if (Test-Path $apkPath) {
     Write-Host "  ✗ app-release.apk (Not generated)" -ForegroundColor Yellow
 }
 
+$encryptedZipPath = $EncryptedKeyZip
+if (Test-Path $encryptedZipPath) {
+    Write-Host "  ✓ signing package: $(Resolve-Path $encryptedZipPath)" -ForegroundColor Green
+} else {
+    Write-Host "  ✗ signing package (PEPK) not generated" -ForegroundColor Yellow
+}
+
+if (Test-Path $UploadCertOutput) {
+    Write-Host "  ✓ upload certificate: $(Resolve-Path $UploadCertOutput)" -ForegroundColor Green
+} else {
+    Write-Host "  ✗ upload certificate export skipped" -ForegroundColor Yellow
+}
+
 if (Test-Path $BackupDir) {
     Write-Host ""
     Write-Host "Backup Location: " -NoNewline -ForegroundColor White
@@ -686,4 +792,23 @@ Write-Host ""
 
 if (-not $Force) {
     Read-Host "Press Enter to exit"
+}
+
+function Get-PropertiesFromFile {
+    param(
+        [string]$Path
+    )
+
+    $map = @{}
+    if (Test-Path $Path) {
+        Get-Content $Path | ForEach-Object {
+            if (-not [string]::IsNullOrWhiteSpace($_) -and -not $_.Trim().StartsWith("#")) {
+                $parts = $_.Split('=', 2)
+                if ($parts.Count -eq 2) {
+                    $map[$parts[0].Trim()] = $parts[1].Trim()
+                }
+            }
+        }
+    }
+    return $map
 }

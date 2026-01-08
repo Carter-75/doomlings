@@ -42,6 +42,7 @@ scripts\web\build-and-deploy.bat
 ```
 
 Both scripts produce signed AAB/APK artifacts in builds/. Generated bundles are ignored by Git after this cleanup—store them externally.
+They also write the Google Play signing payloads to `builds/signing/` using the helpers stored under `android/signing/` (the PEPK jar, encryption public key, and upload certificate templates).
 
 ### Manual Cross-Platform Flow
 
