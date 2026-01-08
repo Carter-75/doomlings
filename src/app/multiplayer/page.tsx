@@ -17,6 +17,29 @@ const MultiplayerPage = () => {
   const [error, setError] = useState('');
   const [playerReady, setPlayerReady] = useState(false);
 
+  const MULTIPLAYER_AVAILABLE = false;
+
+  if (!MULTIPLAYER_AVAILABLE) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center text-center px-6">
+        <div className="max-w-2xl space-y-6 bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 p-10 shadow-2xl">
+          <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-4xl shadow-lg">
+            🎮
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent">
+            Multiplayer Coming Soon
+          </h1>
+          <p className="text-lg text-purple-100">
+            We’re polishing the full real-time multiplayer experience right now. Stay tuned for room battles, chat, and live Doomlings matches in a future update.
+          </p>
+          <p className="text-sm text-purple-200/70">
+            In the meantime, enjoy the companion features and watch this space for launch news.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   useEffect(() => {
     // Clear any existing listeners
     socketManager.offAllListeners();

@@ -1,0 +1,43 @@
+Doomlings Companion Proprietary License
+Version 1.0 (2026-01-07)
+
+Copyright (c) 2024-2026 Carter.
+All rights reserved.
+
+1. Definitions
+   a. "Software" means the Doomlings Companion source code, build assets, artwork, data files, documentation, and any updates or derivatives provided with this repository.
+   b. "Authorized Services" means the official web deployment at https://doomlings.vercel.app and any Google Play distribution explicitly provisioned by Carter for designated tester accounts.
+
+2. Ownership
+   The Software is owned by Carter. No ownership rights are transferred to any third party. This License grants only the limited permissions expressly stated below.
+
+3. Permitted Use
+   a. You may view and interact with the Software solely by accessing the Authorized Services.
+   b. You may not download, copy, fork, host, compile, or execute the Software outside the Authorized Services without prior written permission from Carter.
+
+4. Prohibited Actions
+   You must not, without prior written permission from Carter:
+   a. Reproduce, distribute, sublicense, sell, or otherwise convey the Software or any derivative works.
+   b. Modify, translate, adapt, or create derivative works based on the Software.
+   c. Remove or alter any proprietary notices, trademarks, or attributions contained in the Software.
+   d. Grant third parties access to the Software source code or artifacts beyond what is necessary to use the Authorized Services.
+
+5. Google Play Access
+   Access to any Google Play build of the Software is limited to the tester email accounts explicitly authorized by Carter. Authorized testers may not share access, screenshots, builds, or credentials with any third party.
+
+6. Feedback and Contributions
+   If you provide feedback, suggestions, or contributions, you grant Carter a perpetual, irrevocable, royalty-free license to use, reproduce, and incorporate such feedback into the Software without obligation or restriction.
+
+7. Termination
+   Carter may revoke this License at any time. Upon termination, you must cease all use of the Software and destroy any copies or materials derived from it.
+
+8. Disclaimer of Warranty
+   THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
+
+9. Limitation of Liability
+   TO THE MAXIMUM EXTENT PERMITTED BY LAW, CARTER SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR EXEMPLARY DAMAGES ARISING FROM OR RELATED TO THIS LICENSE OR THE SOFTWARE.
+
+10. Governing Law
+   This License is governed by the laws of the jurisdiction where Carter resides, without regard to conflict of law principles.
+
+For permissions beyond this License, contact Carter directly.
