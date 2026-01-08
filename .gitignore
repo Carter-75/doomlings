@@ -16,6 +16,7 @@
 # Production
 /build
 /builds/
+/android/signing/encryption_key.hex
 
 # Android build artifacts
 *.aab

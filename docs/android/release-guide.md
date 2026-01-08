@@ -42,21 +42,28 @@ Follow these steps in order every time you want to release an update.
   cd ..
   ```
 
-**Step 5: Export the Files Google Play Asks For**
+-**Step 5: Export the Files Google Play Asks For**
+- This step only packages the Play signing artifacts; it reuses the `.aab` you built in Step 4.
 - The automated scripts already call `pepk.jar` and `keytool` for you. After a successful run, check `builds/signing/` for:
   - `doomlings-companion-encrypted-private-key.zip`
   - `upload_certificate.pem`
-- If you need to run it manually, use the helpers stored in `android/signing/`:
+- If you need to run it manually, copy and run this PowerShell block from the project root. It regenerates the encrypted private key ZIP using the Play-provided `encryption_public_key.pem` and refreshes the upload certificate:
   ```powershell
-  New-Item builds/signing -ItemType Directory -Force | Out-Null
+  # Remove any prior export to avoid reuse
+  Remove-Item builds/signing/doomlings-companion-encrypted-private-key.zip -ErrorAction SilentlyContinue
+
+  # Generate Google Play encrypted private key package
   java -jar android/signing/pepk.jar `
     --keystore android/app/doomlings-companion-key.keystore `
     --alias doomlings-companion `
     --output builds/signing/doomlings-companion-encrypted-private-key.zip `
-    --rsa-aes-encryption `
-    --encryption-key-path android/signing/encryption_public_key.pem `
     --keystore-pass doomlings123 `
-    --key-pass doomlings123
+    --key-pass doomlings123 `
+    --include-cert `
+    --rsa-aes-encryption `
+    --encryption-key-path android/signing/encryption_public_key.pem
+
+  # Refresh the upload certificate for Play Console
   keytool -export -rfc -keystore android/app/doomlings-companion-key.keystore `
     -alias doomlings-companion `
     -file builds/signing/upload_certificate.pem `

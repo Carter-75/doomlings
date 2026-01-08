@@ -42,6 +42,7 @@ set LOCAL_PROPERTIES_FILE=%ANDROID_DIR%\local.properties
 set SIGNING_DIR=%ANDROID_DIR%\signing
 set PEPK_JAR=%SIGNING_DIR%\pepk.jar
 set ENCRYPTION_KEY_FILE=%SIGNING_DIR%\encryption_public_key.pem
+set ENCRYPTION_HEX_FILE=%SIGNING_DIR%\encryption_key.hex
 set SIGNING_OUTPUT_DIR=%BUILD_OUTPUT_DIR%\signing
 set ENCRYPTED_KEY_ZIP=%SIGNING_OUTPUT_DIR%\doomlings-companion-encrypted-private-key.zip
 set UPLOAD_CERT_OUTPUT=%SIGNING_OUTPUT_DIR%\upload_certificate.pem
@@ -532,11 +533,6 @@ if not exist "%PEPK_JAR%" (
     set "CAN_RUN_PEPK=false"
 )
 
-if not exist "%ENCRYPTION_KEY_FILE%" (
-    echo [WARNING] Encryption public key missing: %ENCRYPTION_KEY_FILE%
-    set "CAN_RUN_PEPK=false"
-)
-
 if not exist "%KS_STORE_FILE%" (
     echo [WARNING] Keystore file missing: %KS_STORE_FILE%
     set "CAN_RUN_PEPK=false"
@@ -545,9 +541,19 @@ if not exist "%KS_STORE_FILE%" (
 if "%KS_STORE_PASSWORD%"=="" set "CAN_RUN_PEPK=false"
 if "%KS_KEY_ALIAS%"=="" set "CAN_RUN_PEPK=false"
 
+set "ENCRYPTION_HEX="
+if exist "%ENCRYPTION_HEX_FILE%" (
+    for /f "usebackq tokens=* delims=" %%K in (`powershell -NoProfile -Command "(Get-Content -Raw '%ENCRYPTION_HEX_FILE%').Trim()"`) do set "ENCRYPTION_HEX=%%K"
+)
+
+if "%ENCRYPTION_HEX%"=="" (
+    echo [WARNING] Encryption key hex missing. Paste the Play Console value into %ENCRYPTION_HEX_FILE%
+    set "CAN_RUN_PEPK=false"
+)
+
 if "%CAN_RUN_PEPK%"=="true" (
     echo [INFO] Generating encrypted private key package for Google Play...
-    set "PEPK_COMMAND=java -jar \"%PEPK_JAR%\" --keystore \"%KS_STORE_FILE%\" --alias \"%KS_KEY_ALIAS%\" --output \"%ENCRYPTED_KEY_ZIP%\" --rsa-aes-encryption --encryption-key-path \"%ENCRYPTION_KEY_FILE%\" --keystore-pass \"%KS_STORE_PASSWORD%\""
+    set "PEPK_COMMAND=java -jar \"%PEPK_JAR%\" --keystore \"%KS_STORE_FILE%\" --alias \"%KS_KEY_ALIAS%\" --output \"%ENCRYPTED_KEY_ZIP%\" --encryptionkey %ENCRYPTION_HEX% --keystore-pass \"%KS_STORE_PASSWORD%\""
     if not "%KS_KEY_PASSWORD%"=="" (
         set "PEPK_COMMAND=%PEPK_COMMAND% --key-pass \"%KS_KEY_PASSWORD%\""
     )
