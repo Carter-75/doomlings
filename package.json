@@ -13,14 +13,19 @@
     "android:build": "npm run build && npx cap sync android",
     "clean": "rm -rf .next out node_modules/.cache"
   },
-  "keywords": ["doomlings", "board game", "companion app", "card game"],
+  "keywords": [
+    "doomlings",
+    "board game",
+    "companion app",
+    "card game"
+  ],
   "author": "Carter",
   "license": "MIT",
   "description": "A digital companion for the DOOMlings board game with professional UI and cross-platform support",
   "dependencies": {
     "@capacitor/core": "^6.1.2",
     "@capacitor/preferences": "^6.0.2",
-    "next": "^15.0.0",
+    "next": "15.0.7",
     "react": "^18.3.1",
     "react-confetti": "^6.1.0",
     "react-dom": "^18.3.1",
