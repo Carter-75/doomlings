@@ -593,26 +593,30 @@ if (-not (Test-Path $KeystoreStoreFile)) {
 if ($canRunPepk -and -not [string]::IsNullOrWhiteSpace($KeystoreProps["storePassword"]) -and -not [string]::IsNullOrWhiteSpace($KeystoreProps["keyAlias"])) {
     Write-Status "Generating encrypted private key package for Google Play..." "INFO"
 
-    if (Test-Path $EncryptedKeyZip) {
-        Remove-Item $EncryptedKeyZip -ErrorAction SilentlyContinue
+    $pushedToRoot = $false
+    try {
+        Push-Location $RootDir
+        $pushedToRoot = $true
+
+        # Delete the existing file if it exists to avoid the FileAlreadyExistsException
+        Remove-Item builds/signing/doomlings-companion-encrypted-private-key.zip -ErrorAction SilentlyContinue
+
+        # Run the PEPK tool with automated passwords and RSA-AES encryption
+        & java -jar android/signing/pepk.jar `
+            --keystore android/app/doomlings-companion-key.keystore `
+            --alias doomlings-companion `
+            --output builds/signing/doomlings-companion-encrypted-private-key.zip `
+            --keystore-pass doomlings123 `
+            --key-pass doomlings123 `
+            --include-cert `
+            --rsa-aes-encryption `
+            --encryption-key-path android/signing/encryption_public_key.pem
+    } finally {
+        if ($pushedToRoot) {
+            Pop-Location
+        }
     }
 
-    $javaArgs = @(
-        "-jar", $PepkJar,
-        "--keystore", $KeystoreStoreFile,
-        "--alias", $KeystoreProps["keyAlias"],
-        "--output", $EncryptedKeyZip,
-        "--keystore-pass", $KeystoreProps["storePassword"],
-        "--include-cert",
-        "--rsa-aes-encryption",
-        "--encryption-key-path", $EncryptionKeyFile
-    )
-
-    if (-not [string]::IsNullOrWhiteSpace($KeystoreProps["keyPassword"])) {
-        $javaArgs += @("--key-pass", $KeystoreProps["keyPassword"])
-    }
-
-    & java $javaArgs
     if ($LASTEXITCODE -eq 0 -and (Test-Path $EncryptedKeyZip)) {
         Write-Status "Encrypted private key written to $EncryptedKeyZip" "SUCCESS"
     } else {

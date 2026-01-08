@@ -547,12 +547,19 @@ if "%KS_KEY_ALIAS%"=="" set "CAN_RUN_PEPK=false"
 
 if "%CAN_RUN_PEPK%"=="true" (
     echo [INFO] Generating encrypted private key package for Google Play...
-    if exist "%ENCRYPTED_KEY_ZIP%" del /f /q "%ENCRYPTED_KEY_ZIP%" >nul 2>&1
-    set "PEPK_COMMAND=java -jar \"%PEPK_JAR%\" --keystore \"%KS_STORE_FILE%\" --alias \"%KS_KEY_ALIAS%\" --output \"%ENCRYPTED_KEY_ZIP%\" --keystore-pass \"%KS_STORE_PASSWORD%\" --include-cert --rsa-aes-encryption --encryption-key-path \"%ENCRYPTION_KEY_FILE%\""
-    if not "%KS_KEY_PASSWORD%"=="" (
-        set "PEPK_COMMAND=%PEPK_COMMAND% --key-pass \"%KS_KEY_PASSWORD%\""
-    )
-    powershell -NoProfile -Command "%PEPK_COMMAND%"
+    rem Delete the existing file if it exists to avoid the FileAlreadyExistsException
+    powershell -NoProfile -Command "Remove-Item builds/signing/doomlings-companion-encrypted-private-key.zip -ErrorAction SilentlyContinue"
+
+    rem Run the PEPK tool with automated passwords and RSA-AES encryption
+    call java -jar android/signing/pepk.jar ^
+        --keystore android/app/doomlings-companion-key.keystore ^
+        --alias doomlings-companion ^
+        --output builds/signing/doomlings-companion-encrypted-private-key.zip ^
+        --keystore-pass doomlings123 ^
+        --key-pass doomlings123 ^
+        --include-cert ^
+        --rsa-aes-encryption ^
+        --encryption-key-path android/signing/encryption_public_key.pem
     if !errorlevel! equ 0 if exist "%ENCRYPTED_KEY_ZIP%" (
         echo [SUCCESS] Encrypted private key written to %ENCRYPTED_KEY_ZIP%
     ) else (
