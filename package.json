@@ -13,7 +13,6 @@
     "android:build": "npm run build && npx cap sync android",
     "clean": "rm -rf .next out node_modules/.cache"
   },
-<<<<<<< HEAD
   "keywords": [
     "doomlings",
     "board game",
@@ -21,14 +20,8 @@
     "card game"
   ],
   "author": "Carter",
-  "license": "MIT",
-  "description": "A digital companion for the DOOMlings board game with professional UI and cross-platform support",
-=======
-  "keywords": [],
-  "author": "",
   "license": "LicenseRef-Doomlings-Proprietary",
-  "description": "",
->>>>>>> dff5b78 (fixing)
+  "description": "A digital companion for the DOOMlings board game with professional UI and cross-platform support",
   "dependencies": {
     "@capacitor/core": "^6.1.2",
     "@capacitor/preferences": "^6.0.2",
