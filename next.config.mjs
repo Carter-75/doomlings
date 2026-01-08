@@ -1,16 +1,19 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  // Static export for Capacitor
-  output: 'export',
-  trailingSlash: true,
-  
-  // Basic configuration
-  images: {
-    unoptimized: true,
-  },
-  
-  // Disable problematic features for deployment
-  poweredByHeader: false,
+import { PHASE_DEVELOPMENT_SERVER } from 'next/constants.js';
+
+const createConfig = (phase) => {
+  const isDev = phase === PHASE_DEVELOPMENT_SERVER;
+
+  return {
+    ...(isDev ? {} : { output: 'export' }),
+    trailingSlash: true,
+
+    images: {
+      unoptimized: true,
+    },
+
+    poweredByHeader: false,
+  };
 };
 
-export default nextConfig;
+export default createConfig;
