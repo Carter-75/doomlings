@@ -36,6 +36,8 @@ Write-Host ""
 
 # Set variables
 $RootDir = (Resolve-Path (Join-Path $PSScriptRoot ".." "..")).Path
+Set-Location $RootDir
+Write-Status "Changed working directory to: $RootDir" "INFO"
 $BuildOutputDir = Join-Path $RootDir "builds"
 $BackupDir = Join-Path $BuildOutputDir "backup"
 $AndroidDir = Join-Path $RootDir "android"
@@ -101,7 +103,8 @@ if (Test-Path $BuildOutputDir) {
         Copy-Item $existingApk $backupApk -Force
         Write-Status "APK backup created" "SUCCESS"
     }
-} else {
+}
+else {
     Write-Status "No previous builds found, creating fresh builds directory..." "INFO"
     New-Item -Path $BuildOutputDir -ItemType Directory -Force | Out-Null
     Write-Status "Created builds directory: $BuildOutputDir" "SUCCESS"
@@ -151,7 +154,8 @@ if (-not (Test-Path $LocalPropertiesFile)) {
             $androidSdkRoot = $AndroidSdkPath
             $sdkFound = $true
             Write-Status "Using provided Android SDK path: $AndroidSdkPath" "INFO"
-        } else {
+        }
+        else {
             Write-Status "Provided SDK path does not exist: $AndroidSdkPath" "WARNING"
         }
     }
@@ -211,18 +215,21 @@ sdk.dir=$sdkPathGradle
         
         if (Test-Path $platformTools) {
             Write-Status "Android SDK validation passed - platform-tools found" "SUCCESS"
-        } else {
+        }
+        else {
             Write-Status "Android SDK may be incomplete - platform-tools not found" "WARNING"
             Write-Status "Make sure you have installed Android SDK Platform-Tools" "INFO"
         }
         
         if (Test-Path $buildTools) {
             Write-Status "Android SDK validation passed - build-tools found" "SUCCESS"
-        } else {
+        }
+        else {
             Write-Status "Android SDK may be incomplete - build-tools not found" "WARNING"
             Write-Status "Make sure you have installed Android SDK Build-Tools" "INFO"
         }
-    } else {
+    }
+    else {
         Write-Status "Android SDK not found in common locations!" "ERROR"
         Write-Host ""
         Write-Host "SOLUTION OPTIONS:" -ForegroundColor Yellow
@@ -252,7 +259,8 @@ sdk.dir=$sdkPathGradle
         Read-Host "Press Enter to exit"
         exit 1
     }
-} else {
+}
+else {
     Write-Status "local.properties file already exists" "SUCCESS"
     Get-Content $LocalPropertiesFile | ForEach-Object { Write-Host "  $_" -ForegroundColor Gray }
 }
@@ -264,82 +272,18 @@ Write-Host "================================================" -ForegroundColor C
 
 Write-Status "Checking Android keystore configuration..." "INFO"
 
-$KeystorePropertiesFile = Join-Path $AndroidDir "keystore.properties"
-$KeystoreFile = Join-Path $AndroidDir "doomlings-companion-key.keystore"
+$KeystorePropertiesFile = Join-Path $RootDir "android\keystore.properties"
+$KeystoreFile = Join-Path $RootDir "android\app\doomlings-companion-key.keystore"
+
+Write-Status "Looking for keystore config at: $KeystorePropertiesFile" "INFO"
 
 if (-not (Test-Path $KeystorePropertiesFile)) {
-    Write-Status "keystore.properties not found" "WARNING"
-    Write-Status "Setting up new keystore for app signing..." "INFO"
-    
-    Write-Host ""
-    # Prompt for keystore information
-    $keystorePassword = Read-Host "Enter keystore password (or press Enter for default)"
-    if ([string]::IsNullOrEmpty($keystorePassword)) {
-        $keystorePassword = "doomlings2024!"
-    }
-    
-    $keyPassword = Read-Host "Enter key password (or press Enter to use same as keystore)"
-    if ([string]::IsNullOrEmpty($keyPassword)) {
-        $keyPassword = $keystorePassword
-    }
-    
-    $keyAlias = Read-Host "Enter key alias (or press Enter for default)"
-    if ([string]::IsNullOrEmpty($keyAlias)) {
-        $keyAlias = "doomlings-key"
-    }
-    
-    $developerName = Read-Host "Enter your name"
-    if ([string]::IsNullOrEmpty($developerName)) {
-        $developerName = "Doomlings Developer"
-    }
-    
-    Write-Host ""
-    Write-Status "Generating new keystore..." "INFO"
-    
-    # Generate the keystore using keytool
-    $keytoolArgs = @(
-        "-genkey", "-v",
-        "-keystore", $KeystoreFile,
-        "-alias", $keyAlias,
-        "-keyalg", "RSA",
-        "-keysize", "2048",
-        "-validity", "10000",
-        "-storepass", $keystorePassword,
-        "-keypass", $keyPassword,
-        "-dname", "CN=$developerName, OU=Doomlings, O=Doomlings Companion, L=Unknown, S=Unknown, C=US"
-    )
-    
-    try {
-        & keytool $keytoolArgs
-        if ($LASTEXITCODE -eq 0) {
-            Write-Status "Keystore generated successfully" "SUCCESS"
-            
-            # Create keystore.properties file
-            Write-Status "Creating keystore.properties file..." "INFO"
-            $keystoreContent = @"
-# Keystore configuration for Doomlings Companion
-storeFile=doomlings-companion-key.keystore
-storePassword=$keystorePassword
-keyAlias=$keyAlias
-keyPassword=$keyPassword
-"@
-            Set-Content -Path $KeystorePropertiesFile -Value $keystoreContent -Encoding UTF8
-            
-            Write-Status "Keystore configuration completed" "SUCCESS"
-            Write-Status "Keystore location: $KeystoreFile" "INFO"
-            Write-Status "Properties file: $KeystorePropertiesFile" "INFO"
-        } else {
-            Write-Status "Failed to generate keystore" "ERROR"
-            Write-Status "Make sure you have Java/keytool available in PATH" "INFO"
-            Write-Status "Continuing with debug signing..." "INFO"
-        }
-    } catch {
-        Write-Status "Error running keytool: $($_.Exception.Message)" "ERROR"
-        Write-Status "Make sure Java SDK is installed and keytool is in PATH" "INFO"
-        Write-Status "Continuing with debug signing..." "INFO"
-    }
-} else {
-    Write-Status "keystore.properties already exists" "SUCCESS"
+    Write-Status "keystore.properties NOT FOUND at $KeystorePropertiesFile" "ERROR"
+    Write-Status "Please ensure 'android\keystore.properties' exists and contains your signing credentials." "WARNING"
+    Write-Status "Updates related to signing may fail." "WARNING"
+}
+else {
+    Write-Status "keystore.properties found" "SUCCESS"
     Get-Content $KeystorePropertiesFile | ForEach-Object { 
         if (-not $_.StartsWith("#") -and $_.Contains("=")) {
             Write-Host "  $_" -ForegroundColor Gray
@@ -353,7 +297,8 @@ if ($KeystoreProps.ContainsKey("storeFile")) {
     $storePathValue = $KeystoreProps["storeFile"]
     if ([System.IO.Path]::IsPathRooted($storePathValue)) {
         $KeystoreStoreFile = $storePathValue
-    } else {
+    }
+    else {
         $KeystoreStoreFile = Join-Path $AndroidDir $storePathValue
     }
 }
@@ -397,20 +342,23 @@ function Update-Version {
                 $minor = 0
                 $patch = 0
                 Write-Status "Major version bump: $CurrentVersion -> $major.0.0" "INFO"
-            } else {
+            }
+            else {
                 # Increment minor, reset patch to 0
                 $minor++
                 $patch = 0
                 Write-Status "Minor version bump: $CurrentVersion -> $major.$minor.0" "INFO"
             }
-        } else {
+        }
+        else {
             # Normal patch increment
             $patch++
             Write-Status "Patch version bump: $CurrentVersion -> $major.$minor.$patch" "INFO"
         }
         
         return "$major.$minor.$patch"
-    } else {
+    }
+    else {
         Write-Status "Invalid version format: $CurrentVersion, defaulting to 3.0.0" "WARNING"
         return "3.0.0"
     }
@@ -526,7 +474,8 @@ Write-Status "Building Release APK..." "INFO"
 $apkFailed = $LASTEXITCODE -ne 0
 if ($apkFailed) {
     Write-Status "APK build failed, continuing with AAB only..." "WARNING"
-} else {
+}
+else {
     Write-Status "APK build completed" "SUCCESS"
 }
 
@@ -544,7 +493,8 @@ if (Test-Path $AabSource) {
     $aabDest = Join-Path $BuildOutputDir "app-release.aab"
     Copy-Item $AabSource $aabDest -Force
     Write-Status "AAB file copied successfully" "SUCCESS"
-} else {
+}
+else {
     Write-Status "AAB file not found at: $AabSource" "ERROR"
     Read-Host "Press Enter to exit"
     exit 1
@@ -557,10 +507,12 @@ if (-not $apkFailed) {
         $apkDest = Join-Path $BuildOutputDir "app-release.apk"
         Copy-Item $ApkSource $apkDest -Force
         Write-Status "APK file copied successfully" "SUCCESS"
-    } else {
+    }
+    else {
         Write-Status "APK file not found, only AAB will be available" "WARNING"
     }
-} else {
+}
+else {
     Write-Status "APK build failed, only AAB available" "INFO"
 }
 
@@ -611,7 +563,8 @@ if ($canRunPepk -and -not [string]::IsNullOrWhiteSpace($KeystoreProps["storePass
             --include-cert `
             --rsa-aes-encryption `
             --encryption-key-path android/signing/encryption_public_key.pem
-    } finally {
+    }
+    finally {
         if ($pushedToRoot) {
             Pop-Location
         }
@@ -619,10 +572,12 @@ if ($canRunPepk -and -not [string]::IsNullOrWhiteSpace($KeystoreProps["storePass
 
     if ($LASTEXITCODE -eq 0 -and (Test-Path $EncryptedKeyZip)) {
         Write-Status "Encrypted private key written to $EncryptedKeyZip" "SUCCESS"
-    } else {
+    }
+    else {
         Write-Status "Failed to generate encrypted private key. Run pepk manually." "WARNING"
     }
-} else {
+}
+else {
     Write-Status "Skipping encrypted private key export. Missing prerequisites." "WARNING"
 }
 
@@ -631,10 +586,12 @@ if (Test-Path $KeystoreStoreFile -and -not [string]::IsNullOrWhiteSpace($Keystor
     & keytool -export -rfc -keystore $KeystoreStoreFile -alias $KeystoreProps["keyAlias"] -file $UploadCertOutput -storepass $KeystoreProps["storePassword"] -keypass $KeystoreProps["keyPassword"] 2>$null
     if ($LASTEXITCODE -eq 0 -and (Test-Path $UploadCertOutput)) {
         Write-Status "Upload certificate exported to $UploadCertOutput" "SUCCESS"
-    } else {
+    }
+    else {
         Write-Status "Failed to export upload certificate automatically" "WARNING"
     }
-} else {
+}
+else {
     Write-Status "Skipping upload certificate export." "INFO"
 }
 
@@ -645,11 +602,11 @@ Write-Host "================================================" -ForegroundColor C
 
 # Create build info file
 $buildInfoFile = Join-Path $BuildOutputDir "build-info.txt"
-    # Get current version from build.gradle
-    $currentVersionName = "2.9.9"
-    if ($gradleContent -and $gradleContent -match 'versionName "([^"]+)"') {
-        $currentVersionName = $matches[1]
-    }
+# Get current version from build.gradle
+$currentVersionName = "2.9.9"
+if ($gradleContent -and $gradleContent -match 'versionName "([^"]+)"') {
+    $currentVersionName = $matches[1]
+}
 
 $buildInfo = @"
 Build Information
@@ -720,7 +677,8 @@ build: Generate AAB and APK files with updated data - $timestamp
     if ($LASTEXITCODE -ne 0) {
         Write-Status "Git push failed - you may need to authenticate manually" "WARNING"
         Write-Status "You can run 'git push origin main' manually later" "INFO"
-    } else {
+    }
+    else {
         Write-Status "Changes pushed to remote repository" "SUCCESS"
     }
 }
@@ -742,26 +700,30 @@ $apkPath = Join-Path $BuildOutputDir "app-release.apk"
 
 if (Test-Path $aabPath) {
     Write-Host "  ✓ app-release.aab (Android App Bundle)" -ForegroundColor Green
-} else {
+}
+else {
     Write-Host "  ✗ app-release.aab (FAILED)" -ForegroundColor Red
 }
 
 if (Test-Path $apkPath) {
     Write-Host "  ✓ app-release.apk (Android Package)" -ForegroundColor Green
-} else {
+}
+else {
     Write-Host "  ✗ app-release.apk (Not generated)" -ForegroundColor Yellow
 }
 
 $encryptedZipPath = $EncryptedKeyZip
 if (Test-Path $encryptedZipPath) {
     Write-Host "  ✓ signing package: $(Resolve-Path $encryptedZipPath)" -ForegroundColor Green
-} else {
+}
+else {
     Write-Host "  ✗ signing package (PEPK) not generated" -ForegroundColor Yellow
 }
 
 if (Test-Path $UploadCertOutput) {
     Write-Host "  ✓ upload certificate: $(Resolve-Path $UploadCertOutput)" -ForegroundColor Green
-} else {
+}
+else {
     Write-Host "  ✗ upload certificate export skipped" -ForegroundColor Yellow
 }
 
