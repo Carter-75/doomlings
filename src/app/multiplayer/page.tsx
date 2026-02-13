@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import GameSocketManager from '@/lib/gameSocketManager';
 import DoomlingGameInterface from '@/components/DoomlingGameInterface';
 
@@ -36,14 +37,50 @@ const MultiplayerPage = () => {
             In the meantime, enjoy the companion features and watch this space for launch news.
           </p>
         </div>
-      </div>
+
+        <div className="footer-nav">
+          <Link href="/">🏠 Home</Link>
+          <Link href="/contact">📧 Contact</Link>
+          <Link href="/privacy-policy">🔒 Privacy Policy</Link>
+          <Link href="/settings">⚙️ Settings</Link>
+        </div>
+
+        <style jsx>{`
+            .footer-nav {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                text-align: center;
+                padding: 20px 0;
+                background: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(10px);
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                padding-bottom: calc(20px + env(safe-area-inset-bottom));
+                z-index: 50;
+            }
+
+            .footer-nav :global(a) {
+                color: #ccc;
+                text-decoration: none;
+                margin: 0 15px;
+                transition: color 0.3s ease;
+                font-size: 0.9rem;
+                display: inline-block;
+            }
+
+            .footer-nav :global(a:hover) {
+                color: #00ff88;
+            }
+        `}</style>
+      </div >
     );
   }
 
   useEffect(() => {
     // Clear any existing listeners
     socketManager.offAllListeners();
-    
+
     // Set up socket listeners
     socketManager.onRoomUpdated((room: any) => {
       setCurrentRoom(room);
@@ -122,7 +159,7 @@ const MultiplayerPage = () => {
           merchantAges: 2
         }
       });
-      
+
       // Room creation now automatically adds the player, no need to join separately
       setCurrentRoom(response.room);
       setCurrentView('lobby');
@@ -208,12 +245,12 @@ const MultiplayerPage = () => {
   if (!socketManager.isConnected() && currentView === 'menu') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 relative overflow-hidden">
-        
+
         {/* Animated Background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-20 left-10 w-40 h-40 bg-blue-500/10 rounded-full animate-pulse"></div>
-          <div className="absolute top-1/2 right-20 w-32 h-32 bg-purple-500/10 rounded-full animate-bounce" style={{animationDelay: '1s'}}></div>
-          <div className="absolute bottom-20 left-1/4 w-28 h-28 bg-pink-500/10 rounded-full animate-ping" style={{animationDelay: '2s'}}></div>
+          <div className="absolute top-1/2 right-20 w-32 h-32 bg-purple-500/10 rounded-full animate-bounce" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute bottom-20 left-1/4 w-28 h-28 bg-pink-500/10 rounded-full animate-ping" style={{ animationDelay: '2s' }}></div>
         </div>
 
         <div className="container mx-auto px-4 py-8 relative z-10">
@@ -240,7 +277,7 @@ const MultiplayerPage = () => {
                 <span className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-white mr-3">🚀</span>
                 Join the Game
               </h2>
-              
+
               {error && (
                 <div className="bg-red-500/20 border-2 border-red-500 text-red-200 px-4 py-3 rounded-xl mb-6 backdrop-blur">
                   <div className="flex items-center">
@@ -249,7 +286,7 @@ const MultiplayerPage = () => {
                   </div>
                 </div>
               )}
-              
+
               <div className="space-y-6">
                 <div>
                   <label className="block text-white text-sm font-bold mb-3">
@@ -264,7 +301,7 @@ const MultiplayerPage = () => {
                     maxLength={20}
                   />
                 </div>
-                
+
                 <button
                   onClick={handleJoinAsPlayer}
                   disabled={isConnecting || !playerName.trim()}
@@ -293,12 +330,12 @@ const MultiplayerPage = () => {
   if (currentView === 'menu') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 relative overflow-hidden">
-        
+
         {/* Animated Background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-20 left-10 w-40 h-40 bg-blue-500/10 rounded-full animate-pulse"></div>
-          <div className="absolute top-1/2 right-20 w-32 h-32 bg-purple-500/10 rounded-full animate-bounce" style={{animationDelay: '1s'}}></div>
-          <div className="absolute bottom-20 left-1/4 w-28 h-28 bg-pink-500/10 rounded-full animate-ping" style={{animationDelay: '2s'}}></div>
+          <div className="absolute top-1/2 right-20 w-32 h-32 bg-purple-500/10 rounded-full animate-bounce" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute bottom-20 left-1/4 w-28 h-28 bg-pink-500/10 rounded-full animate-ping" style={{ animationDelay: '2s' }}></div>
         </div>
 
         <div className="container mx-auto px-4 py-8 relative z-10">
@@ -317,7 +354,7 @@ const MultiplayerPage = () => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            
+
             {/* Quick Match */}
             <div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md rounded-2xl border border-white/20 p-8 shadow-2xl">
               <div className="text-center mb-6">
@@ -327,7 +364,7 @@ const MultiplayerPage = () => {
                 <h2 className="text-2xl font-bold text-white mb-2">Quick Match</h2>
                 <p className="text-gray-300">Jump into battle with random players instantly!</p>
               </div>
-              
+
               <div className="space-y-3">
                 {[2, 3, 4, 5, 6].map(playerCount => (
                   <button
@@ -354,7 +391,7 @@ const MultiplayerPage = () => {
                 <h2 className="text-2xl font-bold text-white mb-2">Private Room</h2>
                 <p className="text-gray-300">Create or join private games with friends</p>
               </div>
-              
+
               <div className="space-y-6">
                 <div>
                   <h3 className="text-white font-bold mb-3 flex items-center">
@@ -427,7 +464,7 @@ const MultiplayerPage = () => {
                   🔄 Refresh
                 </button>
               </div>
-              
+
               {publicRooms.length === 0 ? (
                 <div className="text-center py-12">
                   <div className="text-6xl mb-4">🎯</div>
@@ -471,6 +508,46 @@ const MultiplayerPage = () => {
             </div>
           )}
         </div>
+
+        <div className="footer-nav">
+          <Link href="/">🏠 Home</Link>
+          <Link href="/contact">📧 Contact</Link>
+          <Link href="/privacy-policy">🔒 Privacy Policy</Link>
+          <Link href="/settings">⚙️ Settings</Link>
+        </div>
+
+        <style jsx>{`
+            .footer-nav {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                text-align: center;
+                padding: 20px 0;
+                background: rgba(0, 0, 0, 0.8);
+                backdrop-filter: blur(10px);
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                padding-bottom: calc(20px + env(safe-area-inset-bottom));
+                z-index: 50;
+            }
+
+            .footer-nav :global(a) {
+                color: #ccc;
+                text-decoration: none;
+                margin: 0 15px;
+                transition: color 0.3s ease;
+                font-size: 0.9rem;
+                display: inline-block;
+            }
+
+            .footer-nav :global(a:hover) {
+                color: #00ff88;
+            }
+            
+            .container {
+                padding-bottom: 100px;
+            }
+        `}</style>
       </div>
     );
   }
@@ -478,16 +555,16 @@ const MultiplayerPage = () => {
   if (currentView === 'lobby' && currentRoom) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 relative overflow-hidden">
-        
+
         {/* Animated Background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-20 left-10 w-40 h-40 bg-blue-500/10 rounded-full animate-pulse"></div>
-          <div className="absolute top-1/2 right-20 w-32 h-32 bg-purple-500/10 rounded-full animate-bounce" style={{animationDelay: '1s'}}></div>
-          <div className="absolute bottom-20 left-1/4 w-28 h-28 bg-pink-500/10 rounded-full animate-ping" style={{animationDelay: '2s'}}></div>
+          <div className="absolute top-1/2 right-20 w-32 h-32 bg-purple-500/10 rounded-full animate-bounce" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute bottom-20 left-1/4 w-28 h-28 bg-pink-500/10 rounded-full animate-ping" style={{ animationDelay: '2s' }}></div>
         </div>
 
         <div className="container mx-auto px-4 py-8 relative z-10">
-          
+
           {/* Header */}
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-6">
@@ -515,24 +592,23 @@ const MultiplayerPage = () => {
           </div>
 
           <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
-            
+
             {/* Players Panel */}
             <div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md rounded-2xl border border-white/20 p-8 shadow-2xl">
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                 <span className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-white mr-3">👥</span>
                 Players ({currentRoom.players.length}/{currentRoom.maxPlayers})
               </h2>
-              
+
               <div className="space-y-4">
                 {currentRoom.players.map((player: any, index: number) => {
                   const isCurrentPlayer = player.id === socketManager.getPlayerId();
                   return (
                     <div key={player.id} className="relative">
-                      <div className={`p-4 rounded-xl border-2 transition-all duration-300 ${
-                        isCurrentPlayer
-                          ? 'bg-gradient-to-r from-purple-500/30 to-pink-500/30 border-purple-400 shadow-lg shadow-purple-500/25'
-                          : 'bg-gradient-to-r from-white/10 to-white/5 border-white/20'
-                      }`}>
+                      <div className={`p-4 rounded-xl border-2 transition-all duration-300 ${isCurrentPlayer
+                        ? 'bg-gradient-to-r from-purple-500/30 to-pink-500/30 border-purple-400 shadow-lg shadow-purple-500/25'
+                        : 'bg-gradient-to-r from-white/10 to-white/5 border-white/20'
+                        }`}>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-4">
                             <div className="relative">
@@ -557,11 +633,10 @@ const MultiplayerPage = () => {
                               </div>
                             </div>
                           </div>
-                          <div className={`px-4 py-2 rounded-xl text-sm font-bold border-2 ${
-                            player.ready 
-                              ? 'bg-green-500/30 text-green-200 border-green-400 animate-pulse' 
-                              : 'bg-red-500/30 text-red-200 border-red-400'
-                          }`}>
+                          <div className={`px-4 py-2 rounded-xl text-sm font-bold border-2 ${player.ready
+                            ? 'bg-green-500/30 text-green-200 border-green-400 animate-pulse'
+                            : 'bg-red-500/30 text-red-200 border-red-400'
+                            }`}>
                             {player.ready ? '✅ Ready' : '⏳ Not Ready'}
                           </div>
                         </div>
@@ -569,7 +644,7 @@ const MultiplayerPage = () => {
                     </div>
                   );
                 })}
-                
+
                 {/* Empty slots */}
                 {Array.from({ length: currentRoom.maxPlayers - currentRoom.players.length }).map((_: any, index: number) => (
                   <div key={`empty-${index}`} className="p-4 rounded-xl border-2 border-dashed border-white/30 bg-white/5">
@@ -586,11 +661,10 @@ const MultiplayerPage = () => {
               {/* Ready Button */}
               <button
                 onClick={handlePlayerReady}
-                className={`w-full mt-6 font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 text-lg shadow-xl ${
-                  playerReady
-                    ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-red-500/50'
-                    : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white shadow-green-500/50 animate-pulse'
-                }`}
+                className={`w-full mt-6 font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 text-lg shadow-xl ${playerReady
+                  ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-red-500/50'
+                  : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white shadow-green-500/50 animate-pulse'
+                  }`}
               >
                 {playerReady ? '❌ Cancel Ready' : '✅ Ready to Play!'}
               </button>
@@ -624,7 +698,7 @@ const MultiplayerPage = () => {
                 <span className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-white mr-3">💬</span>
                 Chat
               </h2>
-              
+
               <div className="flex-1 bg-gradient-to-br from-black/20 to-black/10 rounded-xl p-4 mb-6 min-h-[300px] max-h-[400px] overflow-y-auto custom-scrollbar border border-white/10">
                 {chatMessages.length === 0 ? (
                   <div className="text-center py-12">
@@ -635,23 +709,21 @@ const MultiplayerPage = () => {
                 ) : (
                   <div className="space-y-3">
                     {chatMessages.map((msg: any, index: number) => (
-                      <div key={index} className={`${
-                        msg.type === 'system' 
-                          ? 'text-center' 
-                          : msg.playerId === socketManager.getPlayerId() 
-                            ? 'text-right' 
-                            : 'text-left'
-                      }`}>
+                      <div key={index} className={`${msg.type === 'system'
+                        ? 'text-center'
+                        : msg.playerId === socketManager.getPlayerId()
+                          ? 'text-right'
+                          : 'text-left'
+                        }`}>
                         {msg.type === 'system' ? (
                           <div className="bg-yellow-500/20 border border-yellow-400/50 rounded-lg px-3 py-2 inline-block">
                             <span className="text-yellow-300">🤖 {msg.message}</span>
                           </div>
                         ) : (
-                          <div className={`inline-block max-w-[80%] ${
-                            msg.playerId === socketManager.getPlayerId()
-                              ? 'bg-gradient-to-r from-purple-500/30 to-pink-500/30 border border-purple-400/50'
-                              : 'bg-gradient-to-r from-blue-500/30 to-cyan-500/30 border border-blue-400/50'
-                          } rounded-xl px-4 py-2 backdrop-blur`}>
+                          <div className={`inline-block max-w-[80%] ${msg.playerId === socketManager.getPlayerId()
+                            ? 'bg-gradient-to-r from-purple-500/30 to-pink-500/30 border border-purple-400/50'
+                            : 'bg-gradient-to-r from-blue-500/30 to-cyan-500/30 border border-blue-400/50'
+                            } rounded-xl px-4 py-2 backdrop-blur`}>
                             <div className="font-bold text-sm text-white mb-1">{msg.playerName}</div>
                             <div className="text-white">{msg.message}</div>
                           </div>
@@ -661,7 +733,7 @@ const MultiplayerPage = () => {
                   </div>
                 )}
               </div>
-              
+
               <div className="flex space-x-2">
                 <input
                   type="text"
