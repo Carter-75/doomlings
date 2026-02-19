@@ -450,7 +450,16 @@ export default function Home() {
 
   const handleManualCatastropheToggle = (checked: boolean) => {
     setCatastropheMode(checked);
-    setManualCatastropheOverride(true);
+
+    // Check if the new state matches what the auto-detection would set
+    // If it matches, we don't need the override anymore
+    const shouldBeCatastropheMode = currentAge ? catastropheAges.some(c => c.name === currentAge.name) : false;
+
+    if (checked === shouldBeCatastropheMode) {
+      setManualCatastropheOverride(false);
+    } else {
+      setManualCatastropheOverride(true);
+    }
   };
 
   const assignMeaningCards = () => {
@@ -745,7 +754,7 @@ export default function Home() {
                 </div>
               )}
               {manualCatastropheOverride && (
-                <div className="catastrophe-auto-notice" style={{ background: 'linear-gradient(145deg, #9b59b6, #8e44ad)' }}>
+                <div className="catastrophe-auto-notice">
                   🎛️ Manual Override Active (resets on next turn)
                 </div>
               )}
