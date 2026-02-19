@@ -15,7 +15,7 @@ export function IframeWrapper({ children }: IframeWrapperProps) {
     if (isIframe) {
       document.body.classList.add('iframe-mode')
       document.body.setAttribute('data-iframe', 'true')
-      
+
       if (isPortfolioEmbed) {
         document.body.classList.add('portfolio-iframe-mode')
         document.body.setAttribute('data-portfolio', 'true')
@@ -40,6 +40,15 @@ export function IframeWrapper({ children }: IframeWrapperProps) {
     }
   }, [isIframe, isPortfolioEmbed, theme])
 
+  // Apply saved UI scaling on mount
+  useEffect(() => {
+    const savedScaling = localStorage.getItem('uiScaling');
+    if (savedScaling) {
+      const scaleValue = parseInt(savedScaling, 10) / 100;
+      document.documentElement.style.setProperty('--ui-scale', scaleValue.toString());
+    }
+  }, []);
+
   // Add viewport meta tag for responsive iframe behavior
   useEffect(() => {
     if (isIframe) {
@@ -60,7 +69,7 @@ export function IframeWrapper({ children }: IframeWrapperProps) {
       {children}
       {/* Add iframe detection script for debugging */}
       {process.env.NODE_ENV === 'development' && isIframe && (
-        <div 
+        <div
           style={{
             position: 'fixed',
             top: '10px',
