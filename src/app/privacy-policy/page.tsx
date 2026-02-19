@@ -143,7 +143,7 @@ const PrivacyPolicyPage = () => {
 
             <div className="privacy-container">
                 <h1>Privacy Policy</h1>
-                <p className="last-updated">Last updated: December 2024</p>
+                <p className="last-updated">Last updated: February 2026</p>
 
                 <div className="highlight-box">
                     <p><strong>📱 Privacy First:</strong> The Doomlings Companion App is designed with your privacy in mind. We believe your gaming data should stay yours, which is why we've built this app to work entirely on your device without collecting or transmitting any personal information.</p>
@@ -221,7 +221,7 @@ const PrivacyPolicyPage = () => {
                     <li><strong>Android 15 Compatible:</strong> Targets API level 35 for enhanced security and performance</li>
                     <li><strong>Modern Security:</strong> Complies with Google Play's latest security requirements</li>
                 </ul>
-                
+
                 <div className="compatibility-info">
                     <h3>🔧 System Requirements</h3>
                     <ul>
@@ -250,6 +250,14 @@ const PrivacyPolicyPage = () => {
                     <li>Fully offline experience</li>
                 </ul>
 
+                <h2>🌍 Global Privacy Rights</h2>
+                <p>We are committed to global privacy compliance (including GDPR, CCPA, and others):</p>
+                <ul>
+                    <li><strong>Right to Access:</strong> Your data resides on your device. You have full access to it at all times.</li>
+                    <li><strong>Right to Deletion:</strong> You can delete any game file via the Settings menu or clear your app data to remove everything.</li>
+                    <li><strong>Right to Revoke Consent:</strong> Since we do not collect data, there is no consent to revoke. If we introduce data collection in the future, we will ask for your explicit consent first.</li>
+                </ul>
+
                 <div className="contact-info">
                     <h2>📧 Contact Us</h2>
                     <p>Have questions about this privacy policy or the app?</p>
@@ -259,8 +267,6 @@ const PrivacyPolicyPage = () => {
 
                 <div className="footer-nav">
                     <Link href="/">🏠 Home</Link>
-                    <Link href="/contact">📧 Contact</Link>
-                    <Link href="/settings">⚙️ Settings</Link>
                 </div>
             </div>
         </>

@@ -344,19 +344,19 @@ const ContactPage = () => {
                     </div>
 
                     <div className="tab-navigation">
-                        <button 
+                        <button
                             className={`tab-button ${activeTab === 'contact' ? 'active' : ''}`}
                             onClick={() => setActiveTab('contact')}
                         >
                             📧 Contact Us
                         </button>
-                        <button 
+                        <button
                             className={`tab-button ${activeTab === 'faq' ? 'active' : ''}`}
                             onClick={() => setActiveTab('faq')}
                         >
                             ❓ FAQ
                         </button>
-                        <button 
+                        <button
                             className={`tab-button ${activeTab === 'support' ? 'active' : ''}`}
                             onClick={() => setActiveTab('support')}
                         >
@@ -396,9 +396,9 @@ const ContactPage = () => {
 
                                     <div className="form-group">
                                         <label htmlFor="message">Message *</label>
-                                        <textarea 
-                                            id="message" 
-                                            name="message" 
+                                        <textarea
+                                            id="message"
+                                            name="message"
                                             required
                                             placeholder="Please describe your question, issue, or feedback in detail..."
                                         ></textarea>
@@ -448,7 +448,7 @@ const ContactPage = () => {
                                         <p>
                                             Send us an email at <strong>phoenix75.help@gmail.com</strong> for:
                                             <br />• Bug reports
-                                            <br />• Feature requests  
+                                            <br />• Feature requests
                                             <br />• General questions
                                             <br />• Technical issues
                                         </p>
@@ -488,8 +488,8 @@ const ContactPage = () => {
                                     </div>
                                 </div>
 
-                                <div style={{ 
-                                    background: 'rgba(0, 255, 136, 0.1)', 
+                                <div style={{
+                                    background: 'rgba(0, 255, 136, 0.1)',
                                     border: '1px solid rgba(0, 255, 136, 0.3)',
                                     borderRadius: '10px',
                                     padding: '20px',
@@ -499,8 +499,8 @@ const ContactPage = () => {
                                         🚀 Coming Soon Features
                                     </h3>
                                     <p style={{ color: '#e0e0e0' }}>
-                                        We're working on exciting new features including cloud sync, 
-                                        enhanced customization options, and improved mobile experience. 
+                                        We're working on exciting new features including cloud sync,
+                                        enhanced customization options, and improved mobile experience.
                                         Stay tuned for updates!
                                     </p>
                                 </div>
@@ -512,8 +512,6 @@ const ContactPage = () => {
 
             <div className="footer-nav">
                 <Link href="/">🏠 Home</Link>
-                <Link href="/privacy-policy">🔒 Privacy Policy</Link>
-                <Link href="/settings">⚙️ Settings</Link>
             </div>
         </>
     );

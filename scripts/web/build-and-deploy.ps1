@@ -10,6 +10,43 @@ param(
 # Set execution policy for this session
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 
+# Function to Write colored output
+function Write-Status {
+    param(
+        [string]$Message,
+        [string]$Type = "INFO"
+    )
+    
+    $color = switch ($Type) {
+        "SUCCESS" { "Green" }
+        "ERROR" { "Red" }
+        "WARNING" { "Yellow" }
+        "INFO" { "Cyan" }
+        default { "White" }
+    }
+    
+    Write-Host "[$Type] $Message" -ForegroundColor $color
+}
+
+function Get-PropertiesFromFile {
+    param(
+        [string]$Path
+    )
+
+    $map = @{}
+    if (Test-Path $Path) {
+        Get-Content $Path | ForEach-Object {
+            if (-not [string]::IsNullOrWhiteSpace($_) -and -not $_.Trim().StartsWith("#")) {
+                $parts = $_.Split('=', 2)
+                if ($parts.Count -eq 2) {
+                    $map[$parts[0].Trim()] = $parts[1].Trim()
+                }
+            }
+        }
+    }
+    return $map
+}
+
 Write-Host "================================================" -ForegroundColor Cyan
 Write-Host "   Doomlings Companion - Build and Deploy" -ForegroundColor Cyan  
 Write-Host "================================================" -ForegroundColor Cyan
@@ -59,22 +96,7 @@ Write-Host "[INFO] Root directory: $RootDir" -ForegroundColor Cyan
 Write-Host ""
 
 # Function to Write colored output
-function Write-Status {
-    param(
-        [string]$Message,
-        [string]$Type = "INFO"
-    )
-    
-    $color = switch ($Type) {
-        "SUCCESS" { "Green" }
-        "ERROR" { "Red" }
-        "WARNING" { "Yellow" }
-        "INFO" { "Cyan" }
-        default { "White" }
-    }
-    
-    Write-Host "[$Type] $Message" -ForegroundColor $color
-}
+
 
 # Check if builds directory exists and backup if needed
 if (Test-Path $BuildOutputDir) {
@@ -766,21 +788,3 @@ if (-not $Force) {
     Read-Host "Press Enter to exit"
 }
 
-function Get-PropertiesFromFile {
-    param(
-        [string]$Path
-    )
-
-    $map = @{}
-    if (Test-Path $Path) {
-        Get-Content $Path | ForEach-Object {
-            if (-not [string]::IsNullOrWhiteSpace($_) -and -not $_.Trim().StartsWith("#")) {
-                $parts = $_.Split('=', 2)
-                if ($parts.Count -eq 2) {
-                    $map[$parts[0].Trim()] = $parts[1].Trim()
-                }
-            }
-        }
-    }
-    return $map
-}

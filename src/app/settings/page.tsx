@@ -17,7 +17,7 @@ const CloudSyncSection = () => (
                 <li>👥 Share configurations with friends</li>
             </ul>
             <p className="note">
-                <strong>Note:</strong> All sync features will be completely optional. 
+                <strong>Note:</strong> All sync features will be completely optional.
                 The app will always work fully offline if you prefer.
             </p>
         </div>
@@ -294,6 +294,7 @@ const SettingsPage = () => {
 
         .scale-control input[type="range"] {
             flex: 1;
+            min-width: 200px;
         }
 
         .scale-value {
@@ -567,7 +568,7 @@ const SettingsPage = () => {
             line-height: 1.4;
         }
             `}</style>
-            
+
             {/* Overlay and Confirmation Dialog */}
             <div className="overlay" onClick={() => setShowConfirm(false)}></div>
             <div className="confirm-dialog">
@@ -626,7 +627,7 @@ const SettingsPage = () => {
                                     {editingFile === file ? (
                                         <textarea value={fileContent} onChange={e => setFileContent(e.target.value)}></textarea>
                                     ) : (
-                                         <div className="json-content" style={{ display: 'block' }}>
+                                        <div className="json-content" style={{ display: 'block' }}>
                                             <pre>{fileContent}</pre>
                                         </div>
                                     )}
@@ -693,7 +694,7 @@ const SettingsPage = () => {
                     {/* Save & Load Game Section */}
                     <div className="settings-section">
                         <h2>Save & Load Game</h2>
-                        {message && 
+                        {message &&
                             <div className="notification is-info is-light">
                                 <button className="delete" onClick={() => setMessage('')}></button>
                                 {message}
@@ -748,22 +749,16 @@ const SettingsPage = () => {
                     </div>
                 </div>
             </div>
-            
-            <footer style={{ 
-                textAlign: 'center', 
-                padding: '30px 0', 
+
+            <footer style={{
+                textAlign: 'center',
+                padding: '30px 0',
                 marginTop: '40px',
                 borderTop: '1px solid rgba(255, 255, 255, 0.1)'
             }}>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', flexWrap: 'wrap' }}>
                     <Link href="/" style={{ color: '#ccc', textDecoration: 'none', transition: 'color 0.3s ease' }}>
                         🏠 Home
-                    </Link>
-                    <Link href="/contact" style={{ color: '#ccc', textDecoration: 'none', transition: 'color 0.3s ease' }}>
-                        📧 Contact
-                    </Link>
-                    <Link href="/privacy-policy" style={{ color: '#ccc', textDecoration: 'none', transition: 'color 0.3s ease' }}>
-                        🔒 Privacy Policy
                     </Link>
                 </div>
             </footer>

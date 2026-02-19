@@ -1,6 +1,6 @@
 {
   "name": "doomlings-companion",
-  "version": "3.0.5",
+  "version": "3.0.8",
   "private": true,
   "scripts": {
     "dev": "next dev --turbo",
@@ -23,6 +23,7 @@
   "license": "LicenseRef-Doomlings-Proprietary",
   "description": "A digital companion for the DOOMlings board game with professional UI and cross-platform support",
   "dependencies": {
+    "@capacitor/app": "^6.0.0",
     "@capacitor/core": "^6.1.2",
     "@capacitor/preferences": "^6.0.2",
     "next": "15.0.7",

@@ -2,6 +2,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import { IframeProvider } from "@/lib/iframe-context";
 import { IframeWrapper } from "@/components/iframe-wrapper";
+import { BackHandler } from "@/components/back-handler";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,6 +29,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <IframeProvider>
           <IframeWrapper>
+            <BackHandler />
             {children}
           </IframeWrapper>
         </IframeProvider>
