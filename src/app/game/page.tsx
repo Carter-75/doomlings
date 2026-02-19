@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import DominantCard from '@/components/DominantCard';
 import MeaningOfLifeCard from '@/components/MeaningOfLifeCard';
 import TrinketCard from '@/components/TrinketCard';
@@ -8,13 +9,13 @@ import AnimatedButton from '@/components/AnimatedButton';
 import GameTurn from '@/components/GameTurn';
 
 interface DominantCardState {
-    assignedTo: string;
-    selectedTier: string | null;
+  assignedTo: string;
+  selectedTier: string | null;
 }
 
 interface TrinketState {
-    deck: Trinket[];
-    playerTrinkets: { [key: string]: Trinket[] };
+  deck: Trinket[];
+  playerTrinkets: { [key: string]: Trinket[] };
 }
 
 // Define types for the data
@@ -31,20 +32,20 @@ interface Dominant {
 }
 
 interface Age {
-    name: string;
-    description: string;
+  name: string;
+  description: string;
 }
 
 interface Meaning {
-    name: string;
-    description: string;
+  name: string;
+  description: string;
 }
 
 interface Trinket {
-    name: string;
-    power: string;
-    objective: string;
-    points: number;
+  name: string;
+  power: string;
+  objective: string;
+  points: number;
 }
 
 export default function Home() {
@@ -178,98 +179,98 @@ export default function Home() {
     setIsInitialLoadComplete(false); // Reset flag on refresh
     // Load game state on initial mount
     const loadGameState = () => {
-        const savedStateJSON = localStorage.getItem('doomlingsGameState');
-        if (savedStateJSON) {
-            const savedState = JSON.parse(savedStateJSON);
-            setPlayerCount(parseInt(savedState.playerCount, 10) || 2);
-            setPlayerNames(savedState.playerNames || Array(6).fill(''));
-            setCatastropheMode(savedState.catastropheMode || false);
-            setManualCatastropheOverride(savedState.manualCatastropheOverride || false);
-            setCurrentRule(savedState.currentRule || null);
-            setChallengePlayer(savedState.challengePlayer || null);
-            setAgeDeck(savedState.ageDeck || []);
-            setCurrentAgeIndex(savedState.currentAgeIndex || 0);
-            setNormalAgeCount(savedState.normalAgeCount || 0);
-            setMerchantAgeCount(savedState.merchantAgeCount || 0);
-            setCatastropheAgeCount(savedState.catastropheAgeCount || 0);
-            setFinalCatastropheMode(savedState.finalCatastropheMode ?? true);
-            setPlayerMeanings(savedState.playerMeanings || {});
-            setSelectedMeanings(savedState.selectedMeanings || {});
-            setRevealedMeanings(savedState.revealedMeanings || {});
-            setDominantCardStates(savedState.dominantCardStates || {});
-            
-            const loadedTrinketState = savedState.trinketState || {
-                deck: savedState.trinketDeck || [],
-                playerTrinkets: savedState.playerTrinkets || {}
-            };
-            setTrinketState(loadedTrinketState);
-            setPocketedTrinkets(savedState.pocketedTrinkets || {});
+      const savedStateJSON = localStorage.getItem('doomlingsGameState');
+      if (savedStateJSON) {
+        const savedState = JSON.parse(savedStateJSON);
+        setPlayerCount(parseInt(savedState.playerCount, 10) || 2);
+        setPlayerNames(savedState.playerNames || Array(6).fill(''));
+        setCatastropheMode(savedState.catastropheMode || false);
+        setManualCatastropheOverride(savedState.manualCatastropheOverride || false);
+        setCurrentRule(savedState.currentRule || null);
+        setChallengePlayer(savedState.challengePlayer || null);
+        setAgeDeck(savedState.ageDeck || []);
+        setCurrentAgeIndex(savedState.currentAgeIndex || 0);
+        setNormalAgeCount(savedState.normalAgeCount || 0);
+        setMerchantAgeCount(savedState.merchantAgeCount || 0);
+        setCatastropheAgeCount(savedState.catastropheAgeCount || 0);
+        setFinalCatastropheMode(savedState.finalCatastropheMode ?? true);
+        setPlayerMeanings(savedState.playerMeanings || {});
+        setSelectedMeanings(savedState.selectedMeanings || {});
+        setRevealedMeanings(savedState.revealedMeanings || {});
+        setDominantCardStates(savedState.dominantCardStates || {});
 
-            setActiveSection(savedState.activeSection || 'challenges');
-            setViewingPlayer(savedState.viewingPlayer || null);
-            setInitialTrinketCount(savedState.initialTrinketCount || 0);
-            setCatastrophesInDeck(savedState.catastrophesInDeck || []);
-            setShowCatastropheList(savedState.showCatastropheList || false);
-            setAgeMultiplierMode(savedState.ageMultiplierMode || 'auto');
-            setManualAgeMultiplier(savedState.manualAgeMultiplier || 1);
-        }
+        const loadedTrinketState = savedState.trinketState || {
+          deck: savedState.trinketDeck || [],
+          playerTrinkets: savedState.playerTrinkets || {}
+        };
+        setTrinketState(loadedTrinketState);
+        setPocketedTrinkets(savedState.pocketedTrinkets || {});
+
+        setActiveSection(savedState.activeSection || 'challenges');
+        setViewingPlayer(savedState.viewingPlayer || null);
+        setInitialTrinketCount(savedState.initialTrinketCount || 0);
+        setCatastrophesInDeck(savedState.catastrophesInDeck || []);
+        setShowCatastropheList(savedState.showCatastropheList || false);
+        setAgeMultiplierMode(savedState.ageMultiplierMode || 'auto');
+        setManualAgeMultiplier(savedState.manualAgeMultiplier || 1);
+      }
     };
     loadGameState();
 
     // Load static game data from JSON files
     const loadJson = async (url: string) => {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`Failed to load ${url}`);
-        return response.json();
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Failed to load ${url}`);
+      return response.json();
     };
     const loadAllData = async () => {
-        try {
-            const [
-                normalRulesData, catastropheRulesData, dominantData, ageData,
-                merchantAgeData, catastropheData, meaningOfLifeData, trinketData
-            ] = await Promise.all([
-                loadJson('/data/normalRules.json'), loadJson('/data/catastropheRules.json'),
-                loadJson('/data/dominantData.json'), loadJson('/data/ageData.json'),
-                loadJson('/data/merchantAgeData.json'), loadJson('/data/catastropheData.json'),
-                loadJson('/data/meaningOfLifeData.json'), loadJson('/data/trinketData.json')
-            ]);
+      try {
+        const [
+          normalRulesData, catastropheRulesData, dominantData, ageData,
+          merchantAgeData, catastropheData, meaningOfLifeData, trinketData
+        ] = await Promise.all([
+          loadJson('/data/normalRules.json'), loadJson('/data/catastropheRules.json'),
+          loadJson('/data/dominantData.json'), loadJson('/data/ageData.json'),
+          loadJson('/data/merchantAgeData.json'), loadJson('/data/catastropheData.json'),
+          loadJson('/data/meaningOfLifeData.json'), loadJson('/data/trinketData.json')
+        ]);
 
-            const parseRules = (data: any, titlePrefix: string): Rule[] => {
-                if (Array.isArray(data)) {
-                    return data.map((ruleString, index) => {
-                        const parts = ruleString.split(':');
-                        const title = parts.length > 1 ? parts[0] : `${titlePrefix} ${index + 1}`;
-                        const description = parts.length > 1 ? parts.slice(1).join(':').trim() : ruleString;
-                        return { title, description };
-                    });
-                }
-                return [];
-            };
+        const parseRules = (data: any, titlePrefix: string): Rule[] => {
+          if (Array.isArray(data)) {
+            return data.map((ruleString, index) => {
+              const parts = ruleString.split(':');
+              const title = parts.length > 1 ? parts[0] : `${titlePrefix} ${index + 1}`;
+              const description = parts.length > 1 ? parts.slice(1).join(':').trim() : ruleString;
+              return { title, description };
+            });
+          }
+          return [];
+        };
 
-            setRules(parseRules(normalRulesData, 'Rule'));
-            setCatastropheRules(parseRules(catastropheRulesData, 'Catastrophe Rule'));
-            setAllDominants(dominantData || []);
-            setNormalAges(ageData || []);
-            setMerchantAges(merchantAgeData || []);
-            setCatastropheAges(catastropheData || []);
-            setMeaningOfLife(meaningOfLifeData || []);
-            setTrinkets(trinketData || []);
-            setInitialTrinketCount(trinketData.length || 0);
-            setError(null);
-        } catch (err) {
-            console.error("Failed to load game data:", err);
-            if (err instanceof Error) {
-              setError(`Failed to load essential game data: ${err.message}. Please try refreshing the page.`);
-            } else {
-              setError("An unknown error occurred while loading data. Please try refreshing the page.");
-            }
-        } finally {
-            setIsLoading(false);
+        setRules(parseRules(normalRulesData, 'Rule'));
+        setCatastropheRules(parseRules(catastropheRulesData, 'Catastrophe Rule'));
+        setAllDominants(dominantData || []);
+        setNormalAges(ageData || []);
+        setMerchantAges(merchantAgeData || []);
+        setCatastropheAges(catastropheData || []);
+        setMeaningOfLife(meaningOfLifeData || []);
+        setTrinkets(trinketData || []);
+        setInitialTrinketCount(trinketData.length || 0);
+        setError(null);
+      } catch (err) {
+        console.error("Failed to load game data:", err);
+        if (err instanceof Error) {
+          setError(`Failed to load essential game data: ${err.message}. Please try refreshing the page.`);
+        } else {
+          setError("An unknown error occurred while loading data. Please try refreshing the page.");
         }
+      } finally {
+        setIsLoading(false);
+      }
     };
-    
+
     loadAllData().then(() => {
-        setIsInitialLoadComplete(true);
+      setIsInitialLoadComplete(true);
     });
 
     return () => {
@@ -287,27 +288,27 @@ export default function Home() {
 
   const handlePlayerCountChange = (newCount: number) => {
     if (newCount < playerCount) {
-        const removedPlayerNames = playerNames.slice(newCount, playerCount);
-        const hasNamedPlayers = removedPlayerNames.some(name => name.trim() !== '');
+      const removedPlayerNames = playerNames.slice(newCount, playerCount);
+      const hasNamedPlayers = removedPlayerNames.some(name => name.trim() !== '');
 
-        const performUpdate = () => {
-            const newPlayerNames = [...playerNames];
-            for (let i = newCount; i < playerCount; i++) {
-                newPlayerNames[i] = '';
-            }
-            setPlayerNames(newPlayerNames);
-            setPlayerCount(newCount);
-        };
-
-        if (hasNamedPlayers) {
-            if (window.confirm('Reducing the player count will remove players with names. Are you sure?')) {
-                performUpdate();
-            }
-        } else {
-            performUpdate();
+      const performUpdate = () => {
+        const newPlayerNames = [...playerNames];
+        for (let i = newCount; i < playerCount; i++) {
+          newPlayerNames[i] = '';
         }
-    } else {
+        setPlayerNames(newPlayerNames);
         setPlayerCount(newCount);
+      };
+
+      if (hasNamedPlayers) {
+        if (window.confirm('Reducing the player count will remove players with names. Are you sure?')) {
+          performUpdate();
+        }
+      } else {
+        performUpdate();
+      }
+    } else {
+      setPlayerCount(newCount);
     }
   };
 
@@ -322,10 +323,10 @@ export default function Home() {
 
     const activePlayers = playerNames.slice(0, playerCount).filter(name => name.trim() !== '');
     if (activePlayers.length > 0) {
-        const randomPlayerIndex = Math.floor(Math.random() * activePlayers.length);
-        setChallengePlayer(activePlayers[randomPlayerIndex]);
+      const randomPlayerIndex = Math.floor(Math.random() * activePlayers.length);
+      setChallengePlayer(activePlayers[randomPlayerIndex]);
     } else {
-        setChallengePlayer(null);
+      setChallengePlayer(null);
     }
   };
 
@@ -336,102 +337,102 @@ export default function Home() {
     }
     return array;
   };
-  
+
   const generateAgeDeck = () => {
     if (ageDeck.length > 0) {
-        if (!window.confirm('A deck already exists. Are you sure you want to generate a new one?')) {
-            return;
-        }
+      if (!window.confirm('A deck already exists. Are you sure you want to generate a new one?')) {
+        return;
+      }
     }
 
     let deck: Age[] = [];
     let birthOfLifeAdded = false;
-    
+
     // Find Birth of Life card (exact name match)
     const birthOfLife = normalAges.find(age => age.name === 'The Birth of Life');
     let availableNormalAges = normalAges.filter(age => age.name !== 'The Birth of Life');
-    
+
     // Add Birth of Life FIRST if it exists and we want at least 1 normal age
     if (birthOfLife && normalAgeCount > 0) {
-        deck.push(birthOfLife);
-        birthOfLifeAdded = true;
-        
-        // Add remaining normal ages (one less since Birth of Life is already added)
-        if (normalAgeCount > 1) {
-            const shuffledNormalAges = shuffleArray([...availableNormalAges]);
-            deck.push(...shuffledNormalAges.slice(0, normalAgeCount - 1));
-        }
+      deck.push(birthOfLife);
+      birthOfLifeAdded = true;
+
+      // Add remaining normal ages (one less since Birth of Life is already added)
+      if (normalAgeCount > 1) {
+        const shuffledNormalAges = shuffleArray([...availableNormalAges]);
+        deck.push(...shuffledNormalAges.slice(0, normalAgeCount - 1));
+      }
     } else if (normalAgeCount > 0) {
-        // If no Birth of Life found but we want normal ages, add them normally
-        const shuffledNormalAges = shuffleArray([...normalAges]);
-        deck.push(...shuffledNormalAges.slice(0, normalAgeCount));
+      // If no Birth of Life found but we want normal ages, add them normally
+      const shuffledNormalAges = shuffleArray([...normalAges]);
+      deck.push(...shuffledNormalAges.slice(0, normalAgeCount));
     }
-    
+
     // Add merchant ages (shuffled)
     if (merchantAgeCount > 0) {
-        const shuffledMerchantAges = shuffleArray([...merchantAges]);
-        deck.push(...shuffledMerchantAges.slice(0, merchantAgeCount));
+      const shuffledMerchantAges = shuffleArray([...merchantAges]);
+      deck.push(...shuffledMerchantAges.slice(0, merchantAgeCount));
     }
-    
+
     // Handle catastrophe ages
     let catastropheSelection: Age[] = [];
     let allCatastrophesInDeck: Age[] = [];
-    
+
     if (catastropheAgeCount > 0) {
-        catastropheSelection = shuffleArray([...catastropheAges]).slice(0, catastropheAgeCount);
-        allCatastrophesInDeck = [...catastropheSelection]; // Keep original list for tracking
+      catastropheSelection = shuffleArray([...catastropheAges]).slice(0, catastropheAgeCount);
+      allCatastrophesInDeck = [...catastropheSelection]; // Keep original list for tracking
     }
-    
+
     if (finalCatastropheMode && catastropheSelection.length > 0) {
-        // Reserve the last catastrophe for the end
-        const finalCatastrophe = catastropheSelection.pop();
-        
-        // Add non-final catastrophes to the middle
-        if (catastropheSelection.length > 0) {
-            deck.push(...catastropheSelection);
-        }
-        
-        // Shuffle middle part (everything except Birth of Life if present, and final catastrophe)
-        if (birthOfLifeAdded) {
-            // Birth of Life stays first, shuffle the rest
-            const deckToShuffle = deck.slice(1); // Skip Birth of Life at position 0
-            const shuffledMiddle = shuffleArray(deckToShuffle);
-            deck = [birthOfLife, ...shuffledMiddle];
-        } else {
-            // No Birth of Life, shuffle everything
-            deck = shuffleArray(deck);
-        }
-        
-        // Add final catastrophe at the end
-        if (finalCatastrophe) {
-            deck.push(finalCatastrophe);
-        }
+      // Reserve the last catastrophe for the end
+      const finalCatastrophe = catastropheSelection.pop();
+
+      // Add non-final catastrophes to the middle
+      if (catastropheSelection.length > 0) {
+        deck.push(...catastropheSelection);
+      }
+
+      // Shuffle middle part (everything except Birth of Life if present, and final catastrophe)
+      if (birthOfLifeAdded) {
+        // Birth of Life stays first, shuffle the rest
+        const deckToShuffle = deck.slice(1); // Skip Birth of Life at position 0
+        const shuffledMiddle = shuffleArray(deckToShuffle);
+        deck = [birthOfLife, ...shuffledMiddle];
+      } else {
+        // No Birth of Life, shuffle everything
+        deck = shuffleArray(deck);
+      }
+
+      // Add final catastrophe at the end
+      if (finalCatastrophe) {
+        deck.push(finalCatastrophe);
+      }
     } else {
-        // No final catastrophe mode, add all catastrophes and shuffle
-        if (catastropheSelection.length > 0) {
-            deck.push(...catastropheSelection);
-        }
-        
-        // Shuffle everything except Birth of Life if it's first
-        if (birthOfLifeAdded) {
-            const deckToShuffle = deck.slice(1); // Skip Birth of Life at position 0
-            const shuffledMiddle = shuffleArray(deckToShuffle);
-            deck = [birthOfLife, ...shuffledMiddle];
-        } else {
-            // No Birth of Life, shuffle everything
-            deck = shuffleArray(deck);
-        }
+      // No final catastrophe mode, add all catastrophes and shuffle
+      if (catastropheSelection.length > 0) {
+        deck.push(...catastropheSelection);
+      }
+
+      // Shuffle everything except Birth of Life if it's first
+      if (birthOfLifeAdded) {
+        const deckToShuffle = deck.slice(1); // Skip Birth of Life at position 0
+        const shuffledMiddle = shuffleArray(deckToShuffle);
+        deck = [birthOfLife, ...shuffledMiddle];
+      } else {
+        // No Birth of Life, shuffle everything
+        deck = shuffleArray(deck);
+      }
     }
-    
+
     setCatastrophesInDeck(allCatastrophesInDeck);
     setAgeDeck(deck);
     setCurrentAgeIndex(0);
     setShowCatastropheList(false);
-    
+
     // Log for debugging (can be removed in production)
     console.log('Generated Age Deck:', deck.map(age => age.name));
     if (birthOfLifeAdded) {
-        console.log('Birth of Life is at position:', deck.findIndex(age => age.name === 'The Birth of Life'));
+      console.log('Birth of Life is at position:', deck.findIndex(age => age.name === 'The Birth of Life'));
     }
   };
 
@@ -454,20 +455,20 @@ export default function Home() {
 
   const assignMeaningCards = () => {
     if (Object.keys(playerMeanings).length > 0) {
-        if (!window.confirm('Meaning of Life cards have already been assigned. Are you sure you want to reassign them?')) {
-            return;
-        }
+      if (!window.confirm('Meaning of Life cards have already been assigned. Are you sure you want to reassign them?')) {
+        return;
+      }
     }
     const sM = calculateScalingMultiplier();
     const processedCards = meaningOfLife.map(card => ({
-        ...card,
-        description: processDescription(card.description, sM)
+      ...card,
+      description: processDescription(card.description, sM)
     }));
 
     const shuffledMeanings = shuffleArray(processedCards);
     const newPlayerMeanings: { [key: string]: Meaning[] } = {};
     playerNames.slice(0, playerCount).forEach(name => {
-      if(name) newPlayerMeanings[name] = shuffledMeanings.splice(0, 2);
+      if (name) newPlayerMeanings[name] = shuffledMeanings.splice(0, 2);
     });
     setPlayerMeanings(newPlayerMeanings);
     setSelectedMeanings({});
@@ -481,9 +482,9 @@ export default function Home() {
   };
 
   const revealAllMeaningCards = () => {
-    setRevealedMeanings(Object.keys(playerMeanings).reduce((acc, name) => ({...acc, [name]: true}), {}));
+    setRevealedMeanings(Object.keys(playerMeanings).reduce((acc, name) => ({ ...acc, [name]: true }), {}));
   };
-  
+
   const resetMeaningCards = () => {
     setPlayerMeanings({});
     setSelectedMeanings({});
@@ -493,9 +494,9 @@ export default function Home() {
 
   const assignTrinkets = () => {
     if (Object.keys(trinketState.playerTrinkets).length > 0) {
-        if (!window.confirm('Trinkets have already been assigned. Are you sure you want to reassign them?')) {
-            return;
-        }
+      if (!window.confirm('Trinkets have already been assigned. Are you sure you want to reassign them?')) {
+        return;
+      }
     }
 
     const newShuffledDeck = shuffleArray([...trinkets]);
@@ -503,14 +504,14 @@ export default function Home() {
     let deckCopy = [...newShuffledDeck];
 
     playerNames.slice(0, playerCount).forEach(name => {
-      if(name) {
+      if (name) {
         newPlayerTrinkets[name] = deckCopy.splice(0, 2);
       }
     });
-    
+
     const nextState = { deck: deckCopy, playerTrinkets: newPlayerTrinkets };
     setTrinketState(nextState);
-    setPocketedTrinkets(playerNames.slice(0, playerCount).reduce((acc, name) => ({...acc, [name]: [] }), {}));
+    setPocketedTrinkets(playerNames.slice(0, playerCount).reduce((acc, name) => ({ ...acc, [name]: [] }), {}));
   };
 
   const drawTrinkets = (deck: Trinket[], count: number): { drawn: Trinket[], remaining: Trinket[] } => {
@@ -521,61 +522,61 @@ export default function Home() {
 
   const handleTrinketAdd = (playerName: string, trinketToAdd: Trinket) => {
     setTrinketState(currentState => {
-        const currentHand = currentState.playerTrinkets[playerName] || [];
-        const currentDeck = currentState.deck;
+      const currentHand = currentState.playerTrinkets[playerName] || [];
+      const currentDeck = currentState.deck;
 
-        if (currentHand.length === 2) {
-            const trinketToDiscard = currentHand.find(t => t.name !== trinketToAdd.name);
-            if (!trinketToDiscard) return currentState;
+      if (currentHand.length === 2) {
+        const trinketToDiscard = currentHand.find(t => t.name !== trinketToAdd.name);
+        if (!trinketToDiscard) return currentState;
 
-            const nextState = {
-                playerTrinkets: { ...currentState.playerTrinkets, [playerName]: [trinketToAdd] },
-                deck: [...currentDeck, trinketToDiscard]
-            };
-            return nextState;
-        } else if (currentHand.length === 1) {
-            if (currentDeck.length === 0) return currentState;
-            
-            const { drawn, remaining } = drawTrinkets(currentDeck, 1);
-            const nextState = {
-                playerTrinkets: { ...currentState.playerTrinkets, [playerName]: [...currentHand, ...drawn] },
-                deck: remaining
-            };
-            return nextState;
-        }
-        return currentState;
+        const nextState = {
+          playerTrinkets: { ...currentState.playerTrinkets, [playerName]: [trinketToAdd] },
+          deck: [...currentDeck, trinketToDiscard]
+        };
+        return nextState;
+      } else if (currentHand.length === 1) {
+        if (currentDeck.length === 0) return currentState;
+
+        const { drawn, remaining } = drawTrinkets(currentDeck, 1);
+        const nextState = {
+          playerTrinkets: { ...currentState.playerTrinkets, [playerName]: [...currentHand, ...drawn] },
+          deck: remaining
+        };
+        return nextState;
+      }
+      return currentState;
     });
   };
-  
+
   const handleTrinketRemove = (playerName: string, trinketToRemove: Trinket) => {
     setTrinketState(currentState => {
-        const currentHand = currentState.playerTrinkets[playerName] || [];
-        const currentDeck = currentState.deck;
-        
-        const nextHand = currentHand.filter(t => t.name !== trinketToRemove.name);
-        const nextDeck = [...currentDeck, trinketToRemove];
+      const currentHand = currentState.playerTrinkets[playerName] || [];
+      const currentDeck = currentState.deck;
 
-        if (nextHand.length === 0) {
-            if (nextDeck.length === 0) {
-                 const nextState = {
-                    ...currentState,
-                    playerTrinkets: { ...currentState.playerTrinkets, [playerName]: [] }
-                };
-                return nextState;
-            }
-            const { drawn, remaining } = drawTrinkets(nextDeck, 1);
-            const nextState = {
-                playerTrinkets: { ...currentState.playerTrinkets, [playerName]: drawn },
-                deck: remaining
-            };
-            return nextState;
-        } else {
-            const nextState = {
-                playerTrinkets: { ...currentState.playerTrinkets, [playerName]: nextHand },
-                deck: nextDeck
-            };
-            return nextState;
+      const nextHand = currentHand.filter(t => t.name !== trinketToRemove.name);
+      const nextDeck = [...currentDeck, trinketToRemove];
+
+      if (nextHand.length === 0) {
+        if (nextDeck.length === 0) {
+          const nextState = {
+            ...currentState,
+            playerTrinkets: { ...currentState.playerTrinkets, [playerName]: [] }
+          };
+          return nextState;
         }
+        const { drawn, remaining } = drawTrinkets(nextDeck, 1);
+        const nextState = {
+          playerTrinkets: { ...currentState.playerTrinkets, [playerName]: drawn },
+          deck: remaining
+        };
+        return nextState;
+      } else {
+        const nextState = {
+          playerTrinkets: { ...currentState.playerTrinkets, [playerName]: nextHand },
+          deck: nextDeck
+        };
+        return nextState;
+      }
     });
   };
 
@@ -584,41 +585,41 @@ export default function Home() {
       ...prev,
       [playerName]: [...(prev[playerName] || []), trinketToPocket]
     }));
-    
-    setTrinketState(currentState => {
-        const currentHand = currentState.playerTrinkets[playerName] || [];
-        const currentDeck = currentState.deck;
-        
-        const nextHand = currentHand.filter(t => t.name !== trinketToPocket.name);
 
-        if (nextHand.length === 0) {
-            if (currentDeck.length === 0) {
-                 const nextState = { ...currentState, playerTrinkets: { ...currentState.playerTrinkets, [playerName]: [] } };
-                 return nextState;
-            }
-            const { drawn, remaining } = drawTrinkets(currentDeck, 1);
-            const nextState = {
-                playerTrinkets: { ...currentState.playerTrinkets, [playerName]: drawn },
-                deck: remaining
-            };
-            return nextState;
-        } else {
-             const nextState = { ...currentState, playerTrinkets: { ...currentState.playerTrinkets, [playerName]: nextHand }};
-             return nextState;
+    setTrinketState(currentState => {
+      const currentHand = currentState.playerTrinkets[playerName] || [];
+      const currentDeck = currentState.deck;
+
+      const nextHand = currentHand.filter(t => t.name !== trinketToPocket.name);
+
+      if (nextHand.length === 0) {
+        if (currentDeck.length === 0) {
+          const nextState = { ...currentState, playerTrinkets: { ...currentState.playerTrinkets, [playerName]: [] } };
+          return nextState;
         }
+        const { drawn, remaining } = drawTrinkets(currentDeck, 1);
+        const nextState = {
+          playerTrinkets: { ...currentState.playerTrinkets, [playerName]: drawn },
+          deck: remaining
+        };
+        return nextState;
+      } else {
+        const nextState = { ...currentState, playerTrinkets: { ...currentState.playerTrinkets, [playerName]: nextHand } };
+        return nextState;
+      }
     });
   };
 
   const worldsEndTrinketButton = () => {
-      // Placeholder for score calculation logic
-      alert("Score calculation not implemented yet.");
+    // Placeholder for score calculation logic
+    alert("Score calculation not implemented yet.");
   }
 
   const calculateScalingMultiplier = () => {
     if (ageMultiplierMode === 'manual') {
       return Math.min(Math.max(manualAgeMultiplier, 1), 10); // Constrain between 1x and 10x
     }
-    
+
     const totalAges = normalAgeCount + merchantAgeCount + catastropheAgeCount;
     // Auto mode: (total ages / 20), constrained between 1x and 10x
     const autoSM = Math.max(1, totalAges / 20);
@@ -634,11 +635,11 @@ export default function Home() {
 
   const handleDominantCardChange = (cardName: string, change: Partial<DominantCardState>) => {
     setDominantCardStates(prev => ({
-        ...prev,
-        [cardName]: {
-            ...prev[cardName] || { assignedTo: 'Assign', selectedTier: null },
-            ...change,
-        }
+      ...prev,
+      [cardName]: {
+        ...prev[cardName] || { assignedTo: 'Assign', selectedTier: null },
+        ...change,
+      }
     }));
   };
 
@@ -662,12 +663,12 @@ export default function Home() {
   const resetAllDominants = () => {
     if (window.confirm('Are you sure you want to reset all dominant card assignments and tiers?')) {
       setDominantCardStates({});
-      
+
       // Also clear all duplicate cards from localStorage
       allDominants.forEach(dominant => {
         localStorage.removeItem(`dominant-copies-${dominant.name}`);
       });
-      
+
       // Force DominantCard components to refresh by updating trigger
       setDominantResetTrigger(prev => prev + 1);
     }
@@ -718,60 +719,60 @@ export default function Home() {
         )}
 
         <div className="full-height-section" style={{ display: activeSection === 'challenges' ? 'block' : 'none' }}>
-            <h1 className="section-title">Challenges</h1>
-            <div className="player-control box">
-                <div className="field">
-                    <label className="label">Players: {playerCount}</label>
-                    <input type="range" className="slider" min="2" max="6" value={playerCount} onChange={(e) => handlePlayerCountChange(parseInt(e.target.value, 10))} />
-                </div>
-                <div className="field">
-                    <div className={`catastrophe-toggle-container ${catastropheMode ? 'active' : ''}`}>
-                        <span className="catastrophe-toggle-label">
-                            🔥 Catastrophe Mode {catastropheMode ? '(ACTIVE)' : ''}
-                        </span>
-                        <label className="catastrophe-toggle">
-                            <input 
-                                type="checkbox" 
-                                checked={catastropheMode} 
-                                onChange={(e) => handleManualCatastropheToggle(e.target.checked)}
-                            />
-                            <span className="catastrophe-slider"></span>
-                        </label>
-                    </div>
-                                         {currentAge && isCatastrophe && !manualCatastropheOverride && (
-                         <div className="catastrophe-auto-notice">
-                             ⚡ Auto-enabled due to current Catastrophe Age
-                         </div>
-                     )}
-                     {manualCatastropheOverride && (
-                         <div className="catastrophe-auto-notice" style={{background: 'linear-gradient(145deg, #9b59b6, #8e44ad)'}}>
-                             🎛️ Manual Override Active (resets on next turn)
-                         </div>
-                     )}
-                </div>
-                <div className="field">
-                    {Array.from({ length: playerCount }).map((_, index) => (
-                        <input key={index} type="text" placeholder={`Player ${index + 1} Name`} className="input name-input" value={playerNames[index]} onChange={(e) => handlePlayerNameChange(index, e.target.value)} />
-                    ))}
-                </div>
+          <h1 className="section-title">Challenges</h1>
+          <div className="player-control box">
+            <div className="field">
+              <label className="label">Players: {playerCount}</label>
+              <input type="range" className="slider" min="2" max="6" value={playerCount} onChange={(e) => handlePlayerCountChange(parseInt(e.target.value, 10))} />
             </div>
-             <div className="age-config box">
-                <h2 className="title is-4">Challenges</h2>
-                <div className="field">
-                    <AnimatedButton className="is-primary is-fullwidth" onClick={rollNewAge}>Roll New Challenge</AnimatedButton>
+            <div className="field">
+              <div className={`catastrophe-toggle-container ${catastropheMode ? 'active' : ''}`}>
+                <span className="catastrophe-toggle-label">
+                  🔥 Catastrophe Mode {catastropheMode ? '(ACTIVE)' : ''}
+                </span>
+                <label className="catastrophe-toggle">
+                  <input
+                    type="checkbox"
+                    checked={catastropheMode}
+                    onChange={(e) => handleManualCatastropheToggle(e.target.checked)}
+                  />
+                  <span className="catastrophe-slider"></span>
+                </label>
+              </div>
+              {currentAge && isCatastrophe && !manualCatastropheOverride && (
+                <div className="catastrophe-auto-notice">
+                  ⚡ Auto-enabled due to current Catastrophe Age
                 </div>
-                <div className={`age-display mt-4 has-text-centered ${catastropheMode ? 'catastrophe-mode' : ''}`}>
-                    {currentRule && (
-                        <div className={`rule-display ${catastropheMode ? 'catastrophe-mode' : ''}`}>
-                            {challengePlayer && (
-                                <h3 className="challenge-player-title">For: {challengePlayer}</h3>
-                            )}
-                          <h4>{currentRule.title}</h4>
-                          <p>{currentRule.description}</p>
-                        </div>
-                    )}
+              )}
+              {manualCatastropheOverride && (
+                <div className="catastrophe-auto-notice" style={{ background: 'linear-gradient(145deg, #9b59b6, #8e44ad)' }}>
+                  🎛️ Manual Override Active (resets on next turn)
                 </div>
+              )}
             </div>
+            <div className="field">
+              {Array.from({ length: playerCount }).map((_, index) => (
+                <input key={index} type="text" placeholder={`Player ${index + 1} Name`} className="input name-input" value={playerNames[index]} onChange={(e) => handlePlayerNameChange(index, e.target.value)} />
+              ))}
+            </div>
+          </div>
+          <div className="age-config box">
+            <h2 className="title is-4">Challenges</h2>
+            <div className="field">
+              <AnimatedButton className="is-primary is-fullwidth" onClick={rollNewAge}>Roll New Challenge</AnimatedButton>
+            </div>
+            <div className={`age-display mt-4 has-text-centered ${catastropheMode ? 'catastrophe-mode' : ''}`}>
+              {currentRule && (
+                <div className={`rule-display ${catastropheMode ? 'catastrophe-mode' : ''}`}>
+                  {challengePlayer && (
+                    <h3 className="challenge-player-title">For: {challengePlayer}</h3>
+                  )}
+                  <h4>{currentRule.title}</h4>
+                  <p>{currentRule.description}</p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         {activeSection === 'dominants' && (() => {
@@ -780,37 +781,37 @@ export default function Home() {
             .sort((a, b) => {
               const aIsAssigned = (dominantCardStates[a.name]?.assignedTo || 'Assign') !== 'Assign';
               const bIsAssigned = (dominantCardStates[b.name]?.assignedTo || 'Assign') !== 'Assign';
-              
+
               // First priority: assigned cards go to top
               if (aIsAssigned && !bIsAssigned) return -1;
               if (!aIsAssigned && bIsAssigned) return 1;
-              
+
               // Second priority: alphabetical order within each group
               return a.name.localeCompare(b.name);
             })
             .filter(dominant => {
               const searchTerm = dominantSearchTerm.toLowerCase();
               if (!searchTerm) return true;
-              
+
               // Check main card assignment
               const assignedPlayer = dominantCardStates[dominant.name]?.assignedTo || '';
-              
+
               // Check duplicate card assignments from localStorage
               let duplicateMatches = false;
               try {
                 const savedCopies = localStorage.getItem(`dominant-copies-${dominant.name}`);
                 if (savedCopies) {
                   const cardCopies = JSON.parse(savedCopies);
-                  duplicateMatches = cardCopies.some((copy: any) => 
-                    copy.assignedTo && 
-                    copy.assignedTo !== 'Assign' && 
+                  duplicateMatches = cardCopies.some((copy: any) =>
+                    copy.assignedTo &&
+                    copy.assignedTo !== 'Assign' &&
                     copy.assignedTo.toLowerCase().includes(searchTerm)
                   );
                 }
               } catch (error) {
                 // Ignore localStorage errors
               }
-              
+
               return (
                 dominant.name.toLowerCase().includes(searchTerm) ||
                 (assignedPlayer !== 'Assign' && assignedPlayer.toLowerCase().includes(searchTerm)) ||
@@ -822,36 +823,36 @@ export default function Home() {
             <div id="dominants" className="section-content">
               <h2 className="section-title">Dominants</h2>
               <div className="player-control box">
-                  <AnimatedButton 
-                    className="is-danger is-fullwidth" 
-                    onClick={resetAllDominants}
-                  >
-                    Reset All Dominants
-                  </AnimatedButton>
-                  <div className="field mt-4">
-                    <input
-                      type="text"
-                      className="input"
-                      placeholder="Search Dominants or Players..."
-                      value={dominantSearchTerm}
-                      onChange={(e) => setDominantSearchTerm(e.target.value)}
-                    />
-                  </div>
+                <AnimatedButton
+                  className="is-danger is-fullwidth"
+                  onClick={resetAllDominants}
+                >
+                  Reset All Dominants
+                </AnimatedButton>
+                <div className="field mt-4">
+                  <input
+                    type="text"
+                    className="input"
+                    placeholder="Search Dominants or Players..."
+                    value={dominantSearchTerm}
+                    onChange={(e) => setDominantSearchTerm(e.target.value)}
+                  />
+                </div>
               </div>
               <div className="card-grid">
                 {processedDominants.map((dominant, index) => {
                   const cardState = dominantCardStates[dominant.name] || { assignedTo: 'Assign', selectedTier: null };
                   return (
-                      <DominantCard 
-                        key={`${dominant.name}-${index}`} 
-                        dominant={dominant}
-                        players={playerNames.slice(0, playerCount).filter(name => name.trim() !== '')}
-                        assignedTo={cardState.assignedTo}
-                        selectedTier={cardState.selectedTier}
-                        searchTerm={dominantSearchTerm}
-                        resetTrigger={dominantResetTrigger}
-                        onChange={(change) => handleDominantCardChange(dominant.name, change)}
-                      />
+                    <DominantCard
+                      key={`${dominant.name}-${index}`}
+                      dominant={dominant}
+                      players={playerNames.slice(0, playerCount).filter(name => name.trim() !== '')}
+                      assignedTo={cardState.assignedTo}
+                      selectedTier={cardState.selectedTier}
+                      searchTerm={dominantSearchTerm}
+                      resetTrigger={dominantResetTrigger}
+                      onChange={(change) => handleDominantCardChange(dominant.name, change)}
+                    />
                   )
                 })}
               </div>
@@ -860,362 +861,364 @@ export default function Home() {
         })()}
 
         <div className="full-height-section" style={{ display: activeSection === 'ageSetup' ? 'block' : 'none' }}>
-            <h2 className="section-title">Age Deck Setup</h2>
-            <div className="age-config box">
-                <div className="field">
-                    <label className="label">Normal Ages: {normalAgeCount}</label>
-                    {normalAgeCount > 0 && normalAges.some(age => age.name === 'The Birth of Life') && (
-                        <div className="birth-of-life-notice" style={{ 
-                            background: 'linear-gradient(145deg, #27ae60, #2ecc71)', 
-                            color: 'white', 
-                            padding: '8px 12px', 
-                            borderRadius: '6px', 
-                            fontSize: '0.9rem', 
-                            marginBottom: '8px',
-                            textAlign: 'center'
-                        }}>
-                            ✨ "The Birth of Life" will be the first age
-                        </div>
-                    )}
-                    <div className="age-input-container">
-                        <input type="range" className="slider" min="0" max={normalAges.length} value={normalAgeCount} onChange={(e) => setNormalAgeCount(parseInt(e.target.value, 10))} />
-                        <div className="age-number-wrapper">
-                            <input 
-                                type="number" 
-                                className="age-number-input" 
-                                min="0" 
-                                max={normalAges.length} 
-                                value={normalAgeCount} 
-                                onChange={(e) => setNormalAgeCount(Math.min(Math.max(0, parseInt(e.target.value, 10) || 0), normalAges.length))} 
-                            />
-                            <div className="age-spinner-buttons">
-                                <button 
-                                    type="button" 
-                                    className="age-spinner-btn age-spinner-up" 
-                                    onClick={() => setNormalAgeCount(Math.min(normalAgeCount + 1, normalAges.length))}
-                                    disabled={normalAgeCount >= normalAges.length}
-                                >
-                                    ▲
-                                </button>
-                                <button 
-                                    type="button" 
-                                    className="age-spinner-btn age-spinner-down" 
-                                    onClick={() => setNormalAgeCount(Math.max(normalAgeCount - 1, 0))}
-                                    disabled={normalAgeCount <= 0}
-                                >
-                                    ▼
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+          <h2 className="section-title">Age Deck Setup</h2>
+          <div className="age-config box">
+            <div className="field">
+              <label className="label">Normal Ages: {normalAgeCount}</label>
+              {normalAgeCount > 0 && normalAges.some(age => age.name === 'The Birth of Life') && (
+                <div className="birth-of-life-notice" style={{
+                  background: 'linear-gradient(145deg, #27ae60, #2ecc71)',
+                  color: 'white',
+                  padding: '8px 12px',
+                  borderRadius: '6px',
+                  fontSize: '0.9rem',
+                  marginBottom: '8px',
+                  textAlign: 'center'
+                }}>
+                  ✨ "The Birth of Life" will be the first age
                 </div>
-                <div className="field">
-                    <label className="label">Merchant Ages: {merchantAgeCount}</label>
-                    <div className="age-input-container">
-                        <input type="range" className="slider" min="0" max={merchantAges.length} value={merchantAgeCount} onChange={(e) => setMerchantAgeCount(parseInt(e.target.value, 10))} />
-                        <div className="age-number-wrapper">
-                            <input 
-                                type="number" 
-                                className="age-number-input" 
-                                min="0" 
-                                max={merchantAges.length} 
-                                value={merchantAgeCount} 
-                                onChange={(e) => setMerchantAgeCount(Math.min(Math.max(0, parseInt(e.target.value, 10) || 0), merchantAges.length))} 
-                            />
-                            <div className="age-spinner-buttons">
-                                <button 
-                                    type="button" 
-                                    className="age-spinner-btn age-spinner-up" 
-                                    onClick={() => setMerchantAgeCount(Math.min(merchantAgeCount + 1, merchantAges.length))}
-                                    disabled={merchantAgeCount >= merchantAges.length}
-                                >
-                                    ▲
-                                </button>
-                                <button 
-                                    type="button" 
-                                    className="age-spinner-btn age-spinner-down" 
-                                    onClick={() => setMerchantAgeCount(Math.max(merchantAgeCount - 1, 0))}
-                                    disabled={merchantAgeCount <= 0}
-                                >
-                                    ▼
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="field">
-                    <label className="label">Catastrophe Ages: {catastropheAgeCount}</label>
-                    <div className="age-input-container">
-                        <input type="range" className="slider" min="0" max={catastropheAges.length} value={catastropheAgeCount} onChange={(e) => setCatastropheAgeCount(parseInt(e.target.value, 10))} />
-                        <div className="age-number-wrapper">
-                            <input 
-                                type="number" 
-                                className="age-number-input" 
-                                min="0" 
-                                max={catastropheAges.length} 
-                                value={catastropheAgeCount} 
-                                onChange={(e) => setCatastropheAgeCount(Math.min(Math.max(0, parseInt(e.target.value, 10) || 0), catastropheAges.length))} 
-                            />
-                            <div className="age-spinner-buttons">
-                                <button 
-                                    type="button" 
-                                    className="age-spinner-btn age-spinner-up" 
-                                    onClick={() => setCatastropheAgeCount(Math.min(catastropheAgeCount + 1, catastropheAges.length))}
-                                    disabled={catastropheAgeCount >= catastropheAges.length}
-                                >
-                                    ▲
-                                </button>
-                                <button 
-                                    type="button" 
-                                    className="age-spinner-btn age-spinner-down" 
-                                    onClick={() => setCatastropheAgeCount(Math.max(catastropheAgeCount - 1, 0))}
-                                    disabled={catastropheAgeCount <= 0}
-                                >
-                                    ▼
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="field">
-                    <div className="catastrophe-toggle-container">
-                        <span className="catastrophe-toggle-label">Final Catastrophe at End</span>
-                        <label className="catastrophe-toggle">
-                            <input 
-                                type="checkbox" 
-                                checked={finalCatastropheMode} 
-                                onChange={(e) => setFinalCatastropheMode(e.target.checked)}
-                            />
-                            <span className="catastrophe-slider"></span>
-                        </label>
-                    </div>
-                </div>
-                
-                {/* Age Multiplier Section */}
-                <div className="field mt-4">
-                    <label className="label">Meaning of Life Scaling Multiplier (sM): {calculateScalingMultiplier().toFixed(1)}x</label>
-                    <div className="age-multiplier-container">
-                        <div className="multiplier-mode-selector">
-                            <label className="radio-option">
-                                <input 
-                                    type="radio" 
-                                    name="multiplierMode" 
-                                    value="auto" 
-                                    checked={ageMultiplierMode === 'auto'}
-                                    onChange={(e) => setAgeMultiplierMode('auto')}
-                                />
-                                <span className="radio-label">Auto (based on {normalAgeCount + merchantAgeCount + catastropheAgeCount}/20 ages)</span>
-                            </label>
-                            <label className="radio-option">
-                                <input 
-                                    type="radio" 
-                                    name="multiplierMode" 
-                                    value="manual" 
-                                    checked={ageMultiplierMode === 'manual'}
-                                    onChange={(e) => setAgeMultiplierMode('manual')}
-                                />
-                                <span className="radio-label">Manual Control</span>
-                            </label>
-                        </div>
-                        
-                        {ageMultiplierMode === 'manual' && (
-                            <div className="multiplier-slider-container">
-                                <div className="slider-label-container">
-                                    <span className="slider-label">1x</span>
-                                    <span className="slider-current-value">{manualAgeMultiplier.toFixed(1)}x</span>
-                                    <span className="slider-label">10x</span>
-                                </div>
-                                <input 
-                                    type="range" 
-                                    className="multiplier-slider" 
-                                    min="1" 
-                                    max="10" 
-                                    step="0.1" 
-                                    value={manualAgeMultiplier} 
-                                    onChange={(e) => setManualAgeMultiplier(parseFloat(e.target.value))}
-                                />
-                                <div className="multiplier-info">
-                                    <span className="multiplier-description">
-                                        Controls how much sM values are scaled in Meaning of Life cards
-                                    </span>
-                                </div>
-                            </div>
-                        )}
-                        
-                        {ageMultiplierMode === 'auto' && (
-                            <div className="auto-multiplier-info">
-                                <div className="auto-info-content">
-                                    <span className="auto-description">
-                                        Automatically calculated as: Total Ages ÷ 20 = {((normalAgeCount + merchantAgeCount + catastropheAgeCount) / 20).toFixed(1)}x
-                                    </span>
-                                    <span className="auto-constraint">
-                                        (Constrained between 1x - 10x)
-                                    </span>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-                
-                <AnimatedButton className="is-primary is-fullwidth mt-4" onClick={generateAgeDeck}>Generate Age Deck</AnimatedButton>
-                {catastrophesInDeck.length > 0 && (
-                    <AnimatedButton
-                        className="is-info is-fullwidth mt-2"
-                        onClick={() => setShowCatastropheList(!showCatastropheList)}
+              )}
+              <div className="age-input-container">
+                <input type="range" className="slider" min="0" max={normalAges.length} value={normalAgeCount} onChange={(e) => setNormalAgeCount(parseInt(e.target.value, 10))} />
+                <div className="age-number-wrapper">
+                  <input
+                    type="number"
+                    className="age-number-input"
+                    min="0"
+                    max={normalAges.length}
+                    value={normalAgeCount}
+                    onChange={(e) => setNormalAgeCount(Math.min(Math.max(0, parseInt(e.target.value, 10) || 0), normalAges.length))}
+                  />
+                  <div className="age-spinner-buttons">
+                    <button
+                      type="button"
+                      className="age-spinner-btn age-spinner-up"
+                      onClick={() => setNormalAgeCount(Math.min(normalAgeCount + 1, normalAges.length))}
+                      disabled={normalAgeCount >= normalAges.length}
                     >
-                        {showCatastropheList ? 'Hide' : 'Show'} Catastrophes ({catastrophesInDeck.length})
-                    </AnimatedButton>
+                      ▲
+                    </button>
+                    <button
+                      type="button"
+                      className="age-spinner-btn age-spinner-down"
+                      onClick={() => setNormalAgeCount(Math.max(normalAgeCount - 1, 0))}
+                      disabled={normalAgeCount <= 0}
+                    >
+                      ▼
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="field">
+              <label className="label">Merchant Ages: {merchantAgeCount}</label>
+              <div className="age-input-container">
+                <input type="range" className="slider" min="0" max={merchantAges.length} value={merchantAgeCount} onChange={(e) => setMerchantAgeCount(parseInt(e.target.value, 10))} />
+                <div className="age-number-wrapper">
+                  <input
+                    type="number"
+                    className="age-number-input"
+                    min="0"
+                    max={merchantAges.length}
+                    value={merchantAgeCount}
+                    onChange={(e) => setMerchantAgeCount(Math.min(Math.max(0, parseInt(e.target.value, 10) || 0), merchantAges.length))}
+                  />
+                  <div className="age-spinner-buttons">
+                    <button
+                      type="button"
+                      className="age-spinner-btn age-spinner-up"
+                      onClick={() => setMerchantAgeCount(Math.min(merchantAgeCount + 1, merchantAges.length))}
+                      disabled={merchantAgeCount >= merchantAges.length}
+                    >
+                      ▲
+                    </button>
+                    <button
+                      type="button"
+                      className="age-spinner-btn age-spinner-down"
+                      onClick={() => setMerchantAgeCount(Math.max(merchantAgeCount - 1, 0))}
+                      disabled={merchantAgeCount <= 0}
+                    >
+                      ▼
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="field">
+              <label className="label">Catastrophe Ages: {catastropheAgeCount}</label>
+              <div className="age-input-container">
+                <input type="range" className="slider" min="0" max={catastropheAges.length} value={catastropheAgeCount} onChange={(e) => setCatastropheAgeCount(parseInt(e.target.value, 10))} />
+                <div className="age-number-wrapper">
+                  <input
+                    type="number"
+                    className="age-number-input"
+                    min="0"
+                    max={catastropheAges.length}
+                    value={catastropheAgeCount}
+                    onChange={(e) => setCatastropheAgeCount(Math.min(Math.max(0, parseInt(e.target.value, 10) || 0), catastropheAges.length))}
+                  />
+                  <div className="age-spinner-buttons">
+                    <button
+                      type="button"
+                      className="age-spinner-btn age-spinner-up"
+                      onClick={() => setCatastropheAgeCount(Math.min(catastropheAgeCount + 1, catastropheAges.length))}
+                      disabled={catastropheAgeCount >= catastropheAges.length}
+                    >
+                      ▲
+                    </button>
+                    <button
+                      type="button"
+                      className="age-spinner-btn age-spinner-down"
+                      onClick={() => setCatastropheAgeCount(Math.max(catastropheAgeCount - 1, 0))}
+                      disabled={catastropheAgeCount <= 0}
+                    >
+                      ▼
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="field">
+              <div className="catastrophe-toggle-container">
+                <span className="catastrophe-toggle-label">Final Catastrophe at End</span>
+                <label className="catastrophe-toggle">
+                  <input
+                    type="checkbox"
+                    checked={finalCatastropheMode}
+                    onChange={(e) => setFinalCatastropheMode(e.target.checked)}
+                  />
+                  <span className="catastrophe-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            {/* Age Multiplier Section */}
+            <div className="field mt-4">
+              <label className="label">Meaning of Life Scaling Multiplier (sM): {calculateScalingMultiplier().toFixed(1)}x</label>
+              <div className="age-multiplier-container">
+                <div className="multiplier-mode-selector">
+                  <label className="radio-option">
+                    <input
+                      type="radio"
+                      name="multiplierMode"
+                      value="auto"
+                      checked={ageMultiplierMode === 'auto'}
+                      onChange={(e) => setAgeMultiplierMode('auto')}
+                    />
+                    <span className="radio-label">Auto (based on {normalAgeCount + merchantAgeCount + catastropheAgeCount}/20 ages)</span>
+                  </label>
+                  <label className="radio-option">
+                    <input
+                      type="radio"
+                      name="multiplierMode"
+                      value="manual"
+                      checked={ageMultiplierMode === 'manual'}
+                      onChange={(e) => setAgeMultiplierMode('manual')}
+                    />
+                    <span className="radio-label">Manual Control</span>
+                  </label>
+                </div>
+
+                {ageMultiplierMode === 'manual' && (
+                  <div className="multiplier-slider-container">
+                    <div className="slider-label-container">
+                      <span className="slider-label">1x</span>
+                      <span className="slider-current-value">{manualAgeMultiplier.toFixed(1)}x</span>
+                      <span className="slider-label">10x</span>
+                    </div>
+                    <input
+                      type="range"
+                      className="multiplier-slider"
+                      min="1"
+                      max="10"
+                      step="0.1"
+                      value={manualAgeMultiplier}
+                      onChange={(e) => setManualAgeMultiplier(parseFloat(e.target.value))}
+                    />
+                    <div className="multiplier-info">
+                      <span className="multiplier-description">
+                        Controls how much sM values are scaled in Meaning of Life cards
+                      </span>
+                    </div>
+                  </div>
                 )}
+
+                {ageMultiplierMode === 'auto' && (
+                  <div className="auto-multiplier-info">
+                    <div className="auto-info-content">
+                      <span className="auto-description">
+                        Automatically calculated as: Total Ages ÷ 20 = {((normalAgeCount + merchantAgeCount + catastropheAgeCount) / 20).toFixed(1)}x
+                      </span>
+                      <span className="auto-constraint">
+                        (Constrained between 1x - 10x)
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-            {showCatastropheList && catastrophesInDeck.length > 0 && (
-                <div className="box mt-4">
-                    <h3 className="title is-4">Catastrophes in Deck</h3>
-                    <ul>
-                        {catastrophesInDeck.map((cata, index) => (
-                            <li key={index}>
-                                <strong>{cata.name}:</strong> {(cata as any).worldsEnd || cata.description}
-                            </li>
-                        ))}
-                    </ul>
-                </div>
+
+            <AnimatedButton className="is-primary is-fullwidth mt-4" onClick={generateAgeDeck}>Generate Age Deck</AnimatedButton>
+            {catastrophesInDeck.length > 0 && (
+              <AnimatedButton
+                className="is-info is-fullwidth mt-2"
+                onClick={() => setShowCatastropheList(!showCatastropheList)}
+              >
+                {showCatastropheList ? 'Hide' : 'Show'} Catastrophes ({catastrophesInDeck.length})
+              </AnimatedButton>
             )}
-            <div className="age-navigation box mt-4">
-                <AnimatedButton onClick={previousAge} disabled={currentAgeIndex === 0}>Previous Age</AnimatedButton>
-                <div className="age-counter">
-                    {ageDeck.length > 0 ? (
-                        <>
-                            <span className="current-age">{currentAgeIndex + 1}</span>
-                            <span className="divider">/</span>
-                            <span className="total-ages">{ageDeck.length}</span>
-                        </>
-                    ) : (
-                        'No Deck'
-                    )}
-                </div>
-                <AnimatedButton onClick={nextAge} disabled={currentAgeIndex >= ageDeck.length - 1}>Next Age</AnimatedButton>
+          </div>
+          {showCatastropheList && catastrophesInDeck.length > 0 && (
+            <div className="box mt-4">
+              <h3 className="title is-4">Catastrophes in Deck</h3>
+              <ul>
+                {catastrophesInDeck.map((cata, index) => (
+                  <li key={index}>
+                    <strong>{cata.name}:</strong> {(cata as any).worldsEnd || cata.description}
+                  </li>
+                ))}
+              </ul>
             </div>
-            <div className={`age-display box has-text-centered ${isCatastrophe ? 'catastrophe-age' : ''}`}>
-                {currentAge ? (
+          )}
+          <div className="age-navigation box mt-4">
+            <AnimatedButton onClick={previousAge} disabled={currentAgeIndex === 0}>Previous Age</AnimatedButton>
+            <div className="age-counter">
+              {ageDeck.length > 0 ? (
                 <>
-                    {currentAge.name === 'The Birth of Life' && currentAgeIndex === 0 && (
-                        <div style={{ 
-                            background: 'linear-gradient(145deg, #f39c12, #e67e22)', 
-                            color: 'white', 
-                            padding: '6px 12px', 
-                            borderRadius: '20px', 
-                            fontSize: '0.8rem', 
-                            marginBottom: '12px',
-                            display: 'inline-block'
-                        }}>
-                            ✨ FIRST AGE ✨
-                        </div>
-                    )}
-                    <h4 className="title is-4">{currentAge.name}</h4>
-                    <p>{currentAge.description}</p>
+                  <span className="current-age">{currentAgeIndex + 1}</span>
+                  <span className="divider">/</span>
+                  <span className="total-ages">{ageDeck.length}</span>
                 </>
-                ) : 'Generate a deck to see ages.'}
+              ) : (
+                'No Deck'
+              )}
+            </div>
+            <AnimatedButton onClick={nextAge} disabled={currentAgeIndex >= ageDeck.length - 1}>Next Age</AnimatedButton>
+          </div>
+          <div className={`age-display box has-text-centered ${isCatastrophe ? 'catastrophe-age' : ''}`}>
+            {currentAge ? (
+              <>
+                {currentAge.name === 'The Birth of Life' && currentAgeIndex === 0 && (
+                  <div style={{
+                    background: 'linear-gradient(145deg, #f39c12, #e67e22)',
+                    color: 'white',
+                    padding: '6px 12px',
+                    borderRadius: '20px',
+                    fontSize: '0.8rem',
+                    marginBottom: '12px',
+                    display: 'inline-block'
+                  }}>
+                    ✨ FIRST AGE ✨
+                  </div>
+                )}
+                <h4 className="title is-4">{currentAge.name}</h4>
+                <p>{currentAge.description}</p>
+              </>
+            ) : 'Generate a deck to see ages.'}
           </div>
         </div>
-        
+
         <div className="full-height-section" style={{ display: activeSection === 'meaningOfLife' ? 'block' : 'none' }}>
-            <h2 className="section-title">Meaning of Life</h2>
-            <div className="player-control box">
-                <AnimatedButton className="is-primary is-fullwidth" onClick={assignMeaningCards}>Assign Meaning of Life Cards</AnimatedButton>
-            </div>
-            <div className="player-meaning-cards">
-              {playerNames.slice(0, playerCount).map((playerName, index) => {
-                const pName = playerName.trim() || `Player ${index + 1}`;
-                const hasCards = playerMeanings[pName] && playerMeanings[pName].length > 0;
+          <h2 className="section-title">Meaning of Life</h2>
+          <div className="player-control box">
+            <AnimatedButton className="is-primary is-fullwidth" onClick={assignMeaningCards}>Assign Meaning of Life Cards</AnimatedButton>
+          </div>
+          <div className="player-meaning-cards">
+            {playerNames.slice(0, playerCount).map((playerName, index) => {
+              const pName = playerName.trim() || `Player ${index + 1}`;
+              const hasCards = playerMeanings[pName] && playerMeanings[pName].length > 0;
 
-                return (
-                  <div key={`${pName}-${index}`} id={`meaning-container-${pName}`} className="player-meaning-card-container box">
-                    <h3 className="title is-5 has-text-centered">{pName}</h3>
-                    
-                    {hasCards && !revealedMeanings[pName] && (
-                      <div style={{ marginBottom: '1rem' }}>
-                        <AnimatedButton 
-                          className="is-info is-fullwidth"
-                          onClick={() => handleToggleViewPlayer(pName)}
-                        >
-                          {viewingPlayer === pName ? 'Hide Cards' : 'View Cards'}
-                        </AnimatedButton>
-                      </div>
-                    )}
+              return (
+                <div key={`${pName}-${index}`} id={`meaning-container-${pName}`} className="player-meaning-card-container box">
+                  <h3 className="title is-5 has-text-centered">{pName}</h3>
 
-                    {(viewingPlayer === pName || revealedMeanings[pName]) && hasCards && (
-                      <div className="meaning-cards-container">
-                        {playerMeanings[pName]?.map((card, cardIndex) => (
-                          <MeaningOfLifeCard 
-                            key={`${card.name}-${cardIndex}`}
-                            card={card}
-                            isSelected={selectedMeanings[pName] === card.name}
-                            isRevealed={revealedMeanings[pName] || false}
-                            onChoose={() => handleChooseMeaning(pName, card.name)}
-                            isViewing={viewingPlayer === pName}
-                            canSelect={!revealedMeanings[pName]}
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-            <div className="player-control box mt-4">
-                <AnimatedButton className="is-primary is-fullwidth" onClick={revealAllMeaningCards}>Reveal All Cards</AnimatedButton>
-            </div>
+                  {hasCards && !revealedMeanings[pName] && (
+                    <div style={{ marginBottom: '1rem' }}>
+                      <AnimatedButton
+                        className="is-info is-fullwidth"
+                        onClick={() => handleToggleViewPlayer(pName)}
+                      >
+                        {viewingPlayer === pName ? 'Hide Cards' : 'View Cards'}
+                      </AnimatedButton>
+                    </div>
+                  )}
+
+                  {(viewingPlayer === pName || revealedMeanings[pName]) && hasCards && (
+                    <div className="meaning-cards-container">
+                      {playerMeanings[pName]?.map((card, cardIndex) => (
+                        <MeaningOfLifeCard
+                          key={`${card.name}-${cardIndex}`}
+                          card={card}
+                          isSelected={selectedMeanings[pName] === card.name}
+                          isRevealed={revealedMeanings[pName] || false}
+                          onChoose={() => handleChooseMeaning(pName, card.name)}
+                          isViewing={viewingPlayer === pName}
+                          canSelect={!revealedMeanings[pName]}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+          <div className="player-control box mt-4">
+            <AnimatedButton className="is-primary is-fullwidth" onClick={revealAllMeaningCards}>Reveal All Cards</AnimatedButton>
+          </div>
         </div>
 
         <div className="full-height-section" style={{ display: activeSection === 'trinkets' ? 'block' : 'none' }}>
-            <h2 className="section-title">Trinkets</h2>
-             <div className="player-control box">
-                <AnimatedButton className="is-primary is-fullwidth" onClick={assignTrinkets}>Assign Trinkets</AnimatedButton>
-                {initialTrinketCount > 0 && (
-                  <p className="has-text-centered mt-2">
-                    Trinkets Left: {trinketState.deck.length} / {initialTrinketCount}
-                  </p>
-                )}
-            </div>
-            
-            <div className="player-trinkets-main-container">
-              {playerNames.slice(0, playerCount).filter(name => name.trim() !== '').map((playerName, index) => {
-                const pName = playerName.trim();
-                const currentTrinkets = trinketState.playerTrinkets[pName] || [];
-                const pocketed = pocketedTrinkets[pName] || [];
-                const totalPoints = pocketed.reduce((sum, t) => sum + t.points, 0);
+          <h2 className="section-title">Trinkets</h2>
+          <div className="player-control box">
+            <AnimatedButton className="is-primary is-fullwidth" onClick={assignTrinkets}>Assign Trinkets</AnimatedButton>
+            {initialTrinketCount > 0 && (
+              <p className="has-text-centered mt-2">
+                Trinkets Left: {trinketState.deck.length} / {initialTrinketCount}
+              </p>
+            )}
+          </div>
 
-                return (
-                  <div key={`${pName}-${index}`} className="player-trinket-section box">
-                    <h3 className="title is-5 has-text-centered">{pName}</h3>
-                    <div className="trinkets-container">
-                        {currentTrinkets.map((trinket, tIndex) => (
-                            <TrinketCard 
-                                key={`${trinket.name}-${tIndex}`}
-                                trinket={trinket}
-                                onAdd={() => handleTrinketAdd(pName, trinket)}
-                                onRemove={() => handleTrinketRemove(pName, trinket)}
-                                onPocket={() => handleTrinketPocket(pName, trinket)}
-                                isPocketDisabled={currentTrinkets.length !== 1}
-                            />
-                        ))}
-                    </div>
-                    {pocketed.length > 0 && (
-                      <div className="pocketed-trinkets mt-4">
-                        <h4 className='title is-6'>Pocketed Points: {totalPoints}</h4>
-                      </div>
-                    )}
+          <div className="player-trinkets-main-container">
+            {playerNames.slice(0, playerCount).filter(name => name.trim() !== '').map((playerName, index) => {
+              const pName = playerName.trim();
+              const currentTrinkets = trinketState.playerTrinkets[pName] || [];
+              const pocketed = pocketedTrinkets[pName] || [];
+              const totalPoints = pocketed.reduce((sum, t) => sum + t.points, 0);
+
+              return (
+                <div key={`${pName}-${index}`} className="player-trinket-section box">
+                  <h3 className="title is-5 has-text-centered">{pName}</h3>
+                  <div className="trinkets-container">
+                    {currentTrinkets.map((trinket, tIndex) => (
+                      <TrinketCard
+                        key={`${trinket.name}-${tIndex}`}
+                        trinket={trinket}
+                        onAdd={() => handleTrinketAdd(pName, trinket)}
+                        onRemove={() => handleTrinketRemove(pName, trinket)}
+                        onPocket={() => handleTrinketPocket(pName, trinket)}
+                        isPocketDisabled={currentTrinkets.length !== 1}
+                      />
+                    ))}
                   </div>
-                )
-              })}
-            </div>
+                  {pocketed.length > 0 && (
+                    <div className="pocketed-trinkets mt-4">
+                      <h4 className='title is-6'>Pocketed Points: {totalPoints}</h4>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
         </div>
 
       </div>
 
-      <footer style={{ textAlign: 'center', padding: '20px', marginTop: '40px', color: '#666' }}>
-        <a href="/privacy-policy" style={{ color: '#666', textDecoration: 'none', marginRight: '20px' }}>Privacy Policy</a>
-        <a href="/contact" style={{ color: '#666', textDecoration: 'none', marginRight: '20px' }}>Contact Us</a>
-        <a href="/settings" style={{ color: '#666', textDecoration: 'none' }}>Settings</a>
+      <footer style={{ textAlign: 'center', padding: '30px 0', marginTop: '40px', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', flexWrap: 'wrap' }}>
+          <Link href="/" style={{ color: '#ccc', textDecoration: 'none', transition: 'color 0.3s ease' }}>
+            🏠 Home
+          </Link>
+        </div>
       </footer>
     </>
   );
