@@ -8,22 +8,22 @@
 :root {
   /* Professional Red-Orange Color Palette */
   --primary-red: #d63447;
-  --primary-orange: #ff6b35;
+  --primary-orange: #ff7b4d;
   --secondary-red: #b71c1c;
   --secondary-orange: #ff8a50;
   --accent-red: #f44336;
   --accent-orange: #ff7043;
   
   /* Supporting Colors */
-  --dark-bg: #1a1a1a;
-  --darker-bg: #0f0f0f;
+  --dark-bg: #121212;
+  --darker-bg: #0a0a0a;
   --light-bg: #2d2d2d;
   --lighter-bg: #3d3d3d;
   
   /* Text Colors */
   --text-primary: #ffffff;
-  --text-secondary: #e0e0e0;
-  --text-muted: #a0a0a0;
+  --text-secondary: #ececec;
+  --text-muted: #b0b0b0;
   --text-inverse: #000000;
   
   /* Status Colors */
@@ -61,6 +61,15 @@ html {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 body {
