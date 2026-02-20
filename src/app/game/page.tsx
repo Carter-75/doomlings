@@ -875,15 +875,7 @@ export default function Home() {
             <div className="field">
               <label className="label">Normal Ages: {normalAgeCount}</label>
               {normalAgeCount > 0 && normalAges.some(age => age.name === 'The Birth of Life') && (
-                <div className="birth-of-life-notice" style={{
-                  background: 'linear-gradient(145deg, #27ae60, #2ecc71)',
-                  color: 'white',
-                  padding: '8px 12px',
-                  borderRadius: '6px',
-                  fontSize: '0.9rem',
-                  marginBottom: '8px',
-                  textAlign: 'center'
-                }}>
+                <div className="birth-of-life-notice">
                   ✨ "The Birth of Life" will be the first age
                 </div>
               )}

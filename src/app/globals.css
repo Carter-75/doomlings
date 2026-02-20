@@ -868,6 +868,23 @@ input[type="range"]::-moz-range-thumb {
   }
 }
 
+.birth-of-life-notice {
+  margin-bottom: 8px;
+  padding: 0.75rem;
+  background: rgba(255, 107, 53, 0.1);
+  border: 1px solid var(--primary-orange);
+  border-radius: var(--border-radius-small);
+  color: var(--primary-orange);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
 /* Enhanced Challenges Section Styling */
 .age-config {
   background: linear-gradient(135deg,

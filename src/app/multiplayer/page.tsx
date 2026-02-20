@@ -40,9 +40,6 @@ const MultiplayerPage = () => {
 
         <div className="footer-nav">
           <Link href="/">🏠 Home</Link>
-          <Link href="/contact">📧 Contact</Link>
-          <Link href="/privacy-policy">🔒 Privacy Policy</Link>
-          <Link href="/settings">⚙️ Settings</Link>
         </div>
 
         <style jsx>{`
