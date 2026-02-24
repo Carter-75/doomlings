@@ -62,6 +62,15 @@
         <meta-data 
             android:name="com.getcapacitor.SplashScreen.launchAutoHide"
             android:value="true" />
+
+        <!-- ─────────────────────────────────── -->
+        <!-- Google AdMob App ID                -->
+        <!-- Replace with your real App ID from:-->
+        <!-- https://apps.admob.com             -->
+        <!-- ─────────────────────────────────── -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713" />
     </application>
 
     <!-- Permissions -->

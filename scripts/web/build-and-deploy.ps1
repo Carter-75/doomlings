@@ -433,7 +433,7 @@ Write-Host "        STEP 5: BUILDING NEXT.JS APP" -ForegroundColor Cyan
 Write-Host "================================================" -ForegroundColor Cyan
 
 Write-Status "Installing/updating dependencies..." "INFO"
-& npm install
+& npm install --legacy-peer-deps
 if ($LASTEXITCODE -ne 0) {
     Write-Status "npm install failed" "ERROR"
     Read-Host "Press Enter to exit"

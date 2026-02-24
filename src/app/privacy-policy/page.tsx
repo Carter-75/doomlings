@@ -143,10 +143,10 @@ const PrivacyPolicyPage = () => {
 
             <div className="privacy-container">
                 <h1>Privacy Policy</h1>
-                <p className="last-updated">Last updated: February 2026</p>
+                <p className="last-updated">Last updated: February 23, 2026</p>
 
                 <div className="highlight-box">
-                    <p><strong>📱 Privacy First:</strong> The Doomlings Companion App is designed with your privacy in mind. We believe your gaming data should stay yours, which is why we've built this app to work entirely on your device without collecting or transmitting any personal information.</p>
+                    <p><strong>📱 About This App:</strong> The Doomlings Companion App stores all your game data locally on your device. The free version is ad-supported using Google AdMob. You can remove all ads with a $3.99/month subscription available in the app Settings. No personal accounts are required — everything is managed through your Google Play account.</p>
                 </div>
 
                 <h2>🔒 Information We Don't Collect</h2>
@@ -170,12 +170,12 @@ const PrivacyPolicyPage = () => {
                 <p>This data never leaves your device unless you explicitly choose to share it (like exporting a game configuration).</p>
 
                 <h2>🎮 How the App Works</h2>
-                <p>The Doomlings Companion App is a fully offline experience:</p>
+                <p>The Doomlings Companion App has two tiers:</p>
                 <ul>
-                    <li>All game logic runs locally on your device</li>
-                    <li>No internet connection required for core functionality</li>
-                    <li>No data is sent to external servers</li>
-                    <li>No accounts or sign-ups required</li>
+                    <li><strong>Free (Ad-Supported):</strong> All game logic runs locally. Google AdMob serves banner and interstitial ads, which may use device identifiers (see Advertising section below).</li>
+                    <li><strong>Premium ($3.99/month):</strong> All ads are removed. No ad data is collected. Subscription managed by Google Play Billing — no separate account needed.</li>
+                    <li>No internet connection required for core game functionality</li>
+                    <li>No accounts or sign-ups required from us</li>
                 </ul>
 
                 <h2>🔧 Settings and Customization</h2>
@@ -197,21 +197,33 @@ const PrivacyPolicyPage = () => {
                 </ul>
 
                 <h2>🛡️ Security</h2>
-                <p>Even though we don't collect data, we take security seriously:</p>
+                <p>We take security seriously:</p>
                 <ul>
                     <li>App uses secure coding practices</li>
                     <li>Regular security updates</li>
-                    <li>No third-party tracking or analytics</li>
+                    <li>Limited ad tracking via Google AdMob in the free tier (opt-out: purchase Remove Ads in Settings)</li>
                     <li>Open development process</li>
                 </ul>
 
-                <h2>👨‍💻 Third-Party Services</h2>
-                <p>The app may use minimal third-party services for:</p>
+                <h2>📢 Advertising &amp; Subscriptions</h2>
+                <p>The free version of this app is supported by advertising. We use <strong>Google AdMob</strong> to serve ads.</p>
                 <ul>
+                    <li><strong>What Google AdMob may collect:</strong> Device identifiers (Advertising ID), IP address, app interaction data, and general device information to serve and measure ads.</li>
+                    <li><strong>Google's Privacy Policy:</strong> <a href="https://policies.google.com/privacy" style={{ color: '#3c82f7' }}>policies.google.com/privacy</a></li>
+                    <li><strong>How to opt out of personalized ads:</strong> Go to your Android Settings → Privacy → Ads → Delete Advertising ID or opt out of ad personalization.</li>
+                    <li><strong>Remove Ads Subscription:</strong> For $3.99/month you can remove all ads. Your subscription is managed entirely by Google Play — we never see your payment details. No app account is required; the subscription is tied to your Google Play account.</li>
+                    <li><strong>Restore Purchases:</strong> If you reinstall the app, use the "Restore Purchases" button in Settings to re-apply your subscription without paying again.</li>
+                </ul>
+
+                <h2>👨‍💻 Third-Party Services</h2>
+                <p>The app uses the following third-party services:</p>
+                <ul>
+                    <li><strong>Google AdMob:</strong> Ad serving in the free tier. May collect device ad identifiers and interaction data. <a href="https://support.google.com/admob/answer/6128543" style={{ color: '#3c82f7' }}>AdMob Privacy Policy</a></li>
+                    <li><strong>Google Play Billing:</strong> Processes the Remove Ads subscription payment. Google handles all payment data — we do not store your payment information.</li>
                     <li><strong>App Store Distribution:</strong> Required for app installation</li>
                     <li><strong>Crash Reporting:</strong> Anonymous crash data to fix bugs (if enabled)</li>
                 </ul>
-                <p>These services don't receive any personal information from our app.</p>
+                <p>Premium subscribers (Remove Ads active) are not subject to AdMob data collection.</p>
 
                 <h2>📱 Permissions & Compatibility</h2>
                 <p>The app requests minimal permissions and maintains high compatibility standards:</p>
@@ -242,20 +254,21 @@ const PrivacyPolicyPage = () => {
                 <p>Significant changes will be communicated through app updates.</p>
 
                 <h2>👶 Children's Privacy</h2>
-                <p>The Doomlings Companion App is safe for all ages:</p>
+                <p>The Doomlings Companion App is designed to be family-friendly:</p>
                 <ul>
-                    <li>No data collection means no privacy concerns</li>
+                    <li>No data collection by us (all game data stays on device)</li>
                     <li>No chat or social features</li>
-                    <li>No advertising or in-app purchases</li>
-                    <li>Fully offline experience</li>
+                    <li>The free version displays ads via Google AdMob, which may use non-personalized identifiers. Parents can remove all ads with the $3.99/month Remove Ads subscription.</li>
+                    <li>To disable all advertising for children, purchase the Remove Ads subscription in Settings, or reset the Advertising ID in device Settings → Privacy → Ads.</li>
                 </ul>
 
                 <h2>🌍 Global Privacy Rights</h2>
                 <p>We are committed to global privacy compliance (including GDPR, CCPA, and others):</p>
                 <ul>
-                    <li><strong>Right to Access:</strong> Your data resides on your device. You have full access to it at all times.</li>
+                    <li><strong>Right to Access:</strong> Your game data resides on your device. You have full access to it at all times.</li>
                     <li><strong>Right to Deletion:</strong> You can delete any game file via the Settings menu or clear your app data to remove everything.</li>
-                    <li><strong>Right to Revoke Consent:</strong> Since we do not collect data, there is no consent to revoke. If we introduce data collection in the future, we will ask for your explicit consent first.</li>
+                    <li><strong>Right to Opt Out of Advertising:</strong> Purchase the Remove Ads subscription ($3.99/month) to stop all ad data collection, or reset your Android Advertising ID in device Settings → Privacy → Ads.</li>
+                    <li><strong>Right to Revoke Consent:</strong> Cancel your Remove Ads subscription at any time via Google Play → Subscriptions. Upon cancellation, ads will resume at the end of the billing period.</li>
                 </ul>
 
                 <div className="contact-info">

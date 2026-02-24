@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Preferences } from '@capacitor/preferences';
+import { useAds } from '@/lib/ad-context';
+import { Capacitor } from '@capacitor/core';
 
 // Cloud Sync Section - Coming Soon
 const CloudSyncSection = () => (
@@ -31,6 +33,9 @@ const CloudSyncSection = () => (
 );
 
 const SettingsPage = () => {
+    const { adsRemoved, subscriptionStatus, purchaseSubscription, restorePurchases, openCustomerCenter, loading: adsLoading } = useAds();
+    const isNativeApp = typeof window !== 'undefined' && Capacitor.isNativePlatform();
+
     // State for UI scaling
     const [scale, setScale] = useState(100);
 
@@ -567,6 +572,110 @@ const SettingsPage = () => {
             font-size: 0.9em;
             line-height: 1.4;
         }
+            /* ── Remove Ads Premium Section ── */
+        .premium-section {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.08), rgba(255, 87, 34, 0.08));
+            border: 1px solid rgba(255, 193, 7, 0.4);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .premium-section h2 {
+            color: #ffc107;
+            margin-bottom: 6px;
+        }
+        .premium-section p {
+            color: #ccc;
+            margin-bottom: 18px;
+            font-size: 0.95em;
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.85em;
+            margin-bottom: 20px;
+        }
+        .status-badge.active {
+            background: rgba(0, 255, 136, 0.15);
+            border: 1px solid rgba(0, 255, 136, 0.4);
+            color: #00ff88;
+        }
+        .status-badge.free {
+            background: rgba(255, 193, 7, 0.15);
+            border: 1px solid rgba(255, 193, 7, 0.4);
+            color: #ffc107;
+        }
+        .premium-btn-row {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .subscribe-btn {
+            background: linear-gradient(135deg, #ffc107, #ff5722);
+            color: #000;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .subscribe-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+        }
+        .restore-btn {
+            background: transparent;
+            color: #ccc;
+            padding: 12px 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: border-color 0.2s, color 0.2s;
+        }
+        .restore-btn:hover {
+            border-color: rgba(255,255,255,0.5);
+            color: #fff;
+        }
+        .manage-btn {
+            background: transparent;
+            color: #00ff88;
+            padding: 12px 20px;
+            border: 1px solid rgba(0, 255, 136, 0.4);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .manage-btn:hover {
+            background: rgba(0, 255, 136, 0.1);
+            border-color: rgba(0, 255, 136, 0.7);
+        }
+        .premium-feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 18px 0;
+            text-align: left;
+            display: inline-block;
+        }
+        .premium-feature-list li {
+            color: #e0e0e0;
+            padding: 4px 0;
+            font-size: 0.9em;
+        }
+        .web-only-note {
+            color: #888;
+            font-size: 0.8em;
+            margin-top: 12px;
+        }
             `}</style>
 
             {/* Overlay and Confirmation Dialog */}
@@ -583,6 +692,61 @@ const SettingsPage = () => {
             <div className="container">
                 <div className="settings-container">
                     <h1 style={{ color: '#fff', textAlign: 'center' }}>Settings</h1>
+
+                    {/* ── Remove Ads Premium Section ── */}
+                    <div className="premium-section">
+                        <h2>✨ Remove Ads</h2>
+                        <p>Enjoy an ad-free experience for just $3.99/month</p>
+
+                        {adsLoading ? (
+                            <div className="status-badge free">⏳ Checking subscription…</div>
+                        ) : adsRemoved ? (
+                            <div className="status-badge active">✅ Premium Active — Ads Removed</div>
+                        ) : (
+                            <div className="status-badge free">🔔 Free Tier — Ads Enabled</div>
+                        )}
+
+                        {!adsRemoved && (
+                            <ul className="premium-feature-list">
+                                <li>🚫 No banner ads</li>
+                                <li>🚫 No interstitial ads</li>
+                                <li>⚡ Faster, cleaner gameplay</li>
+                                <li>❤️ Support the developer</li>
+                            </ul>
+                        )}
+
+                        <div className="premium-btn-row">
+                            {!adsRemoved && (
+                                <button
+                                    className="subscribe-btn"
+                                    onClick={purchaseSubscription}
+                                    disabled={adsLoading}
+                                >
+                                    {isNativeApp ? '🛒 View Plans' : '📱 Available in the Android App'}
+                                </button>
+                            )}
+                            {adsRemoved && isNativeApp && (
+                                <button
+                                    className="manage-btn"
+                                    onClick={openCustomerCenter}
+                                    disabled={adsLoading}
+                                >
+                                    ⚙️ Manage Subscription
+                                </button>
+                            )}
+                            <button
+                                className="restore-btn"
+                                onClick={restorePurchases}
+                                disabled={adsLoading}
+                            >
+                                🔄 Restore Purchases
+                            </button>
+                        </div>
+
+                        {!isNativeApp && (
+                            <p className="web-only-note">Subscriptions are managed through Google Play on the Android app.</p>
+                        )}
+                    </div>
 
                     {/* UI Scaling Section */}
                     <div className="settings-section">
@@ -657,8 +821,8 @@ const SettingsPage = () => {
                             </div>
                             <div className="info-card">
                                 <h3>🔒 Privacy</h3>
-                                <p>100% Private</p>
-                                <small>No data collection</small>
+                                <p>{adsRemoved ? 'Ad-Free' : 'Ad-Supported'}</p>
+                                <small>{adsRemoved ? 'Premium — full privacy' : 'Free tier: Google AdMob ads'}</small>
                             </div>
                         </div>
                     </div>

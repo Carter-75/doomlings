@@ -1,6 +1,6 @@
 {
   "name": "doomlings-companion",
-  "version": "3.1.4",
+  "version": "3.1.8",
   "private": true,
   "scripts": {
     "dev": "next dev --turbo",
@@ -23,9 +23,12 @@
   "license": "LicenseRef-Doomlings-Proprietary",
   "description": "A digital companion for the DOOMlings board game with professional UI and cross-platform support",
   "dependencies": {
+    "@capacitor-community/admob": "^8.0.0",
     "@capacitor/app": "^6.0.0",
     "@capacitor/core": "^6.1.2",
     "@capacitor/preferences": "^6.0.2",
+    "@revenuecat/purchases-capacitor": "^12.2.0",
+    "@revenuecat/purchases-capacitor-ui": "^12.2.0",
     "next": "15.0.7",
     "react": "^18.3.1",
     "react-confetti": "^6.1.0",
