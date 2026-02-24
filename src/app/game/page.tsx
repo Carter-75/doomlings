@@ -7,6 +7,110 @@ import MeaningOfLifeCard from '@/components/MeaningOfLifeCard';
 import TrinketCard from '@/components/TrinketCard';
 import AnimatedButton from '@/components/AnimatedButton';
 import GameTurn from '@/components/GameTurn';
+import TutorialOverlay, { TutorialStep } from '@/components/TutorialOverlay';
+
+const TUTORIAL_STEPS: TutorialStep[] = [
+  {
+    title: '👋 Welcome to DOOMlings Companion!',
+    message: 'This app makes Doomlings way more fun and easier to manage — especially with lots of expansions. Let\'s take a quick tour!',
+    highlightId: null,
+  },
+  {
+    title: '👥 Choose Your Players',
+    message: 'Start here! Use the slider to set how many players, then type in everyone\'s names so the app can track who does what.',
+    highlightId: 'player-name-section',
+    section: 'challenges',
+  },
+  {
+    title: '⚡ Challenges Section',
+    message: 'This is the Challenges section — brand new cool stuff to do each age! Roll a challenge and one player gets assigned it.',
+    highlightId: 'nav-challenges',
+    section: 'challenges',
+  },
+  {
+    title: '🎲 Roll a Challenge',
+    message: 'Hit this button to roll a random challenge for the current age. The app picks a player to try it!',
+    highlightId: 'roll-challenge-btn',
+    section: 'challenges',
+  },
+  {
+    title: '📅 Age Setup',
+    message: 'Head to Age Setup to build your Age deck for the game. This controls what ages you\'ll play through.',
+    highlightId: 'nav-age-setup',
+    section: 'ageSetup',
+  },
+  {
+    title: '🌱 Normal Ages',
+    message: 'Pick how many Normal Ages to include. "The Birth of Life" is always first when selected — it\'s the opening age!',
+    highlightId: 'normal-age-slider',
+    section: 'ageSetup',
+  },
+  {
+    title: '🐱 Catastrophe Ages',
+    message: 'Including Catastrophes? Pick how many here. They\'re shuffled in with a final one always at the very end (toggle that on/off below).',
+    highlightId: 'catastrophe-age-slider',
+    section: 'ageSetup',
+  },
+  {
+    title: '🏪 Merchant Ages',
+    message: 'Playing with the Merchant expansion? Add Merchant Ages here to mix them into your deck.',
+    highlightId: 'merchant-age-slider',
+    section: 'ageSetup',
+  },
+  {
+    title: '📊 Meaning of Life Scaling (sM)',
+    message: 'This scaling multiplier adjusts MoL card values based on how many ages you\'re playing. Leave it on Auto — it calculates from your age count automatically.',
+    highlightId: 'sm-multiplier-section',
+    section: 'ageSetup',
+  },
+  {
+    title: '🃏 Generate Your Deck',
+    message: 'Once you\'ve set your counts, hit Generate to shuffle and build your Age deck! You can flip through ages with Prev/Next.',
+    highlightId: 'generate-deck-btn',
+    section: 'ageSetup',
+  },
+  {
+    title: '🌟 Meaning of Life',
+    message: 'Go to MoL — these are secret objectives each player tries to complete for bonus points at the end of the game.',
+    highlightId: 'nav-mol',
+    section: 'meaningOfLife',
+  },
+  {
+    title: '🎴 Assign MoL Cards',
+    message: 'Hit Assign — each player gets 2 cards privately. Each player views their cards and picks the one they want to keep!',
+    highlightId: 'assign-mol-btn',
+    section: 'meaningOfLife',
+  },
+  {
+    title: '💎 Trinkets',
+    message: 'Trinkets are bonus objectives worth points! Go to the Trinkets section to assign them.',
+    highlightId: 'nav-trinkets',
+    section: 'trinkets',
+  },
+  {
+    title: '🎁 Assign Trinkets',
+    message: 'Each player gets 2 trinkets. Pick the one you want to keep and complete its objective during the game for points!',
+    highlightId: 'assign-trinkets-btn',
+    section: 'trinkets',
+  },
+  {
+    title: '👑 Dominants',
+    message: 'Dominants use a new Tier system (Tier 1–5) based on card stats. Assign a dominant to each player, and roll its bonus when you play it!',
+    highlightId: 'nav-dominants',
+    section: 'dominants',
+  },
+  {
+    title: '🎮 Game Turn',
+    message: 'Finally — Game Turn! Follow the current Age card and Challenge. Everyone completes their trinket if they can. Once all players go, flip to the next age for a new challenge!',
+    highlightId: 'nav-game-turn',
+    section: 'gameTurn',
+  },
+  {
+    title: "🎉 You're all set!",
+    message: "That's the whole app! Use the ? Tutorial button in the nav any time you need a refresher. Have fun playing DOOMlings!",
+    highlightId: null,
+  },
+];
 
 interface DominantCardState {
   assignedTo: string;
@@ -50,6 +154,9 @@ interface Trinket {
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState('challenges');
+
+  // Tutorial state
+  const [tutorialStep, setTutorialStep] = useState<number | null>(null);
 
   // Game Data State
   const [rules, setRules] = useState<Rule[]>([]);
@@ -273,6 +380,12 @@ export default function Home() {
       setIsInitialLoadComplete(true);
     });
 
+    // Auto-start tutorial on first visit
+    const tutorialSeen = localStorage.getItem('doomlingsTutorialSeen');
+    if (!tutorialSeen) {
+      setTimeout(() => setTutorialStep(0), 600);
+    }
+
     return () => {
       isMounted.current = false;
     }
@@ -313,6 +426,32 @@ export default function Home() {
   };
 
   const showSection = (sectionId: string) => setActiveSection(sectionId);
+
+  const startTutorial = () => {
+    setTutorialStep(0);
+    setActiveSection('challenges');
+  };
+
+  const handleTutorialNext = () => {
+    if (tutorialStep === null) return;
+    const nextStep = tutorialStep + 1;
+    if (nextStep >= TUTORIAL_STEPS.length) {
+      // Tutorial finished
+      localStorage.setItem('doomlingsTutorialSeen', '1');
+      setTutorialStep(null);
+      return;
+    }
+    const step = TUTORIAL_STEPS[nextStep];
+    if (step.section) {
+      setActiveSection(step.section);
+    }
+    setTutorialStep(nextStep);
+  };
+
+  const handleTutorialSkip = () => {
+    localStorage.setItem('doomlingsTutorialSeen', '1');
+    setTutorialStep(null);
+  };
 
   const rollNewAge = () => {
     const rulesToUse = catastropheMode ? catastropheRules : rules;
@@ -699,12 +838,13 @@ export default function Home() {
       </div>
       <div className="container">
         <div className="nav">
-          <button className="nav-button" onClick={() => showSection('challenges')}>Challenges</button>
-          <button className="nav-button" onClick={() => showSection('dominants')}>Dominants</button>
-          <button className="nav-button" onClick={() => showSection('ageSetup')}>Age Setup</button>
-          <button className="nav-button" onClick={() => showSection('meaningOfLife')}>Meaning of Life</button>
-          <button className="nav-button" onClick={() => showSection('trinkets')}>Trinkets</button>
-          <button className="nav-button game-turn-button" onClick={() => showSection('gameTurn')}>Game Turn</button>
+          <button id="nav-challenges" className="nav-button" onClick={() => showSection('challenges')}>Challenges</button>
+          <button id="nav-dominants" className="nav-button" onClick={() => showSection('dominants')}>Dominants</button>
+          <button id="nav-age-setup" className="nav-button" onClick={() => showSection('ageSetup')}>Age Setup</button>
+          <button id="nav-mol" className="nav-button" onClick={() => showSection('meaningOfLife')}>Meaning of Life</button>
+          <button id="nav-trinkets" className="nav-button" onClick={() => showSection('trinkets')}>Trinkets</button>
+          <button id="nav-game-turn" className="nav-button game-turn-button" onClick={() => showSection('gameTurn')}>Game Turn</button>
+          <button className="tutorial-nav-btn" onClick={startTutorial}>❓ Tutorial</button>
         </div>
 
         {/* Sections */}
@@ -729,7 +869,7 @@ export default function Home() {
 
         <div className="full-height-section" style={{ display: activeSection === 'challenges' ? 'block' : 'none' }}>
           <h1 className="section-title">Challenges</h1>
-          <div className="player-control box">
+          <div id="player-name-section" className="player-control box">
             <div className="field">
               <label className="label">Players: {playerCount}</label>
               <input type="range" className="slider" min="2" max="6" value={playerCount} onChange={(e) => handlePlayerCountChange(parseInt(e.target.value, 10))} />
@@ -768,7 +908,7 @@ export default function Home() {
           <div className="age-config box">
             <h2 className="title is-4">Challenges</h2>
             <div className="field">
-              <AnimatedButton className="is-primary is-fullwidth" onClick={rollNewAge}>Roll New Challenge</AnimatedButton>
+              <AnimatedButton id="roll-challenge-btn" className="is-primary is-fullwidth" onClick={rollNewAge}>Roll New Challenge</AnimatedButton>
             </div>
             <div className={`age-display mt-4 has-text-centered ${catastropheMode ? 'catastrophe-mode' : ''}`}>
               {currentRule && (
@@ -872,7 +1012,7 @@ export default function Home() {
         <div className="full-height-section" style={{ display: activeSection === 'ageSetup' ? 'block' : 'none' }}>
           <h2 className="section-title">Age Deck Setup</h2>
           <div className="age-config box">
-            <div className="field">
+            <div id="normal-age-slider" className="field">
               <label className="label">Normal Ages: {normalAgeCount}</label>
               {normalAgeCount > 0 && normalAges.some(age => age.name === 'The Birth of Life') && (
                 <div className="birth-of-life-notice">
@@ -911,7 +1051,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="field">
+            <div id="merchant-age-slider" className="field">
               <label className="label">Merchant Ages: {merchantAgeCount}</label>
               <div className="age-input-container">
                 <input type="range" className="slider" min="0" max={merchantAges.length} value={merchantAgeCount} onChange={(e) => setMerchantAgeCount(parseInt(e.target.value, 10))} />
@@ -945,7 +1085,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="field">
+            <div id="catastrophe-age-slider" className="field">
               <label className="label">Catastrophe Ages: {catastropheAgeCount}</label>
               <div className="age-input-container">
                 <input type="range" className="slider" min="0" max={catastropheAges.length} value={catastropheAgeCount} onChange={(e) => setCatastropheAgeCount(parseInt(e.target.value, 10))} />
@@ -994,7 +1134,7 @@ export default function Home() {
             </div>
 
             {/* Age Multiplier Section */}
-            <div className="field mt-4">
+            <div id="sm-multiplier-section" className="field mt-4">
               <label className="label">Meaning of Life Scaling Multiplier (sM): {calculateScalingMultiplier().toFixed(1)}x</label>
               <div className="age-multiplier-container">
                 <div className="multiplier-mode-selector">
@@ -1059,7 +1199,7 @@ export default function Home() {
               </div>
             </div>
 
-            <AnimatedButton className="is-primary is-fullwidth mt-4" onClick={generateAgeDeck}>Generate Age Deck</AnimatedButton>
+            <AnimatedButton id="generate-deck-btn" className="is-primary is-fullwidth mt-4" onClick={generateAgeDeck}>Generate Age Deck</AnimatedButton>
             {catastrophesInDeck.length > 0 && (
               <AnimatedButton
                 className="is-info is-fullwidth mt-2"
@@ -1122,7 +1262,7 @@ export default function Home() {
         <div className="full-height-section" style={{ display: activeSection === 'meaningOfLife' ? 'block' : 'none' }}>
           <h2 className="section-title">Meaning of Life</h2>
           <div className="player-control box">
-            <AnimatedButton className="is-primary is-fullwidth" onClick={assignMeaningCards}>Assign Meaning of Life Cards</AnimatedButton>
+            <AnimatedButton id="assign-mol-btn" className="is-primary is-fullwidth" onClick={assignMeaningCards}>Assign Meaning of Life Cards</AnimatedButton>
           </div>
           <div className="player-meaning-cards">
             {playerNames.slice(0, playerCount).map((playerName, index) => {
@@ -1171,7 +1311,7 @@ export default function Home() {
         <div className="full-height-section" style={{ display: activeSection === 'trinkets' ? 'block' : 'none' }}>
           <h2 className="section-title">Trinkets</h2>
           <div className="player-control box">
-            <AnimatedButton className="is-primary is-fullwidth" onClick={assignTrinkets}>Assign Trinkets</AnimatedButton>
+            <AnimatedButton id="assign-trinkets-btn" className="is-primary is-fullwidth" onClick={assignTrinkets}>Assign Trinkets</AnimatedButton>
             {initialTrinketCount > 0 && (
               <p className="has-text-centered mt-2">
                 Trinkets Left: {trinketState.deck.length} / {initialTrinketCount}
@@ -1213,6 +1353,16 @@ export default function Home() {
         </div>
 
       </div>
+
+      {/* Tutorial Overlay */}
+      {tutorialStep !== null && (
+        <TutorialOverlay
+          steps={TUTORIAL_STEPS}
+          currentStep={tutorialStep}
+          onNext={handleTutorialNext}
+          onSkip={handleTutorialSkip}
+        />
+      )}
 
       <footer style={{ textAlign: 'center', padding: '30px 0', marginTop: '40px', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', flexWrap: 'wrap' }}>
