@@ -24,6 +24,10 @@ interface AdContextValue {
     restorePurchases: () => Promise<void>;
     /** Opens the RevenueCat Customer Center — lets users manage/cancel subs (native only) */
     openCustomerCenter: () => Promise<void>;
+    /** Temporarily suppress ads (e.g., during tutorial) */
+    setAdsSuppressed: (suppressed: boolean) => void;
+    /** Whether the banner ad is currently intended to be visible */
+    bannerVisible: boolean;
 }
 
 const AdContext = createContext<AdContextValue>({
@@ -33,6 +37,8 @@ const AdContext = createContext<AdContextValue>({
     purchaseSubscription: async () => { },
     restorePurchases: async () => { },
     openCustomerCenter: async () => { },
+    setAdsSuppressed: () => { },
+    bannerVisible: false,
 });
 
 export function useAds() {
@@ -62,6 +68,8 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
     const [adsRemoved, setAdsRemoved] = useState(false);
     const [loading, setLoading] = useState(true);
     const [subscriptionStatus, setSubscriptionStatus] = useState<'active' | 'free' | 'checking'>('checking');
+    const [adsSuppressed, setAdsSuppressed] = useState(false);
+    const [bannerVisible, setBannerVisible] = useState(false);
 
     const persistState = useCallback(async (removed: boolean) => {
         try { await Preferences.set({ key: ADS_REMOVED_KEY, value: removed ? 'true' : 'false' }); }
@@ -84,8 +92,32 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
         setAdsRemoved(removed);
         setSubscriptionStatus(removed ? 'active' : 'free');
         await persistState(removed);
-        if (isNative()) { removed ? await hideBanner() : await showBanner(); }
-    }, [persistState]);
+        if (isNative()) {
+            (removed || adsSuppressed) ? await hideBanner() : await showBanner();
+        }
+    }, [persistState, adsSuppressed]);
+
+    // Handle suppression changes
+    useEffect(() => {
+        if (!isNative() || loading) return;
+        if (adsSuppressed || adsRemoved) {
+            hideBanner();
+            setBannerVisible(false);
+        } else {
+            showBanner();
+            setBannerVisible(true);
+        }
+    }, [adsSuppressed, adsRemoved, loading]);
+
+    // Apply class to body for CSS padding
+    useEffect(() => {
+        if (typeof document === 'undefined') return;
+        if (bannerVisible) {
+            document.body.classList.add('ads-visible');
+        } else {
+            document.body.classList.remove('ads-visible');
+        }
+    }, [bannerVisible]);
 
     // ─── Init ──────────────────────────────────────────────────────────────────
     useEffect(() => {
@@ -204,6 +236,7 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
         <AdContext.Provider value={{
             adsRemoved, loading, subscriptionStatus,
             purchaseSubscription, restorePurchases, openCustomerCenter,
+            setAdsSuppressed, bannerVisible,
         }}>
             {children}
         </AdContext.Provider>
