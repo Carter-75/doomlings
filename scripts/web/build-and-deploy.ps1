@@ -603,7 +603,7 @@ else {
     Write-Status "Skipping encrypted private key export. Missing prerequisites." "WARNING"
 }
 
-if (Test-Path $KeystoreStoreFile -and -not [string]::IsNullOrWhiteSpace($KeystoreProps["keyAlias"]) -and -not [string]::IsNullOrWhiteSpace($KeystoreProps["storePassword"])) {
+if ((Test-Path $KeystoreStoreFile) -and -not [string]::IsNullOrWhiteSpace($KeystoreProps["keyAlias"]) -and -not [string]::IsNullOrWhiteSpace($KeystoreProps["storePassword"])) {
     Write-Status "Exporting upload certificate (PEM) for Google Play..." "INFO"
     & keytool -export -rfc -keystore $KeystoreStoreFile -alias $KeystoreProps["keyAlias"] -file $UploadCertOutput -storepass $KeystoreProps["storePassword"] -keypass $KeystoreProps["keyPassword"] 2>$null
     if ($LASTEXITCODE -eq 0 -and (Test-Path $UploadCertOutput)) {
