@@ -23,12 +23,26 @@ export default function TutorialOverlay({ steps, currentStep, onNext, onSkip }: 
     const [tooltipStyle, setTooltipStyle] = useState<React.CSSProperties>({});
     const [highlightStyle, setHighlightStyle] = useState<React.CSSProperties>({});
     const [arrowPos, setArrowPos] = useState<'top' | 'bottom' | 'none'>('bottom');
+    const [opacity, setOpacity] = useState(0);
     const tooltipRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        // Start hidden whenever step changes
+        setOpacity(0);
+
+        let el = step?.highlightId ? document.getElementById(step.highlightId) : null;
+
+        if (el) {
+            const rect = el.getBoundingClientRect();
+            const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+            // Scroll if mostly out of view (using center block, which gracefully falls back if impossible)
+            if (rect.top < 0 || rect.bottom > viewportHeight) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
         const updatePosition = () => {
             if (!step?.highlightId) {
-                // Center tooltip when no highlight
                 setHighlightStyle({});
                 setTooltipStyle({
                     position: 'fixed',
@@ -41,8 +55,9 @@ export default function TutorialOverlay({ steps, currentStep, onNext, onSkip }: 
                 return;
             }
 
-            const el = document.getElementById(step.highlightId);
-            if (!el) {
+            // re-fetch element inside the loop in case DOM updated
+            const currentEl = document.getElementById(step.highlightId);
+            if (!currentEl) {
                 setHighlightStyle({});
                 setTooltipStyle({
                     position: 'fixed',
@@ -55,14 +70,11 @@ export default function TutorialOverlay({ steps, currentStep, onNext, onSkip }: 
                 return;
             }
 
-            const rect = el.getBoundingClientRect();
+            const rect = currentEl.getBoundingClientRect();
             const padding = 8;
-
-            // Get current UI scale
             const scaleStr = typeof window !== 'undefined' ? getComputedStyle(document.documentElement).getPropertyValue('--ui-scale').trim() : '1';
             const scale = parseFloat(scaleStr) || 1;
 
-            // Highlight box
             setHighlightStyle({
                 position: 'fixed',
                 top: rect.top - padding,
@@ -75,9 +87,8 @@ export default function TutorialOverlay({ steps, currentStep, onNext, onSkip }: 
                 boxShadow: '0 0 0 4000px rgba(0,0,0,0.72), 0 0 0 3px var(--primary-red), 0 0 24px 6px rgba(255, 255, 255, 0.08)',
             });
 
-            // Tooltip positioning
             const tooltipWidth = 310 * scale;
-            const tooltipHeight = 180 * scale; // Approximate height including arrow
+            const tooltipHeight = 180 * scale;
             const viewportHeight = window.innerHeight;
             const viewportWidth = window.innerWidth;
             const safeMargin = 16;
@@ -90,15 +101,12 @@ export default function TutorialOverlay({ steps, currentStep, onNext, onSkip }: 
             const spaceAbove = rect.top;
 
             if (spaceBelow >= tooltipHeight + 20) {
-                // Position below
                 top = rect.bottom + 16;
                 arrow = 'top';
             } else if (spaceAbove >= tooltipHeight + 20) {
-                // Position above
                 top = rect.top - tooltipHeight - 16;
                 arrow = 'bottom';
             } else {
-                // If not enough vertical space, try side-by-side (important for landscape)
                 const spaceRight = viewportWidth - rect.right;
                 const spaceLeft = rect.left;
 
@@ -111,19 +119,16 @@ export default function TutorialOverlay({ steps, currentStep, onNext, onSkip }: 
                     top = rect.top + rect.height / 2 - tooltipHeight / 2;
                     arrow = 'none';
                 } else {
-                    // Fallback to center vertically if it absolutely doesn't fit anywhere
                     top = viewportHeight / 2 - tooltipHeight / 2;
                     left = viewportWidth / 2 - tooltipWidth / 2;
                     arrow = 'none';
                 }
             }
 
-            // Clamping horizontal for top/bottom arrows
             if (arrow === 'top' || arrow === 'bottom') {
                 left = rect.left + rect.width / 2 - tooltipWidth / 2;
             }
 
-            // Final clamping to ensure it's always on screen
             left = Math.max(safeMargin, Math.min(left, viewportWidth - tooltipWidth - safeMargin));
             top = Math.max(safeMargin, Math.min(top, viewportHeight - tooltipHeight - safeMargin));
 
@@ -137,18 +142,29 @@ export default function TutorialOverlay({ steps, currentStep, onNext, onSkip }: 
             });
         };
 
-        // Update on mount, step change, and resize/orientation change
+        // Update immediately
         updatePosition();
+
+        // Listeners for layout shifts and scrolling
         window.addEventListener('resize', updatePosition);
         window.addEventListener('orientationchange', updatePosition);
+        window.addEventListener('scroll', updatePosition, true); // true = capture phase for all scrollable containers
 
-        // Polling as a safety for dynamic layouts (like sections expanding)
         const interval = setInterval(updatePosition, 1000);
+
+        // After scrolling is assumed to finish (smooth scroll takes around ~300ms usually)
+        // Ensure position is fully 100% updated immediately before fading in
+        const timer = setTimeout(() => {
+            updatePosition();
+            setOpacity(1);
+        }, 400);
 
         return () => {
             window.removeEventListener('resize', updatePosition);
             window.removeEventListener('orientationchange', updatePosition);
+            window.removeEventListener('scroll', updatePosition, true);
             clearInterval(interval);
+            clearTimeout(timer);
         };
     }, [currentStep, step]);
 
@@ -164,6 +180,7 @@ export default function TutorialOverlay({ steps, currentStep, onNext, onSkip }: 
                 <div
                     className="tutorial-backdrop"
                     onClick={(e) => e.stopPropagation()}
+                    style={{ opacity, transition: 'opacity 0.3s ease' }}
                 />
             )}
 
@@ -182,14 +199,14 @@ export default function TutorialOverlay({ steps, currentStep, onNext, onSkip }: 
 
             {/* Glow ring around target */}
             {Object.keys(highlightStyle).length > 0 && (
-                <div className="tutorial-highlight-ring" style={highlightStyle} />
+                <div className="tutorial-highlight-ring" style={{ ...highlightStyle, opacity, transition: 'opacity 0.3s ease' }} />
             )}
 
             {/* Tooltip card */}
             <div
                 ref={tooltipRef}
                 className="tutorial-tooltip"
-                style={tooltipStyle}
+                style={{ ...tooltipStyle, opacity, transition: 'opacity 0.3s ease' }}
             >
                 {arrowPos === 'top' && <div className="tutorial-arrow tutorial-arrow-top" />}
 
