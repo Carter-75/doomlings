@@ -15,12 +15,19 @@ interface TutorialOverlayProps {
     steps: TutorialStep[];
     currentStep: number;
     onNext: () => void;
+    onBack: () => void;
     onSkip: () => void;
 }
 
-export default function TutorialOverlay({ steps, currentStep, onNext, onSkip }: TutorialOverlayProps) {
+export default function TutorialOverlay({ steps, currentStep, onNext, onBack, onSkip }: TutorialOverlayProps) {
     const step = steps[currentStep];
-    const [tooltipStyle, setTooltipStyle] = useState<React.CSSProperties>({});
+    const [tooltipStyle, setTooltipStyle] = useState<React.CSSProperties>({
+        position: 'fixed',
+        top: '-9999px',
+        left: '-9999px',
+        opacity: 0,
+        pointerEvents: 'none'
+    });
     const [highlightStyle, setHighlightStyle] = useState<React.CSSProperties>({});
     const [arrowPos, setArrowPos] = useState<'top' | 'bottom' | 'none'>('bottom');
     const [opacity, setOpacity] = useState(0);
@@ -224,8 +231,13 @@ export default function TutorialOverlay({ steps, currentStep, onNext, onSkip }: 
                 <h3 className="tutorial-step-title">{step.title}</h3>
                 <p className="tutorial-step-message">{step.message}</p>
 
-                <div className="tutorial-footer">
-                    <button className="tutorial-next-btn" onClick={onNext}>
+                <div className="tutorial-footer" style={{ display: 'flex', gap: '8px' }}>
+                    {currentStep > 0 && (
+                        <button className="tutorial-skip-btn" onClick={onBack} style={{ flex: 1, padding: '12px', background: 'rgba(255, 255, 255, 0.15)', color: 'white', border: '1px solid rgba(255, 255, 255, 0.2)', borderRadius: '25px', cursor: 'pointer', fontWeight: 'bold' }}>
+                            ← Back
+                        </button>
+                    )}
+                    <button className="tutorial-next-btn" onClick={onNext} style={{ flex: currentStep > 0 ? 1 : 'none', width: currentStep > 0 ? 'auto' : '100%' }}>
                         {isLast ? '🎉 Done!' : 'Next →'}
                     </button>
                 </div>

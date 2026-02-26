@@ -179,6 +179,7 @@ export default function Home() {
   const [manualCatastropheOverride, setManualCatastropheOverride] = useState(false);
   const [currentRule, setCurrentRule] = useState<Rule | null>(null);
   const [challengePlayer, setChallengePlayer] = useState<string | null>(null);
+  const [challengeRolledThisAge, setChallengeRolledThisAge] = useState(false);
 
   // Age Deck State
   const [ageDeck, setAgeDeck] = useState<Age[]>([]);
@@ -212,6 +213,14 @@ export default function Home() {
   }>({ deck: [], playerTrinkets: {} });
   const [initialTrinketCount, setInitialTrinketCount] = useState(0);
   const [pocketedTrinkets, setPocketedTrinkets] = useState<{ [key: string]: Trinket[] }>({});
+  const [trinketsPocketedThisTurn, setTrinketsPocketedThisTurn] = useState<{ [key: string]: boolean }>({});
+
+  // Game Preferences State
+  const [showScrollToTop, setShowScrollToTop] = useState(true);
+  const [warnUnpocketedTrinkets, setWarnUnpocketedTrinkets] = useState(true);
+  const [showWarningModal, setShowWarningModal] = useState(false);
+  const [pendingNextTurn, setPendingNextTurn] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -244,6 +253,7 @@ export default function Home() {
         dominantCardStates,
         trinketState,
         pocketedTrinkets,
+        trinketsPocketedThisTurn,
         activeSection,
         viewingPlayer,
         initialTrinketCount,
@@ -251,6 +261,7 @@ export default function Home() {
         showCatastropheList,
         ageMultiplierMode,
         manualAgeMultiplier,
+        challengeRolledThisAge,
       };
       localStorage.setItem('doomlingsGameState', JSON.stringify(gameState));
     };
@@ -282,6 +293,7 @@ export default function Home() {
     showCatastropheList,
     ageMultiplierMode,
     manualAgeMultiplier,
+    challengeRolledThisAge,
     isInitialLoadComplete,
   ]);
 
@@ -316,6 +328,7 @@ export default function Home() {
         };
         setTrinketState(loadedTrinketState);
         setPocketedTrinkets(savedState.pocketedTrinkets || {});
+        setTrinketsPocketedThisTurn(savedState.trinketsPocketedThisTurn || {});
 
         setActiveSection(savedState.activeSection || 'challenges');
         setViewingPlayer(savedState.viewingPlayer || null);
@@ -324,6 +337,17 @@ export default function Home() {
         setShowCatastropheList(savedState.showCatastropheList || false);
         setAgeMultiplierMode(savedState.ageMultiplierMode || 'auto');
         setManualAgeMultiplier(savedState.manualAgeMultiplier || 1);
+        setChallengeRolledThisAge(savedState.challengeRolledThisAge || false);
+
+        // Load Game Preferences
+        const savedShowScrollToTop = localStorage.getItem('showScrollToTop');
+        if (savedShowScrollToTop !== null) {
+          setShowScrollToTop(savedShowScrollToTop === 'true');
+        }
+        const savedWarnUnpocketedTrinkets = localStorage.getItem('warnUnpocketedTrinkets');
+        if (savedWarnUnpocketedTrinkets !== null) {
+          setWarnUnpocketedTrinkets(savedWarnUnpocketedTrinkets === 'true');
+        }
       }
     };
     loadGameState();
@@ -402,6 +426,18 @@ export default function Home() {
 
 
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 300);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handlePlayerNameChange = (index: number, name: string) => {
     const newPlayerNames = [...playerNames];
     newPlayerNames[index] = name;
@@ -434,7 +470,12 @@ export default function Home() {
     }
   };
 
-  const showSection = (sectionId: string) => setActiveSection(sectionId);
+  const showSection = (sectionId: string) => {
+    setActiveSection(sectionId);
+    if (sectionId === 'gameTurn' && !challengeRolledThisAge && ageDeck.length > 0) {
+      rollNewAge();
+    }
+  };
 
   const startTutorial = () => {
     setTutorialStep(0);
@@ -457,13 +498,24 @@ export default function Home() {
     setTutorialStep(nextStep);
   };
 
+  const handleTutorialBack = () => {
+    if (tutorialStep === null || tutorialStep <= 0) return;
+    const prevStep = tutorialStep - 1;
+    const step = TUTORIAL_STEPS[prevStep];
+    if (step.section) {
+      setActiveSection(step.section);
+    }
+    setTutorialStep(prevStep);
+  };
+
   const handleTutorialSkip = () => {
     localStorage.setItem('doomlingsTutorialSeen', '1');
     setTutorialStep(null);
   };
 
-  const rollNewAge = () => {
-    const rulesToUse = catastropheMode ? catastropheRules : rules;
+  const rollNewAge = (forceCatastropheMode?: boolean) => {
+    const isCatastrophe = forceCatastropheMode !== undefined ? forceCatastropheMode : catastropheMode;
+    const rulesToUse = isCatastrophe ? catastropheRules : rules;
     if (rulesToUse.length > 0) {
       const randomIndex = Math.floor(Math.random() * rulesToUse.length);
       setCurrentRule(rulesToUse[randomIndex]);
@@ -476,6 +528,7 @@ export default function Home() {
     } else {
       setChallengePlayer(null);
     }
+    setChallengeRolledThisAge(true);
   };
 
   const shuffleArray = (array: any[]) => {
@@ -577,6 +630,11 @@ export default function Home() {
     setCurrentAgeIndex(0);
     setShowCatastropheList(false);
 
+    // Automatically roll a challenge for the first age
+    const firstAgeIsCatastrophe = catastropheSelection.some(c => c.name === deck[0].name);
+    setCatastropheMode(firstAgeIsCatastrophe);
+    rollNewAge(firstAgeIsCatastrophe);
+
     // Log for debugging (can be removed in production)
     console.log('Generated Age Deck:', deck.map(age => age.name));
     if (birthOfLifeAdded) {
@@ -587,13 +645,55 @@ export default function Home() {
   const nextAge = () => setCurrentAgeIndex(i => Math.min(i + 1, ageDeck.length - 1));
   const previousAge = () => setCurrentAgeIndex(i => Math.max(i - 1, 0));
 
-  const handleNextTurn = () => {
+  const executeNextTurn = () => {
     // Clear manual override when advancing to next age (allow auto-toggle again)
     setManualCatastropheOverride(false);
-    // Roll new challenge
-    rollNewAge();
+
+    // Determine info about the NEXT age to sync rules correctly
+    const nextIndex = Math.min(currentAgeIndex + 1, ageDeck.length - 1);
+    const nextAgeCard = ageDeck[nextIndex];
+    const willBeCatastrophe = catastropheAges.some(c => c.name === nextAgeCard?.name);
+
+    setCatastropheMode(willBeCatastrophe);
+
+    // Roll new challenge using the next turn's catastrophe mode
+    rollNewAge(willBeCatastrophe);
+
     // Advance to next age
-    nextAge();
+    setCurrentAgeIndex(nextIndex);
+
+    // Reset trinkets pocketed this turn
+    setTrinketsPocketedThisTurn({});
+    setShowWarningModal(false);
+    setPendingNextTurn(false);
+  };
+
+  const handleNextTurn = () => {
+    if (warnUnpocketedTrinkets) {
+      // Check if anyone has a trinket in hand but hasn't pocketed yet this turn
+      const playersNeedingAction = playerNames.slice(0, playerCount).filter(name => {
+        const pName = name.trim();
+        if (!pName) return false;
+        const currentTrinkets = trinketState.playerTrinkets[pName] || [];
+        const hasTrinketInHand = currentTrinkets.length > 0;
+        const hasPocketedThisTurn = trinketsPocketedThisTurn[pName];
+        return hasTrinketInHand && !hasPocketedThisTurn;
+      });
+
+      if (playersNeedingAction.length > 0) {
+        setPendingNextTurn(true);
+        setShowWarningModal(true);
+
+        // Smooth scroll to trinkets
+        const trinketsSection = document.getElementById('trinkets-section');
+        if (trinketsSection) {
+          trinketsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        return;
+      }
+    }
+
+    executeNextTurn();
   };
 
   const handleManualCatastropheToggle = (checked: boolean) => {
@@ -738,6 +838,7 @@ export default function Home() {
   };
 
   const handleTrinketPocket = (playerName: string, trinketToPocket: Trinket) => {
+    setTrinketsPocketedThisTurn(prev => ({ ...prev, [playerName]: true }));
     setPocketedTrinkets(prev => ({
       ...prev,
       [playerName]: [...(prev[playerName] || []), trinketToPocket]
@@ -785,8 +886,8 @@ export default function Home() {
 
   const processDescription = (description: string, sM: number) => {
     return description
-      .replace(/(\d+)\*sM/g, (_, num) => Math.round(parseInt(num) * sM).toString())
-      .replace(/sM\*(\d+)/g, (_, num) => Math.round(parseInt(num) * sM).toString())
+      .replace(/(\d+)\*?sM/g, (_, num) => Math.round(parseInt(num) * sM).toString())
+      .replace(/sM\*?(\d+)/g, (_, num) => Math.round(parseInt(num) * sM).toString())
       .replace(/\bsM\b/g, Math.round(sM).toString());
   };
 
@@ -868,6 +969,7 @@ export default function Home() {
             isLastAge={currentAgeIndex === ageDeck.length - 1}
             trinketState={trinketState}
             pocketedTrinkets={pocketedTrinkets}
+            trinketsPocketedThisTurn={trinketsPocketedThisTurn}
             onNextTurn={handleNextTurn}
             handleTrinketAdd={handleTrinketAdd}
             handleTrinketRemove={handleTrinketRemove}
@@ -917,7 +1019,13 @@ export default function Home() {
           <div className="age-config box">
             <h2 className="title is-4">Challenges</h2>
             <div className="field">
-              <AnimatedButton id="roll-challenge-btn" className="is-primary is-fullwidth" onClick={rollNewAge}>Roll New Challenge</AnimatedButton>
+              <AnimatedButton
+                id="roll-challenge-btn"
+                className="is-primary is-fullwidth"
+                onClick={() => rollNewAge()}
+              >
+                Roll New Challenge
+              </AnimatedButton>
             </div>
             <div className={`age-display mt-4 has-text-centered ${catastropheMode ? 'catastrophe-mode' : ''}`}>
               {currentRule && (
@@ -1363,12 +1471,36 @@ export default function Home() {
 
       </div>
 
+      {showScrollToTop && (
+        <button
+          className={`scroll-to-top-btn ${isScrolled ? 'visible' : ''}`}
+          onClick={scrollToTop}
+          aria-label="Scroll to top"
+        >
+          ↑
+        </button>
+      )}
+
+      {showWarningModal && (
+        <div className="warning-overlay">
+          <div className="warning-dialog">
+            <h3>Wait!</h3>
+            <p>Someone hasn't hidden a trinket yet. Are you done with your trinkets? (You can pocket or hold on to them)</p>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+              <AnimatedButton className="is-info" onClick={() => setShowWarningModal(false)}>Cancel</AnimatedButton>
+              <AnimatedButton className="is-warning" onClick={executeNextTurn}>We're Ready, Next Turn</AnimatedButton>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Tutorial Overlay */}
       {tutorialStep !== null && (
         <TutorialOverlay
           steps={TUTORIAL_STEPS}
           currentStep={tutorialStep}
           onNext={handleTutorialNext}
+          onBack={handleTutorialBack}
           onSkip={handleTutorialSkip}
         />
       )}

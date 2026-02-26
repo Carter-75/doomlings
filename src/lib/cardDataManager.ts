@@ -61,36 +61,36 @@ export type CardDataType = keyof typeof CARD_DATA_PATHS;
 
 // Data validation schemas
 export const validateRule = (rule: any): rule is Rule => {
-  return typeof rule === 'object' && 
-         typeof rule.title === 'string' && 
-         typeof rule.description === 'string';
+  return typeof rule === 'object' &&
+    typeof rule.title === 'string' &&
+    typeof rule.description === 'string';
 };
 
 export const validateDominant = (dominant: any): dominant is Dominant => {
-  return typeof dominant === 'object' && 
-         typeof dominant.name === 'string' && 
-         typeof dominant.tiers === 'object' &&
-         Object.values(dominant.tiers).every(tier => typeof tier === 'string');
+  return typeof dominant === 'object' &&
+    typeof dominant.name === 'string' &&
+    typeof dominant.tiers === 'object' &&
+    Object.values(dominant.tiers).every(tier => typeof tier === 'string');
 };
 
 export const validateAge = (age: any): age is Age => {
-  return typeof age === 'object' && 
-         typeof age.name === 'string' && 
-         typeof age.description === 'string';
+  return typeof age === 'object' &&
+    typeof age.name === 'string' &&
+    typeof age.description === 'string';
 };
 
 export const validateMeaning = (meaning: any): meaning is Meaning => {
-  return typeof meaning === 'object' && 
-         typeof meaning.name === 'string' && 
-         typeof meaning.description === 'string';
+  return typeof meaning === 'object' &&
+    typeof meaning.name === 'string' &&
+    typeof meaning.description === 'string';
 };
 
 export const validateTrinket = (trinket: any): trinket is Trinket => {
-  return typeof trinket === 'object' && 
-         typeof trinket.name === 'string' && 
-         typeof trinket.power === 'string' && 
-         typeof trinket.objective === 'string' && 
-         typeof trinket.points === 'number';
+  return typeof trinket === 'object' &&
+    typeof trinket.name === 'string' &&
+    typeof trinket.power === 'string' &&
+    typeof trinket.objective === 'string' &&
+    typeof trinket.points === 'number';
 };
 
 /**
@@ -180,16 +180,16 @@ export class CardDataManager {
     switch (type) {
       case 'normalRules':
         return this.parseRules(rawData, 'Rule');
-      
+
       case 'catastropheRules':
         return this.parseRules(rawData, 'Catastrophe Rule');
-      
+
       case 'dominantData':
         if (Array.isArray(rawData)) {
           return rawData.filter(validateDominant);
         }
         return [];
-      
+
       case 'ageData':
       case 'merchantAgeData':
       case 'catastropheData':
@@ -197,22 +197,22 @@ export class CardDataManager {
           return rawData.filter(validateAge);
         }
         return [];
-      
+
       case 'meaningOfLifeData':
         if (Array.isArray(rawData)) {
           return rawData.filter(validateMeaning);
         }
         return [];
-      
+
       case 'trinketData':
         if (Array.isArray(rawData)) {
           return rawData.filter(validateTrinket);
         }
         return [];
-      
+
       case 'extendedCards':
         return Array.isArray(rawData) ? rawData : [];
-      
+
       default:
         return rawData;
     }
@@ -233,11 +233,11 @@ export class CardDataManager {
     });
 
     const results = await Promise.all(loadPromises);
-    
+
     // Return results organized by type
     const organizedData: any = {};
     const errors: any = {};
-    
+
     results.forEach(({ type, data, error }) => {
       if (error) {
         errors[type] = error;
@@ -272,7 +272,7 @@ export class CardDataManager {
    */
   exportData(): string {
     const exportData: any = {};
-    
+
     this.cache.forEach((data, type) => {
       exportData[type] = data;
     });
@@ -286,7 +286,7 @@ export class CardDataManager {
   importData(jsonData: string): void {
     try {
       const importedData = JSON.parse(jsonData);
-      
+
       Object.entries(importedData).forEach(([type, data]) => {
         if (type in CARD_DATA_PATHS) {
           this.cache.set(type as CardDataType, data);
@@ -303,7 +303,7 @@ export class CardDataManager {
    */
   getDataStats(): Record<string, number> {
     const stats: Record<string, number> = {};
-    
+
     this.cache.forEach((data, type) => {
       if (Array.isArray(data)) {
         stats[type] = data.length;
@@ -323,7 +323,7 @@ export class CardDataManager {
   searchCards(query: string): any[] {
     const results: any[] = [];
     const searchTerm = query.toLowerCase().trim();
-    
+
     if (!searchTerm) return results;
 
     this.cache.forEach((data, type) => {
@@ -331,7 +331,7 @@ export class CardDataManager {
         data.forEach((item, index) => {
           let match = false;
           let matchedContent = '';
-          
+
           if (typeof item === 'object' && item !== null) {
             // Search in object properties
             Object.entries(item).forEach(([key, value]) => {
@@ -344,7 +344,7 @@ export class CardDataManager {
             match = true;
             matchedContent = item;
           }
-          
+
           if (match) {
             results.push({
               type,
@@ -385,8 +385,8 @@ export const useCardData = () => {
  */
 export const processScalingDescription = (description: string, scalingMultiplier: number): string => {
   return description
-    .replace(/(\d+)\*sM/g, (_, num) => Math.round(parseInt(num) * scalingMultiplier).toString())
-    .replace(/sM\*(\d+)/g, (_, num) => Math.round(parseInt(num) * scalingMultiplier).toString())
+    .replace(/(\d+)\*?sM/g, (_, num) => Math.round(parseInt(num) * scalingMultiplier).toString())
+    .replace(/sM\*?(\d+)/g, (_, num) => Math.round(parseInt(num) * scalingMultiplier).toString())
     .replace(/\bsM\b/g, Math.round(scalingMultiplier).toString());
 };
 

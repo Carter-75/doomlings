@@ -519,6 +519,105 @@ textarea:focus {
   border-radius: var(--border-radius-small);
 }
 
+/* Trinket Fog */
+.trinket-fogged {
+  filter: grayscale(100%) opacity(60%);
+  pointer-events: none;
+  border-color: rgba(128, 128, 128, 0.4);
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.trinket-fogged .card-footer-item {
+  pointer-events: none;
+}
+
+/* Scroll to Top Button */
+.scroll-to-top-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-red), var(--primary-orange));
+  color: white;
+  border: none;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-primary);
+  z-index: 1000;
+  transition: all 0.3s ease;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+}
+
+.scroll-to-top-btn.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.scroll-to-top-btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.6);
+}
+
+/* Warning Prompt Overlay */
+.warning-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 9998;
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.warning-dialog {
+  background: linear-gradient(135deg, var(--darker-bg), var(--dark-bg));
+  border: 2px solid var(--accent-orange);
+  border-radius: var(--border-radius-large);
+  padding: 2rem;
+  max-width: 90%;
+  width: 400px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(255, 107, 53, 0.2);
+  z-index: 9999;
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.warning-dialog h3 {
+  color: var(--warning);
+  margin-bottom: 1rem;
+}
+
+.warning-dialog p {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
 /* Age and Rule Display */
 .age-display,
 .rule-display {
@@ -1678,20 +1777,8 @@ input:checked+.catastrophe-slider:before {
     /* Neutral hint in shadow */
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(20px);
-  animation: tutorial-tooltip-in 0.25s ease-out;
 }
 
-@keyframes tutorial-tooltip-in {
-  from {
-    opacity: 0;
-    transform: translateY(8px) scale(0.97);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
 
 .tutorial-header {
   display: flex;

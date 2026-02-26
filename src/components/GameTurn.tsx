@@ -13,6 +13,7 @@ interface GameTurnProps {
   isLastAge: boolean;
   trinketState: TrinketState;
   pocketedTrinkets: { [key: string]: Trinket[] };
+  trinketsPocketedThisTurn: { [key: string]: boolean };
   onNextTurn: () => void;
   handleTrinketAdd: (playerName: string, trinket: Trinket) => void;
   handleTrinketRemove: (playerName: string, trinket: Trinket) => void;
@@ -30,6 +31,7 @@ const GameTurn: React.FC<GameTurnProps> = ({
   isLastAge,
   trinketState,
   pocketedTrinkets,
+  trinketsPocketedThisTurn,
   onNextTurn,
   handleTrinketAdd,
   handleTrinketRemove,
@@ -64,13 +66,13 @@ const GameTurn: React.FC<GameTurnProps> = ({
         </div>
         <div className="column">
           <div className={`age-display box has-text-centered ${isCatastrophe ? 'catastrophe-age' : ''}`}>
-             <h2 className="title is-4 has-text-centered">Current Age</h2>
+            <h2 className="title is-4 has-text-centered">Current Age</h2>
             {currentAge ? (
               <>
                 {isLastAge && (
-                    <p className="has-text-weight-bold is-size-5" style={{ color: isCatastrophe ? '#e74c3c' : 'var(--gold-light)'}}>
-                        {isCatastrophe ? 'Final Catastrophe!' : 'The Last Age!'}
-                    </p>
+                  <p className="has-text-weight-bold is-size-5" style={{ color: isCatastrophe ? '#e74c3c' : 'var(--gold-light)' }}>
+                    {isCatastrophe ? 'Final Catastrophe!' : 'The Last Age!'}
+                  </p>
                 )}
                 <h4 className="title is-4 mt-4">{currentAge.name}</h4>
                 <p>{currentAge.description}</p>
@@ -80,42 +82,43 @@ const GameTurn: React.FC<GameTurnProps> = ({
         </div>
       </div>
 
-        <div className="player-trinkets-main-container mt-4">
-            <h2 className="section-title">Player Trinkets</h2>
-            <div className="columns is-multiline">
-            {playerNames.slice(0, playerCount).filter(name => name.trim() !== '').map((playerName, index) => {
-                const pName = playerName.trim();
-                const currentTrinkets = trinketState.playerTrinkets[pName] || [];
-                const pocketed = pocketedTrinkets[pName] || [];
-                const totalPoints = pocketed.reduce((sum, t) => sum + t.points, 0);
+      <div id="trinkets-section" className="player-trinkets-main-container mt-4">
+        <h2 className="section-title">Player Trinkets</h2>
+        <div className="columns is-multiline">
+          {playerNames.slice(0, playerCount).filter(name => name.trim() !== '').map((playerName, index) => {
+            const pName = playerName.trim();
+            const currentTrinkets = trinketState.playerTrinkets[pName] || [];
+            const pocketed = pocketedTrinkets[pName] || [];
+            const totalPoints = pocketed.reduce((sum, t) => sum + t.points, 0);
 
-                return (
-                    <div key={`${pName}-${index}`} className="column is-full-touch is-half-desktop">
-                        <div className="player-trinket-section box">
-                            <h3 className="title is-5 has-text-centered">{pName}</h3>
-                            <div className="trinkets-container">
-                                {currentTrinkets.map((trinket, tIndex) => (
-                                <TrinketCard
-                                    key={`${trinket.name}-${tIndex}`}
-                                    trinket={trinket}
-                                    onAdd={() => handleTrinketAdd(pName, trinket)}
-                                    onRemove={() => handleTrinketRemove(pName, trinket)}
-                                    onPocket={() => handleTrinketPocket(pName, trinket)}
-                                    isPocketDisabled={currentTrinkets.length !== 1}
-                                />
-                                ))}
-                            </div>
-                            {pocketed.length > 0 && (
-                                <div className="pocketed-trinkets mt-4">
-                                <h4 className='title is-6'>Pocketed Points: {totalPoints}</h4>
-                                </div>
-                            )}
-                        </div>
+            return (
+              <div key={`${pName}-${index}`} className="column is-full-touch is-half-desktop">
+                <div className="player-trinket-section box">
+                  <h3 className="title is-5 has-text-centered">{pName}</h3>
+                  <div className="trinkets-container">
+                    {currentTrinkets.map((trinket, tIndex) => (
+                      <TrinketCard
+                        key={`${trinket.name}-${tIndex}`}
+                        trinket={trinket}
+                        onAdd={() => handleTrinketAdd(pName, trinket)}
+                        onRemove={() => handleTrinketRemove(pName, trinket)}
+                        onPocket={() => handleTrinketPocket(pName, trinket)}
+                        isPocketDisabled={currentTrinkets.length !== 1 || trinketsPocketedThisTurn[pName]}
+                        isFogged={trinketsPocketedThisTurn[pName]}
+                      />
+                    ))}
+                  </div>
+                  {pocketed.length > 0 && (
+                    <div className="pocketed-trinkets mt-4">
+                      <h4 className='title is-6'>Pocketed Points: {totalPoints}</h4>
                     </div>
-                )
-            })}
-            </div>
+                  )}
+                </div>
+              </div>
+            )
+          })}
         </div>
+      </div>
     </div>
   );
 };

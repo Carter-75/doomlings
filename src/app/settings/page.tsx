@@ -52,11 +52,26 @@ const SettingsPage = () => {
     const [savedFiles, setSavedFiles] = useState<string[]>([]);
     const [message, setMessage] = useState('');
 
+    // Game Preferences State
+    const [showScrollToTop, setShowScrollToTop] = useState(true);
+    const [warnUnpocketedTrinkets, setWarnUnpocketedTrinkets] = useState(true);
+
     useEffect(() => {
         const savedScaling = localStorage.getItem('uiScaling');
         if (savedScaling) {
             setScale(parseInt(savedScaling, 10));
         }
+
+        // Load Game Preferences
+        const savedShowScrollToTop = localStorage.getItem('showScrollToTop');
+        if (savedShowScrollToTop !== null) {
+            setShowScrollToTop(savedShowScrollToTop === 'true');
+        }
+        const savedWarnUnpocketedTrinkets = localStorage.getItem('warnUnpocketedTrinkets');
+        if (savedWarnUnpocketedTrinkets !== null) {
+            setWarnUnpocketedTrinkets(savedWarnUnpocketedTrinkets === 'true');
+        }
+
         fetchJsonFiles();
         fetchSavedFiles();
     }, []);
@@ -64,6 +79,18 @@ const SettingsPage = () => {
     // Stub functions for now
     const handleScaleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setScale(parseInt(e.target.value, 10));
+    };
+
+    const handleShowScrollToTopChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const checked = e.target.checked;
+        setShowScrollToTop(checked);
+        localStorage.setItem('showScrollToTop', String(checked));
+    };
+
+    const handleWarnUnpocketedTrinketsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const checked = e.target.checked;
+        setWarnUnpocketedTrinkets(checked);
+        localStorage.setItem('warnUnpocketedTrinkets', String(checked));
     };
 
     const applyScale = () => {
@@ -823,6 +850,35 @@ const SettingsPage = () => {
                                 <h3>🔒 Privacy</h3>
                                 <p>{adsRemoved ? 'Ad-Free' : 'Ad-Supported'}</p>
                                 <small>{adsRemoved ? 'Premium — full privacy' : 'Free tier: Google AdMob ads'}</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Game Preferences Section */}
+                    <div className="settings-section">
+                        <h2>Game Preferences</h2>
+                        <div className="advanced-settings">
+                            <div className="setting-item">
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={showScrollToTop}
+                                        onChange={handleShowScrollToTopChange}
+                                    />
+                                    <span>Show Scroll-to-Top Button</span>
+                                </label>
+                                <small>Displays a floating button to quickly scroll to the top of the page when you are scrolled down.</small>
+                            </div>
+                            <div className="setting-item">
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={warnUnpocketedTrinkets}
+                                        onChange={handleWarnUnpocketedTrinketsChange}
+                                    />
+                                    <span>Warn for Unpocketed Trinkets</span>
+                                </label>
+                                <small>Prompts you if players haven't pocketed a trinket when advancing to the next turn.</small>
                             </div>
                         </div>
                     </div>
