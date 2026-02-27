@@ -6,50 +6,191 @@
 @tailwind utilities;
 
 :root {
-  /* Professional Red-Orange Color Palette */
+  /* Default Professional Red-Orange Theme */
   --primary-red: #d63447;
   --primary-orange: #ff7b4d;
   --secondary-red: #b71c1c;
   --secondary-orange: #ff8a50;
   --accent-red: #f44336;
   --accent-orange: #ff7043;
-
-  /* Supporting Colors */
   --dark-bg: #121212;
   --darker-bg: #0a0a0a;
   --light-bg: #2d2d2d;
   --lighter-bg: #3d3d3d;
-
-  /* Text Colors */
   --text-primary: #ffffff;
   --text-secondary: #ececec;
   --text-muted: #b0b0b0;
   --text-inverse: #000000;
-
-  /* Status Colors */
   --success: #4caf50;
   --warning: #ff9800;
   --error: #f44336;
   --info: #2196f3;
-
-  /* Shadows and Effects */
   --shadow-primary: 0 4px 20px rgba(214, 52, 71, 0.3);
   --shadow-secondary: 0 2px 10px rgba(0, 0, 0, 0.2);
   --shadow-card: 0 8px 30px rgba(0, 0, 0, 0.4);
   --glow-primary: 0 0 20px rgba(255, 107, 53, 0.5);
-
-  /* Responsive Breakpoints (for reference) */
   --mobile: 480px;
   --tablet: 768px;
   --desktop: 1024px;
   --large: 1440px;
-
-  /* UI Scale Factor */
   --ui-scale: 1;
   --ad-banner-height: 0px;
   --border-radius: 12px;
   --border-radius-small: 8px;
   --border-radius-large: 16px;
+}
+
+[data-theme="ocean"] {
+  --primary-red: #0284c7;
+  /* blue-600 */
+  --primary-orange: #38bdf8;
+  /* sky-400 */
+  --secondary-red: #0369a1;
+  /* sky-700 */
+  --secondary-orange: #7dd3fc;
+  /* sky-300 */
+  --accent-red: #0ea5e9;
+  /* sky-500 */
+  --accent-orange: #0284c7;
+  /* sky-600 */
+  --shadow-primary: 0 4px 20px rgba(2, 132, 199, 0.3);
+  --glow-primary: 0 0 20px rgba(56, 189, 248, 0.5);
+}
+
+[data-theme="forest"] {
+  --primary-red: #166534;
+  /* green-800 */
+  --primary-orange: #4ade80;
+  /* green-400 */
+  --secondary-red: #14532d;
+  /* green-900 */
+  --secondary-orange: #86efac;
+  /* green-300 */
+  --accent-red: #22c55e;
+  /* green-500 */
+  --accent-orange: #15803d;
+  /* green-700 */
+  --shadow-primary: 0 4px 20px rgba(22, 101, 52, 0.3);
+  --glow-primary: 0 0 20px rgba(74, 222, 128, 0.5);
+}
+
+[data-theme="purple"] {
+  --primary-red: #7e22ce;
+  /* purple-700 */
+  --primary-orange: #c084fc;
+  /* purple-400 */
+  --secondary-red: #581c87;
+  /* purple-900 */
+  --secondary-orange: #d8b4fe;
+  /* purple-300 */
+  --accent-red: #a855f7;
+  /* purple-500 */
+  --accent-orange: #9333ea;
+  /* purple-600 */
+  --shadow-primary: 0 4px 20px rgba(126, 34, 206, 0.3);
+  --glow-primary: 0 0 20px rgba(192, 132, 252, 0.5);
+}
+
+[data-theme="midnight"] {
+  --primary-red: #1e1b4b;
+  /* indigo-950 */
+  --primary-orange: #6366f1;
+  /* indigo-500 */
+  --secondary-red: #000000;
+  /* black */
+  --secondary-orange: #818cf8;
+  /* indigo-400 */
+  --accent-red: #4f46e5;
+  /* indigo-600 */
+  --accent-orange: #4338ca;
+  /* indigo-700 */
+  --shadow-primary: 0 4px 20px rgba(30, 27, 75, 0.3);
+  --glow-primary: 0 0 20px rgba(99, 102, 241, 0.5);
+}
+
+[data-theme="sunset"] {
+  --primary-red: #be123c;
+  /* rose-700 */
+  --primary-orange: #fbbf24;
+  /* amber-400 */
+  --secondary-red: #881337;
+  /* rose-900 */
+  --secondary-orange: #fcd34d;
+  /* amber-300 */
+  --accent-red: #f43f5e;
+  /* rose-500 */
+  --accent-orange: #f59e0b;
+  /* amber-500 */
+  --shadow-primary: 0 4px 20px rgba(190, 18, 60, 0.3);
+  --glow-primary: 0 0 20px rgba(251, 191, 36, 0.5);
+}
+
+[data-theme="cyberpunk"] {
+  --primary-red: #f0abfc;
+  /* fuchsia-300 */
+  --primary-orange: #2dd4bf;
+  /* teal-400 */
+  --secondary-red: #c026d3;
+  /* fuchsia-600 */
+  --secondary-orange: #5eead4;
+  /* teal-300 */
+  --accent-red: #e879f9;
+  /* fuchsia-400 */
+  --accent-orange: #14b8a6;
+  /* teal-500 */
+  --shadow-primary: 0 4px 20px rgba(240, 171, 252, 0.3);
+  --glow-primary: 0 0 20px rgba(45, 212, 191, 0.5);
+}
+
+[data-theme="gold"] {
+  --primary-red: #854d0e;
+  /* yellow-800 */
+  --primary-orange: #fde047;
+  /* yellow-300 */
+  --secondary-red: #713f12;
+  /* yellow-900 */
+  --secondary-orange: #fef08a;
+  /* yellow-200 */
+  --accent-red: #eab308;
+  /* yellow-500 */
+  --accent-orange: #ca8a04;
+  /* yellow-600 */
+  --shadow-primary: 0 4px 20px rgba(133, 77, 14, 0.3);
+  --glow-primary: 0 0 20px rgba(253, 224, 71, 0.5);
+}
+
+[data-theme="monochrome"] {
+  --primary-red: #52525b;
+  /* zinc-600 */
+  --primary-orange: #d4d4d8;
+  /* zinc-300 */
+  --secondary-red: #27272a;
+  /* zinc-800 */
+  --secondary-orange: #e4e4e7;
+  /* zinc-200 */
+  --accent-red: #a1a1aa;
+  /* zinc-400 */
+  --accent-orange: #71717a;
+  /* zinc-500 */
+  --shadow-primary: 0 4px 20px rgba(82, 82, 91, 0.3);
+  --glow-primary: 0 0 20px rgba(212, 212, 216, 0.5);
+}
+
+[data-theme="mint"] {
+  --primary-red: #0f766e;
+  /* teal-700 */
+  --primary-orange: #6ee7b7;
+  /* emerald-300 */
+  --secondary-red: #115e59;
+  /* teal-800 */
+  --secondary-orange: #a7f3d0;
+  /* emerald-200 */
+  --accent-red: #10b981;
+  /* emerald-500 */
+  --accent-orange: #059669;
+  /* emerald-600 */
+  --shadow-primary: 0 4px 20px rgba(15, 118, 110, 0.3);
+  --glow-primary: 0 0 20px rgba(110, 231, 183, 0.5);
 }
 
 body.ads-visible {

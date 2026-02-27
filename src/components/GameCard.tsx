@@ -33,7 +33,7 @@ const GameCard: React.FC<GameCardProps> = ({
   const getCardColorStyles = (color?: string) => {
     const baseGradient = 'bg-gradient-to-br';
     const selectedRing = isSelected ? 'ring-4 ring-yellow-400 ring-opacity-75 shadow-2xl shadow-yellow-400/50' : '';
-    
+
     switch (color) {
       case 'red':
         return `${baseGradient} from-red-600 via-red-500 to-red-700 border-red-400 text-white shadow-red-500/50 ${selectedRing}`;
@@ -62,7 +62,7 @@ const GameCard: React.FC<GameCardProps> = ({
   const getSizeClasses = () => {
     switch (size) {
       case 'small':
-        return 'w-16 h-24'; 
+        return 'w-16 h-24';
       case 'large':
         return 'w-32 h-48';
       case 'medium':
@@ -117,7 +117,7 @@ const GameCard: React.FC<GameCardProps> = ({
     >
       {/* Card Shadow */}
       <div className="absolute inset-0 bg-black/50 rounded-lg transform translate-x-1 translate-y-1 -z-10" />
-      
+
       {/* Main Card */}
       <div className={`
         relative w-full h-full rounded-lg overflow-hidden
@@ -125,12 +125,12 @@ const GameCard: React.FC<GameCardProps> = ({
         ${getRarityBorder()}
         backdrop-blur-sm
       `}>
-        
+
         {/* Holo Effect */}
         {card.rarity === 'holo' && (
           <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-white/20 opacity-50 animate-pulse" />
         )}
-        
+
         {/* Card Header */}
         <div className="relative p-1.5 border-b border-white/20">
           <div className="flex items-center justify-between">
@@ -166,8 +166,8 @@ const GameCard: React.FC<GameCardProps> = ({
           {showDetails && (
             <div className="text-xs leading-tight opacity-90 px-1">
               <div className="line-clamp-3" title={card.textPlaceholder}>
-                {card.textPlaceholder.length > 60 
-                  ? `${card.textPlaceholder.substring(0, 60)}...` 
+                {card.textPlaceholder.length > 60
+                  ? `${card.textPlaceholder.substring(0, 60)}...`
                   : card.textPlaceholder
                 }
               </div>
@@ -228,7 +228,7 @@ const GameCard: React.FC<GameCardProps> = ({
           </div>
           {card.restrictions.length > 0 && (
             <div className="text-red-400 text-xs mt-2">
-              Restrictions: {card.restrictions.map(r => r.type).join(', ')}
+              Restrictions: {card.restrictions.map((r, i) => <span key={`restriction-${i}`}>{r.type}{i < card.restrictions.length - 1 ? ', ' : ''}</span>)}
             </div>
           )}
         </div>

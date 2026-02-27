@@ -1,9 +1,9 @@
 {
   "name": "doomlings-companion",
-  "version": "3.2.7",
+  "version": "3.3.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbo",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

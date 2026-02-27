@@ -9,7 +9,7 @@ class GameSocketManager {
   private vercelManager: VercelGameManager | null = null;
   private useVercelFallback = false;
 
-  private constructor() {}
+  private constructor() { }
 
   static getInstance(): GameSocketManager {
     if (!GameSocketManager.instance) {
@@ -29,10 +29,10 @@ class GameSocketManager {
 
         // Determine the correct Socket.IO server URL
         let serverUrl = 'http://localhost:3000'; // Default for local development
-        
+
         if (typeof window !== 'undefined') {
           const hostname = window.location.hostname;
-          
+
           if (hostname === 'doomlings.vercel.app') {
             // Production Vercel deployment - use public demo server
             serverUrl = 'https://doomlings-socket-demo.glitch.me';
@@ -112,7 +112,7 @@ class GameSocketManager {
         return;
       }
 
-      this.socket!.emit('join-as-player', playerName, (response: any) => {
+      this.socket?.emit('join-as-player', playerName, (response: any) => {
         if (response.success) {
           this.playerId = response.playerId;
           this.playerName = playerName;
@@ -125,12 +125,16 @@ class GameSocketManager {
   }
 
   async createRoom(data: any) {
+    if (!this.socket && !this.useVercelFallback) {
+      await this.connect();
+    }
+
     if (this.useVercelFallback && this.vercelManager) {
       return this.vercelManager.createRoom(data);
     }
 
     return new Promise((resolve, reject) => {
-      this.socket!.emit('create-room', data, (response: any) => {
+      this.socket?.emit('create-room', data, (response: any) => {
         if (response.success) {
           resolve(response);
         } else {
@@ -140,14 +144,19 @@ class GameSocketManager {
     });
   }
 
-  async joinRoom(roomId: string) {
+  async joinRoom(roomId: string, password?: string) {
+    if (!this.socket && !this.useVercelFallback) {
+      await this.connect();
+    }
+
     if (this.useVercelFallback && this.vercelManager) {
-      return this.vercelManager.joinRoom(roomId);
+      return this.vercelManager.joinRoom(roomId, password);
     }
 
     return new Promise((resolve, reject) => {
-      this.socket!.emit('join-room', {
+      this.socket?.emit('join-room', {
         roomId,
+        password,
         playerName: this.playerName
       }, (response: any) => {
         if (response.success) {
@@ -160,12 +169,16 @@ class GameSocketManager {
   }
 
   async quickMatch(maxPlayers: number) {
+    if (!this.socket && !this.useVercelFallback) {
+      await this.connect();
+    }
+
     if (this.useVercelFallback && this.vercelManager) {
       return this.vercelManager.quickMatch(maxPlayers);
     }
 
     return new Promise((resolve, reject) => {
-      this.socket!.emit('quick-match', {
+      this.socket?.emit('quick-match', {
         maxPlayers,
         playerName: this.playerName
       }, (response: any) => {
@@ -178,38 +191,83 @@ class GameSocketManager {
     });
   }
 
-  setPlayerReady(roomId: string, ready: boolean) {
+  async setPlayerReady(roomId: string, ready: boolean) {
+    if (!this.socket && !this.useVercelFallback) {
+      await this.connect();
+    }
+
     if (this.useVercelFallback && this.vercelManager) {
       return this.vercelManager.setPlayerReady(roomId, ready);
     }
 
-    this.socket!.emit('player-ready', { roomId, ready });
+    this.socket?.emit('player-ready', { roomId, ready });
   }
 
-  playCard(roomId: string, cardId: string) {
+  async playCard(roomId: string, cardId: string) {
+    if (!this.socket && !this.useVercelFallback) {
+      await this.connect();
+    }
+
     if (this.useVercelFallback && this.vercelManager) {
       return this.vercelManager.playCard(roomId, cardId);
     }
 
-    this.socket!.emit('play-card', { roomId, cardId });
+    this.socket?.emit('play-card', { roomId, cardId });
   }
 
-  sendChatMessage(roomId: string, message: string) {
+  async sendChatMessage(roomId: string, message: string) {
+    if (!this.socket && !this.useVercelFallback) {
+      await this.connect();
+    }
+
     if (this.useVercelFallback && this.vercelManager) {
       return this.vercelManager.sendChatMessage(roomId, message);
     }
 
-    this.socket!.emit('send-chat', { roomId, message });
+    this.socket?.emit('send-chat', { roomId, message });
+  }
+
+  async syncGameState(roomId: string, payload: any) {
+    if (!this.socket && !this.useVercelFallback) {
+      await this.connect();
+    }
+
+    if (this.useVercelFallback && this.vercelManager) {
+      return this.vercelManager.syncGameState(roomId, payload);
+    }
+
+    // For socket io, just emit it to everyone
+    this.socket?.emit('sync-game-state', { roomId, payload });
   }
 
   async getPublicRooms() {
+    if (!this.socket && !this.useVercelFallback) {
+      await this.connect();
+    }
+
     if (this.useVercelFallback && this.vercelManager) {
       return this.vercelManager.getPublicRooms();
     }
 
     return new Promise<any[]>((resolve, reject) => {
-      this.socket!.emit('get-public-rooms', (rooms: any[]) => {
-        resolve(rooms);
+      this.socket?.emit('get-public-rooms', (rooms: any[]) => {
+        resolve(rooms || []);
+      });
+    });
+  }
+
+  async getLocalRooms() {
+    if (!this.socket && !this.useVercelFallback) {
+      await this.connect();
+    }
+
+    if (this.useVercelFallback && this.vercelManager) {
+      return this.vercelManager.getLocalRooms();
+    }
+
+    return new Promise<any[]>((resolve, reject) => {
+      this.socket?.emit('get-local-rooms', (rooms: any[]) => {
+        resolve(rooms || []);
       });
     });
   }
@@ -231,11 +289,35 @@ class GameSocketManager {
     }
   }
 
+  onRoomJoined(callback: (...args: any[]) => void) {
+    if (this.useVercelFallback && this.vercelManager) {
+      this.vercelManager.onRoomJoined(callback);
+    } else {
+      this.socket?.on('room-joined', callback);
+    }
+  }
+
+  onError(callback: (...args: any[]) => void) {
+    if (this.useVercelFallback && this.vercelManager) {
+      this.vercelManager.onError(callback);
+    } else {
+      this.socket?.on('error', callback);
+    }
+  }
+
   onGameUpdated(callback: (...args: any[]) => void) {
     if (this.useVercelFallback && this.vercelManager) {
       this.vercelManager.onGameUpdated(callback);
     } else {
       this.socket?.on('game-updated', callback);
+    }
+  }
+
+  onSyncGameState(callback: (...args: any[]) => void) {
+    if (this.useVercelFallback && this.vercelManager) {
+      this.vercelManager.onSyncGameState(callback);
+    } else {
+      this.socket?.on('sync-game-state', callback);
     }
   }
 
@@ -284,7 +366,23 @@ class GameSocketManager {
     }
   }
 
-  disconnect() {
+  async leaveRoom() {
+    if (!this.socket && !this.useVercelFallback) {
+      await this.connect();
+    }
+
+    if (this.useVercelFallback && this.vercelManager) {
+      this.vercelManager.leaveRoom();
+    } else {
+      this.socket?.emit('leave-room');
+    }
+  }
+
+  async disconnect() {
+    if (!this.socket && !this.useVercelFallback) {
+      await this.connect();
+    }
+
     if (this.useVercelFallback && this.vercelManager) {
       this.vercelManager.disconnect();
     } else {

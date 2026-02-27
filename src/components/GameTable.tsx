@@ -41,7 +41,7 @@ const GameTable: React.FC<GameTableProps> = ({
     const radius = 220; // Distance from center
     const x = Math.cos((angle * Math.PI) / 180) * radius;
     const y = Math.sin((angle * Math.PI) / 180) * radius;
-    
+
     return {
       transform: `translate(${x}px, ${y}px)`,
       position: 'absolute' as const,
@@ -57,19 +57,19 @@ const GameTable: React.FC<GameTableProps> = ({
 
   return (
     <div className="relative w-full h-screen bg-gradient-to-br from-green-800 via-green-700 to-green-900 overflow-hidden">
-      
+
       {/* Table Felt Background */}
       <div className="absolute inset-0">
         <div className="absolute inset-8 bg-gradient-to-br from-green-600 to-green-800 rounded-full shadow-2xl border-8 border-amber-600">
           {/* Felt Texture Pattern */}
           <div className="absolute inset-0 bg-green-700 rounded-full opacity-50"
-               style={{
-                 backgroundImage: `radial-gradient(circle at 20% 30%, rgba(0,0,0,0.1) 1px, transparent 1px),
+            style={{
+              backgroundImage: `radial-gradient(circle at 20% 30%, rgba(0,0,0,0.1) 1px, transparent 1px),
                                   radial-gradient(circle at 80% 70%, rgba(0,0,0,0.1) 1px, transparent 1px)`,
-                 backgroundSize: '50px 50px'
-               }}>
+              backgroundSize: '50px 50px'
+            }}>
           </div>
-          
+
           {/* Table Edge Highlight */}
           <div className="absolute inset-0 rounded-full border-4 border-amber-500 shadow-inner"></div>
         </div>
@@ -78,15 +78,15 @@ const GameTable: React.FC<GameTableProps> = ({
       {/* Central Game Area */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="relative w-80 h-80">
-          
+
           {/* Current Age Display */}
           {currentAge && (
             <div className="absolute top-8 left-1/2 transform -translate-x-1/2 z-10">
               <div className="bg-black/20 backdrop-blur rounded-lg p-3 text-center">
                 <div className="text-yellow-400 font-bold text-sm mb-2">CURRENT AGE</div>
-                <GameCard 
-                  card={currentAge} 
-                  size="small" 
+                <GameCard
+                  card={currentAge}
+                  size="small"
                   isPlayable={false}
                   showDetails={false}
                 />
@@ -113,9 +113,9 @@ const GameTable: React.FC<GameTableProps> = ({
           {/* Discard Pile */}
           <div className="absolute top-1/2 right-8 transform -translate-y-1/2">
             {discardPile.length > 0 ? (
-              <GameCard 
-                card={discardPile[discardPile.length - 1]} 
-                size="small" 
+              <GameCard
+                card={discardPile[discardPile.length - 1]}
+                size="small"
                 isPlayable={false}
                 showDetails={false}
               />
@@ -148,8 +148,8 @@ const GameTable: React.FC<GameTableProps> = ({
           style={getPlayerPositionStyle(player.position, players.length)}
           className="z-20"
         >
-          <PlayerArea 
-            player={player} 
+          <PlayerArea
+            player={player}
             isOtherPlayer={true}
             onCardHover={onCardHover}
           />
@@ -159,7 +159,7 @@ const GameTable: React.FC<GameTableProps> = ({
       {/* Current Player Area (Bottom) */}
       {currentPlayer && (
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30">
-          <CurrentPlayerArea 
+          <CurrentPlayerArea
             player={currentPlayer}
             onCardPlay={onCardPlay}
             onCardHover={onCardHover}
@@ -208,11 +208,11 @@ const PlayerArea: React.FC<{
         <div className="font-bold text-sm">{player.name}</div>
         <div className="text-xs text-gray-300">Gene Pool: {player.genePool}</div>
       </div>
-      
+
       {/* Hand Cards (face down for other players) */}
       <div className="flex justify-center mb-2 space-x-1">
         {player.hand.slice(0, Math.min(5, player.hand.length)).map((_, index) => (
-          <div key={index} className="w-4 h-6 bg-blue-900 rounded border border-blue-700 shadow-sm"></div>
+          <div key={`hand-${player.id}-${index}`} className="w-4 h-6 bg-blue-900 rounded border border-blue-700 shadow-sm"></div>
         ))}
         {player.hand.length > 5 && (
           <div className="text-xs text-white self-center ml-1">+{player.hand.length - 5}</div>

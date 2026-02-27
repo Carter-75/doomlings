@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Preferences } from '@capacitor/preferences';
 import { useAds } from '@/lib/ad-context';
+import { useTheme } from '@/lib/theme-context';
 import { Capacitor } from '@capacitor/core';
 
 // Cloud Sync Section - Coming Soon
@@ -34,6 +35,7 @@ const CloudSyncSection = () => (
 
 const SettingsPage = () => {
     const { adsRemoved, subscriptionStatus, purchaseSubscription, restorePurchases, openCustomerCenter, loading: adsLoading } = useAds();
+    const { theme, setTheme } = useTheme();
     const isNativeApp = typeof window !== 'undefined' && Capacitor.isNativePlatform();
 
     // State for UI scaling
@@ -104,12 +106,13 @@ const SettingsPage = () => {
         try {
             const response = await fetch('/api/list-files');
             if (!response.ok) {
-                throw new Error('Failed to fetch files');
+                console.warn('Failed to fetch files (route may not exist in static export)');
+                return;
             }
             const data = await response.json();
             setJsonFiles(data);
         } catch (error) {
-            console.error(error);
+            console.warn('Error fetching json files:', error);
             // Handle error state in UI
         }
     };
@@ -784,6 +787,49 @@ const SettingsPage = () => {
                             <span className="scale-value">{scale}%</span>
                         </div>
                         <button className="action-btn" onClick={applyScale}>Apply Scale</button>
+                    </div>
+
+                    {/* Theme Picker Section */}
+                    <div className="settings-section">
+                        <h2>🎨 App Theme</h2>
+                        <div className="theme-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '15px', marginTop: '15px' }}>
+                            {[
+                                { id: 'default', name: 'Default', colors: ['#d63447', '#ff7b4d'] },
+                                { id: 'ocean', name: 'Ocean', colors: ['#0284c7', '#38bdf8'] },
+                                { id: 'forest', name: 'Forest', colors: ['#166534', '#4ade80'] },
+                                { id: 'purple', name: 'Purple', colors: ['#7e22ce', '#c084fc'] },
+                                { id: 'midnight', name: 'Midnight', colors: ['#1e1b4b', '#6366f1'] },
+                                { id: 'sunset', name: 'Sunset', colors: ['#be123c', '#fbbf24'] },
+                                { id: 'cyberpunk', name: 'Cyber', colors: ['#f0abfc', '#2dd4bf'] },
+                                { id: 'gold', name: 'Gold', colors: ['#854d0e', '#fde047'] },
+                                { id: 'mint', name: 'Mint', colors: ['#0f766e', '#6ee7b7'] },
+                                { id: 'monochrome', name: 'Mono', colors: ['#52525b', '#d4d4d8'] },
+                            ].map(t => (
+                                <div
+                                    key={t.id}
+                                    onClick={() => setTheme(t.id)}
+                                    style={{
+                                        cursor: 'pointer',
+                                        padding: '10px',
+                                        borderRadius: '8px',
+                                        border: `2px solid ${theme === t.id ? '#00ff88' : 'rgba(255,255,255,0.1)'}`,
+                                        background: 'rgba(0,0,0,0.3)',
+                                        textAlign: 'center',
+                                        transition: 'all 0.2s',
+                                        transform: theme === t.id ? 'scale(1.05)' : 'scale(1)'
+                                    }}
+                                >
+                                    <div style={{
+                                        width: '100%',
+                                        height: '40px',
+                                        borderRadius: '4px',
+                                        background: `linear-gradient(135deg, ${t.colors[0]}, ${t.colors[1]})`,
+                                        marginBottom: '8px'
+                                    }}></div>
+                                    <span style={{ color: theme === t.id ? '#00ff88' : '#fff', fontSize: '0.9em', fontWeight: 'bold' }}>{t.name}</span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
 
                     {/* Cloud Sync Section */}

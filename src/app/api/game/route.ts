@@ -42,7 +42,7 @@ function generateInitialHand(playerId: string) {
 export async function POST(request: NextRequest) {
   try {
     const { action, data } = await request.json();
-    
+
     switch (action) {
       case 'register-player':
         const playerId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
@@ -51,13 +51,14 @@ export async function POST(request: NextRequest) {
           name: data.playerName,
           lastSeen: Date.now()
         });
-        
+
         return NextResponse.json({
           success: true,
           playerId,
           playerName: data.playerName
         });
-      
+
+      // ...
       case 'create-room':
         // Ensure player exists, if not create them
         let hostPlayerId = data.playerId;
@@ -72,7 +73,8 @@ export async function POST(request: NextRequest) {
         const roomId = generateRoomCode();
         const room = {
           id: roomId,
-          name: data.roomName,
+          name: data.roomName || `${data.playerName || 'Player'}'s Room`,
+          password: data.password || null,
           hostId: hostPlayerId,
           players: [
             // Automatically add the creator as the first player
@@ -86,37 +88,43 @@ export async function POST(request: NextRequest) {
               score: 0
             }
           ],
-          maxPlayers: data.maxPlayers,
+          maxPlayers: data.maxPlayers || 6,
           isPrivate: data.isPrivate,
+          isLocal: data.isLocal || false,
+          wifiIp: data.isLocal ? (request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '127.0.0.1').split(',')[0] : null,
           status: 'waiting',
           currentPlayerIndex: 0,
           gameSettings: data.gameSettings,
           createdAt: Date.now(),
           lastUpdate: Date.now()
         };
-        
+
         gameState.rooms.set(roomId, room);
-        
+
         return NextResponse.json({
           success: true,
           roomId,
           room
         });
-      
+
       case 'join-room':
         const targetRoom = gameState.rooms.get(data.roomId);
         if (!targetRoom) {
           return NextResponse.json({ success: false, error: 'Room not found' });
         }
-        
+
+        if (targetRoom.password && targetRoom.password !== data.password) {
+          return NextResponse.json({ success: false, error: 'Incorrect password' });
+        }
+
         if (targetRoom.players.length >= targetRoom.maxPlayers) {
           return NextResponse.json({ success: false, error: 'Room is full' });
         }
-        
+
         if (targetRoom.status !== 'waiting') {
           return NextResponse.json({ success: false, error: 'Game already started' });
         }
-        
+
         // Ensure player exists, get from data if not in gameState
         let player = gameState.players.get(data.playerId);
         if (!player) {
@@ -127,7 +135,7 @@ export async function POST(request: NextRequest) {
           };
           gameState.players.set(data.playerId, player);
         }
-        
+
         if (!targetRoom.players.find((p: any) => p.id === data.playerId)) {
           targetRoom.players.push({
             id: data.playerId,
@@ -140,43 +148,43 @@ export async function POST(request: NextRequest) {
           });
           targetRoom.lastUpdate = Date.now();
         }
-        
+
         return NextResponse.json({
           success: true,
           room: targetRoom
         });
-        
+
       case 'get-room-state':
         const roomForState = gameState.rooms.get(data.roomId);
         if (!roomForState) {
           return NextResponse.json({ success: false, error: 'Room not found' });
         }
-        
+
         return NextResponse.json({
           success: true,
           room: roomForState
         });
-        
+
       case 'set-player-ready':
         const readyRoom = gameState.rooms.get(data.roomId);
         if (!readyRoom) {
           return NextResponse.json({ success: false, error: 'Room not found' });
         }
-        
+
         const playerInRoom = readyRoom.players.find((p: any) => p.id === data.playerId);
         if (!playerInRoom) {
           return NextResponse.json({ success: false, error: 'Player not in room' });
         }
-        
+
         playerInRoom.ready = data.ready;
         readyRoom.lastUpdate = Date.now();
-        
+
         // Check if all players are ready to start game
         const minPlayers = 1; // Allow single player for testing
         if (readyRoom.players.length >= minPlayers && readyRoom.players.every((p: any) => p.ready)) {
           readyRoom.status = 'playing';
           readyRoom.currentPlayerIndex = 0;
-          
+
           // Deal initial hands
           readyRoom.players.forEach((player: any) => {
             player.hand = generateInitialHand(player.id);
@@ -185,49 +193,49 @@ export async function POST(request: NextRequest) {
             player.score = 0;
           });
         }
-        
+
         return NextResponse.json({
           success: true,
           room: readyRoom
         });
-        
+
       case 'play-card':
         const gameRoom = gameState.rooms.get(data.roomId);
         if (!gameRoom) {
           return NextResponse.json({ success: false, error: 'Room not found' });
         }
-        
+
         if (gameRoom.status !== 'playing') {
           return NextResponse.json({ success: false, error: 'Game not started' });
         }
-        
+
         const currentPlayer = gameRoom.players[gameRoom.currentPlayerIndex];
         if (currentPlayer.id !== data.playerId) {
           return NextResponse.json({ success: false, error: 'Not your turn' });
         }
-        
+
         const cardIndex = currentPlayer.hand.findIndex((card: any) => card.id === data.cardId);
         if (cardIndex === -1) {
           return NextResponse.json({ success: false, error: 'Card not found in hand' });
         }
-        
+
         const playedCard = currentPlayer.hand.splice(cardIndex, 1)[0];
         currentPlayer.traitPile.push(playedCard);
         currentPlayer.score += playedCard.points || 0;
-        
+
         // Move to next player
         gameRoom.currentPlayerIndex = (gameRoom.currentPlayerIndex + 1) % gameRoom.players.length;
         gameRoom.lastUpdate = Date.now();
-        
+
         return NextResponse.json({
           success: true,
           room: gameRoom,
           playedCard
         });
-        
+
       case 'get-public-rooms':
         const publicRooms = Array.from(gameState.rooms.values())
-          .filter(room => !room.isPrivate && room.status === 'waiting')
+          .filter(room => !room.isPrivate && room.status === 'waiting' && !room.isLocal)
           .map(room => ({
             id: room.id,
             name: room.name,
@@ -235,16 +243,70 @@ export async function POST(request: NextRequest) {
             maxPlayers: room.maxPlayers,
             createdAt: room.createdAt
           }));
-          
+
         return NextResponse.json({
           success: true,
           rooms: publicRooms
         });
-        
+
+      case 'get-local-rooms':
+        const clientIp = (request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '127.0.0.1').split(',')[0];
+        const localRooms = Array.from(gameState.rooms.values())
+          .filter(room => room.isLocal && room.wifiIp === clientIp && room.status === 'waiting')
+          .map(room => ({
+            id: room.id,
+            name: room.name,
+            password: room.password,
+            currentPlayers: room.players.length,
+            maxPlayers: room.maxPlayers,
+            createdAt: room.createdAt
+          }));
+
+        return NextResponse.json({
+          success: true,
+          rooms: localRooms
+        });
+
+      case 'sync-game-state':
+        const syncRoom = gameState.rooms.get(data.roomId);
+        if (!syncRoom) {
+          return NextResponse.json({ success: false, error: 'Room not found' });
+        }
+
+        // Ensure only the host can forcefully push full game state syncs
+        if (syncRoom.hostId !== data.playerId) {
+          return NextResponse.json({ success: false, error: 'Only the host can sync game state' });
+        }
+
+        syncRoom.gameStatePayload = data.payload;
+        syncRoom.lastUpdate = Date.now();
+
+        return NextResponse.json({
+          success: true,
+          room: syncRoom
+        });
+
+      case 'leave-room':
+        const leavingRoom = gameState.rooms.get(data.roomId);
+        if (!leavingRoom) {
+          return NextResponse.json({ success: false, error: 'Room not found' });
+        }
+
+        leavingRoom.players = leavingRoom.players.filter((p: any) => p.id !== data.playerId);
+
+        if (leavingRoom.players.length === 0) {
+          gameState.rooms.delete(data.roomId);
+        } else if (leavingRoom.hostId === data.playerId) {
+          // Re-assign host if host leaves
+          leavingRoom.hostId = leavingRoom.players[0].id;
+        }
+
+        return NextResponse.json({ success: true });
+
       default:
         return NextResponse.json({ success: false, error: 'Unknown action' });
     }
-    
+
   } catch (error) {
     console.error('API Error:', error);
     return NextResponse.json({ success: false, error: 'Server error' });
@@ -255,21 +317,21 @@ export async function GET() {
   // Clean up old rooms and players (older than 1 hour)
   const now = Date.now();
   const oneHour = 60 * 60 * 1000;
-  
+
   // Clean old rooms
   for (const [roomId, room] of gameState.rooms.entries()) {
     if (now - room.lastUpdate > oneHour) {
       gameState.rooms.delete(roomId);
     }
   }
-  
+
   // Clean old players
   for (const [playerId, player] of gameState.players.entries()) {
     if (now - player.lastSeen > oneHour) {
       gameState.players.delete(playerId);
     }
   }
-  
+
   return NextResponse.json({
     status: 'Doomlings API Running',
     timestamp: new Date().toISOString(),

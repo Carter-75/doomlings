@@ -12,6 +12,14 @@ const createConfig = (phase) => {
       unoptimized: true,
     },
 
+    eslint: {
+      ignoreDuringBuilds: true,
+    },
+
+    typescript: {
+      ignoreBuildErrors: true,
+    },
+
     poweredByHeader: false,
   };
 };

@@ -27,7 +27,7 @@ class VercelGameManager {
         },
         body: JSON.stringify({ action, data }),
       });
-      
+
       const result = await response.json();
       return result;
     } catch (error) {
@@ -38,28 +38,33 @@ class VercelGameManager {
 
   private startPolling() {
     if (this.pollInterval) return;
-    
+
     this.pollInterval = setInterval(async () => {
       if (this.currentRoomId) {
         try {
-          const result = await this.apiCall('get-room-state', { 
+          const result = await this.apiCall('get-room-state', {
             roomId: this.currentRoomId,
-            playerId: this.playerId 
+            playerId: this.playerId
           });
-          
+
           if (result.success && result.room) {
             // Check if room state changed
             const roomStateString = JSON.stringify(result.room);
             const lastStateString = JSON.stringify(this.lastRoomState);
-            
+
             if (roomStateString !== lastStateString) {
               this.lastRoomState = result.room;
-              
+
               if (result.room.status === 'playing') {
                 this.emit('game-started', result.room);
                 this.emit('game-updated', result.room);
               } else {
                 this.emit('room-updated', result.room);
+              }
+
+              // Check if a new game state payload was synced
+              if (result.room.gameStatePayload) {
+                this.emit('sync-game-state', result.room.gameStatePayload);
               }
             }
           } else if (result.error === 'Room not found') {
@@ -92,14 +97,14 @@ class VercelGameManager {
 
   async registerPlayer(playerName: string): Promise<string> {
     const result = await this.apiCall('register-player', { playerName });
-    
+
     if (result.success) {
       this.playerId = result.playerId;
       this.playerName = result.playerName;
       this.startPolling();
       return result.playerId;
     }
-    
+
     throw new Error(result.error || 'Failed to register player');
   }
 
@@ -109,28 +114,31 @@ class VercelGameManager {
       playerId: this.playerId,
       playerName: this.playerName
     });
-    
+
     if (result.success) {
       this.currentRoomId = result.roomId;
       return result;
     }
-    
+
     throw new Error(result.error || 'Failed to create room');
   }
 
-  async joinRoom(roomId: string) {
+  async joinRoom(roomId: string, password?: string) {
     const result = await this.apiCall('join-room', {
       roomId,
+      password,
       playerId: this.playerId,
       playerName: this.playerName
     });
-    
+
     if (result.success) {
       this.currentRoomId = roomId;
       this.lastRoomState = result.room;
+      this.emit('room-joined', result.room);
       return result;
     }
-    
+
+    this.emit('error', result.error || 'Failed to join room');
     throw new Error(result.error || 'Failed to join room');
   }
 
@@ -156,17 +164,17 @@ class VercelGameManager {
       playerId: this.playerId,
       ready
     });
-    
+
     if (result.success) {
       this.lastRoomState = result.room;
-      
+
       if (result.room.status === 'playing') {
         this.emit('game-started', result.room);
       } else {
         this.emit('room-updated', result.room);
       }
     }
-    
+
     return result;
   }
 
@@ -176,10 +184,10 @@ class VercelGameManager {
       playerId: this.playerId,
       cardId
     });
-    
+
     if (result.success) {
       this.emit('game-updated', result.room);
-      
+
       // Simulate chat message for card played
       this.emit('chat-message', {
         id: Date.now(),
@@ -190,7 +198,7 @@ class VercelGameManager {
         type: 'system'
       });
     }
-    
+
     return result;
   }
 
@@ -206,8 +214,33 @@ class VercelGameManager {
     });
   }
 
+  async syncGameState(roomId: string, payload: any) {
+    const result = await this.apiCall('sync-game-state', {
+      roomId,
+      playerId: this.playerId,
+      payload
+    });
+
+    if (result.success) {
+      // Optimistically emit locally as well
+      this.emit('sync-game-state', payload);
+      return result;
+    }
+
+    console.error('Failed to sync game state:', result.error);
+    throw new Error(result.error);
+  }
+
   async getPublicRooms() {
     const result = await this.apiCall('get-public-rooms');
+    if (result.success) {
+      return result.rooms;
+    }
+    return [];
+  }
+
+  async getLocalRooms() {
+    const result = await this.apiCall('get-local-rooms');
     if (result.success) {
       return result.rooms;
     }
@@ -220,6 +253,16 @@ class VercelGameManager {
     this.listeners['room-updated'].push(callback);
   }
 
+  onRoomJoined(callback: Function) {
+    if (!this.listeners['room-joined']) this.listeners['room-joined'] = [];
+    this.listeners['room-joined'].push(callback);
+  }
+
+  onError(callback: Function) {
+    if (!this.listeners['error']) this.listeners['error'] = [];
+    this.listeners['error'].push(callback);
+  }
+
   onGameStarted(callback: Function) {
     if (!this.listeners['game-started']) this.listeners['game-started'] = [];
     this.listeners['game-started'].push(callback);
@@ -228,6 +271,11 @@ class VercelGameManager {
   onGameUpdated(callback: Function) {
     if (!this.listeners['game-updated']) this.listeners['game-updated'] = [];
     this.listeners['game-updated'].push(callback);
+  }
+
+  onSyncGameState(callback: Function) {
+    if (!this.listeners['sync-game-state']) this.listeners['sync-game-state'] = [];
+    this.listeners['sync-game-state'].push(callback);
   }
 
   onChatMessage(callback: Function) {
@@ -255,6 +303,22 @@ class VercelGameManager {
 
   offAllListeners() {
     this.listeners = {};
+  }
+
+  async leaveRoom() {
+    if (this.currentRoomId) {
+      try {
+        await this.apiCall('leave-room', {
+          roomId: this.currentRoomId,
+          playerId: this.playerId
+        });
+      } catch (err) {
+        console.error('Failed to leave room api fetch', err);
+      }
+    }
+    this.currentRoomId = null;
+    this.lastRoomState = null;
+    this.stopPolling();
   }
 
   disconnect() {

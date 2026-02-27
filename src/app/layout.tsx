@@ -4,6 +4,7 @@ import { IframeProvider } from "@/lib/iframe-context";
 import { IframeWrapper } from "@/components/iframe-wrapper";
 import { BackHandler } from "@/components/back-handler";
 import { AdProvider } from "@/lib/ad-context";
+import { ThemeProvider } from "@/lib/theme-context";
 import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -45,14 +46,16 @@ export default function RootLayout({
         )}
       </head>
       <body className={inter.className}>
-        <IframeProvider>
-          <AdProvider>
-            <IframeWrapper>
-              <BackHandler />
-              {children}
-            </IframeWrapper>
-          </AdProvider>
-        </IframeProvider>
+        <ThemeProvider>
+          <IframeProvider>
+            <AdProvider>
+              <IframeWrapper>
+                <BackHandler />
+                {children}
+              </IframeWrapper>
+            </AdProvider>
+          </IframeProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

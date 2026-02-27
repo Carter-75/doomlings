@@ -166,15 +166,16 @@ const PrivacyPolicyPage = () => {
                     <li><strong>Local Storage:</strong> Your game preferences, settings, and current game state</li>
                     <li><strong>Device Storage:</strong> Saved game files and custom configurations</li>
                     <li><strong>Cache:</strong> App resources for faster loading</li>
+                    <li><strong>Local Network (WiFi):</strong> If you choose to sync your game state with another device on the same local network, data is transferred directly peer-to-peer. No data is sent over the internet or to our servers.</li>
                 </ul>
                 <p>This data never leaves your device unless you explicitly choose to share it (like exporting a game configuration).</p>
 
                 <h2>🎮 How the App Works</h2>
-                <p>The Doomlings Companion App has two tiers:</p>
+                <p>The Doomlings Companion App offers different gameplay modes (Companion App & upcoming Full Digital Game) under two tiers:</p>
                 <ul>
                     <li><strong>Free (Ad-Supported):</strong> All game logic runs locally. Google AdMob serves banner and interstitial ads, which may use device identifiers (see Advertising section below).</li>
                     <li><strong>Premium ($3.99/month):</strong> All ads are removed. No ad data is collected. Subscription managed by Google Play Billing — no separate account needed.</li>
-                    <li>No internet connection required for core game functionality</li>
+                    <li>No internet connection required for core game functionality (Local WiFi multiplayer operates purely on your local network)</li>
                     <li>No accounts or sign-ups required from us</li>
                 </ul>
 
@@ -229,7 +230,7 @@ const PrivacyPolicyPage = () => {
                 <p>The app requests minimal permissions and maintains high compatibility standards:</p>
                 <ul>
                     <li><strong>Storage:</strong> To save your game data and preferences locally</li>
-                    <li><strong>Network (if applicable):</strong> Only for optional features like updates</li>
+                    <li><strong>Network:</strong> To facilitate optional Local WiFi syncing between devices and checking for updates</li>
                     <li><strong>Android 15 Compatible:</strong> Targets API level 35 for enhanced security and performance</li>
                     <li><strong>Modern Security:</strong> Complies with Google Play's latest security requirements</li>
                 </ul>

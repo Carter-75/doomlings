@@ -1,12 +1,21 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useIframe } from '@/lib/iframe-context';
+import { useRouter } from 'next/navigation';
 
 export default function HomePage() {
   const { isIframe, isPortfolioEmbed } = useIframe();
-  const [showAdvanced, setShowAdvanced] = React.useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showModeModal, setShowModeModal] = useState(false);
+
+  const router = useRouter();
+
+  const handlePlayGameClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowModeModal(prev => !prev);
+  };
 
   return (
     <div className="home-container">
@@ -20,21 +29,57 @@ export default function HomePage() {
             </p>
 
             <div className="grid grid-auto mt-4">
-
-              <Link href="/game" className="card">
+              <a href="#" onClick={handlePlayGameClick} className="card">
                 <h3 className="text-center mb-2">🎮 Play Game</h3>
                 <p className="text-center">
-                  Start or continue your DOOMlings game with full state management and custom controls
+                  Start or continue your DOOMlings game with full state tracking
                 </p>
-              </Link>
+              </a>
 
               <Link href="/settings" className="card">
                 <h3 className="text-center mb-2">⚙️ Settings</h3>
                 <p className="text-center">
-                  Manage preferences, customize data files, and save/load game states
+                  Manage preferences, themes, and save/load game states
                 </p>
               </Link>
             </div>
+
+            {/* Inline Mode Selection */}
+            {showModeModal && (
+              <div className="mt-8 mb-6 animate-in fade-in duration-200">
+                <h2 className="text-3xl font-bold text-center text-primary-orange mb-2">Choose Game Mode</h2>
+                <p className="text-gray-400 text-center mb-6">How would you like to play today?</p>
+
+                <div className="grid grid-auto gap-6">
+                  {/* Companion App Link */}
+                  <a
+                    href="#"
+                    onClick={(e) => { e.preventDefault(); router.push('/game'); }}
+                    className="card w-full"
+                  >
+                    <h3 className="text-center mb-2">📱 Companion App</h3>
+                    <p className="text-center text-gray-400 text-sm mt-2">
+                      Track physical card game scores, ages, and rules. Optionally sync your stats across local WiFi.
+                    </p>
+                  </a>
+
+                  {/* Full Game (Coming Soon) */}
+                  <div className="card w-full relative overflow-hidden group/disabled cursor-not-allowed opacity-60 pointer-events-none">
+                    <div className="absolute inset-0 bg-black/60 z-10 flex items-center justify-center backdrop-blur-[2px]">
+                      <span className="bg-primary-orange text-white font-bold py-2 px-6 rounded-full transform rotate-[-12deg] shadow-lg text-lg border-2 border-white/20">
+                        Coming Soon!
+                      </span>
+                    </div>
+                    <div className="opacity-40 filter grayscale">
+                      <h3 className="text-center mb-2">🎮 Full Digital Game</h3>
+                      <p className="text-center text-gray-400 text-sm mt-2">
+                        Play the cards entirely on your device with rules enforcement and matchmaking.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <button
               onClick={() => setShowAdvanced(!showAdvanced)}
@@ -55,13 +100,6 @@ export default function HomePage() {
                       </p>
                     </Link>
                   )}
-
-                  <Link href="/multiplayer" className="card">
-                    <h3 className="text-center mb-2">🌐 Multiplayer</h3>
-                    <p className="text-center">
-                      Play the full Doomlings card game online with friends in real-time
-                    </p>
-                  </Link>
 
                   {!isIframe && (
                     <Link href="/privacy-policy" className="card">
@@ -90,7 +128,7 @@ export default function HomePage() {
                       <p>🎲 Roll challenges and track game rules with smart logic</p>
                     </div>
                     <div className="card">
-                      <p>📊 Manage Age decks and Catastrophe modes with Birth of Life priority</p>
+                      <p>📊 Manage Age decks and Catastrophe modes</p>
                     </div>
                     <div className="card">
                       <p>🎯 Handle Meaning of Life cards with custom configurations</p>
@@ -99,7 +137,7 @@ export default function HomePage() {
                       <p>💎 Track Dominant cards and tiers with color-coded system</p>
                     </div>
                     <div className="card">
-                      <p>🎁 Manage Trinket cards and player hands efficiently</p>
+                      <p>🌐 Sync gameplay automatically across local WiFi devices</p>
                     </div>
                     <div className="card">
                       <p>💾 Save and load multiple game states with persistent storage</p>
@@ -108,22 +146,17 @@ export default function HomePage() {
                       <p>📱 Mobile-friendly design with responsive controls</p>
                     </div>
                     <div className="card">
-                      <p>🎨 Custom styled spinner buttons for precise input</p>
-                    </div>
-                    <div className="card">
-                      <p>🔧 Advanced customization with JSON data editing</p>
-                    </div>
-                    <div className="card">
                       <p>🌙 Dark theme optimized for extended gameplay</p>
                     </div>
                   </div>
                 </div>
               </div>
             )}
-
           </div>
         </main>
       </div>
+
+
     </div>
   );
 }

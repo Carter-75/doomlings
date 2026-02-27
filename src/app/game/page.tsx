@@ -8,6 +8,8 @@ import TrinketCard from '@/components/TrinketCard';
 import AnimatedButton from '@/components/AnimatedButton';
 import GameTurn from '@/components/GameTurn';
 import TutorialOverlay, { TutorialStep } from '@/components/TutorialOverlay';
+import MultiplayerTab from '@/components/MultiplayerTab';
+import GameSocketManager from '@/lib/gameSocketManager';
 import { useAds } from '@/lib/ad-context';
 
 const TUTORIAL_STEPS: TutorialStep[] = [
@@ -99,6 +101,12 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     message: 'Dominants use a new Tier system (Tier 1–5) based on card stats. Assign a dominant to each player, and roll its bonus when you play it!',
     highlightId: 'nav-dominants',
     section: 'dominants',
+  },
+  {
+    title: '🌐 Multiplayer Sync',
+    message: 'Use the new Sync tab to connect with other devices on your WiFi! The host\'s game state (like Age Deck and Challenges) will automatically sync to everyone else.',
+    highlightId: 'nav-multiplayer',
+    section: 'multiplayer',
   },
   {
     title: '🎮 Game Turn',
@@ -226,6 +234,99 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false);
   const isMounted = useRef(false);
+
+  // Multiplayer State Initialization
+  const [socketManager] = useState(() => GameSocketManager.getInstance());
+  const [isHost, setIsHost] = useState(false);
+  const [currentRoom, setCurrentRoom] = useState<any>(null);
+
+  // SYNC LISTENER (Incoming State)
+  useEffect(() => {
+    const handleSync = (payload: any) => {
+      if (!payload || payload.hostId === socketManager.getPlayerId()) return; // Don't apply our own sync back
+
+      // Carefully apply incoming state, ignore local UI preferences
+      // We wrap in batch updates by React 18 implicitly, but just to be safe:
+      if (payload.playerCount !== undefined) setPlayerCount(payload.playerCount);
+      if (payload.playerNames) setPlayerNames(payload.playerNames);
+      if (payload.catastropheMode !== undefined) setCatastropheMode(payload.catastropheMode);
+      if (payload.manualCatastropheOverride !== undefined) setManualCatastropheOverride(payload.manualCatastropheOverride);
+      if (payload.currentRule !== undefined) setCurrentRule(payload.currentRule);
+      if (payload.challengePlayer !== undefined) setChallengePlayer(payload.challengePlayer);
+      if (payload.ageDeck) setAgeDeck(payload.ageDeck);
+      if (payload.currentAgeIndex !== undefined) setCurrentAgeIndex(payload.currentAgeIndex);
+      if (payload.normalAgeCount !== undefined) setNormalAgeCount(payload.normalAgeCount);
+      if (payload.merchantAgeCount !== undefined) setMerchantAgeCount(payload.merchantAgeCount);
+      if (payload.catastropheAgeCount !== undefined) setCatastropheAgeCount(payload.catastropheAgeCount);
+      if (payload.finalCatastropheMode !== undefined) setFinalCatastropheMode(payload.finalCatastropheMode);
+      if (payload.playerMeanings) setPlayerMeanings(payload.playerMeanings);
+      if (payload.selectedMeanings) setSelectedMeanings(payload.selectedMeanings);
+      if (payload.revealedMeanings) setRevealedMeanings(payload.revealedMeanings);
+      if (payload.dominantCardStates) setDominantCardStates(payload.dominantCardStates);
+      if (payload.trinketState) setTrinketState(payload.trinketState);
+      if (payload.pocketedTrinkets) setPocketedTrinkets(payload.pocketedTrinkets);
+      if (payload.trinketsPocketedThisTurn) setTrinketsPocketedThisTurn(payload.trinketsPocketedThisTurn);
+      if (payload.catastrophesInDeck) setCatastrophesInDeck(payload.catastrophesInDeck);
+      if (payload.showCatastropheList !== undefined) setShowCatastropheList(payload.showCatastropheList);
+      if (payload.challengeRolledThisAge !== undefined) setChallengeRolledThisAge(payload.challengeRolledThisAge);
+    };
+
+    const handleRoomJoined = (room: any) => {
+      setCurrentRoom(room);
+      const iAmHost = room.hostId === socketManager.getPlayerId();
+      setIsHost(iAmHost);
+    };
+
+    socketManager.onSyncGameState(handleSync);
+    socketManager.onRoomJoined(handleRoomJoined);
+
+    return () => {
+      // Keep active to prevent stale references, or handle cleanup carefully mapped
+    };
+  }, [socketManager]);
+
+  // SYNC PUSH (Outgoing State)
+  useEffect(() => {
+    // Only host pushes state changes
+    if (!isHost || !currentRoom) return;
+    if (!isInitialLoadComplete || !isMounted.current) return;
+
+    const syncPayload = {
+      hostId: socketManager.getPlayerId(),
+      playerCount,
+      playerNames,
+      catastropheMode,
+      manualCatastropheOverride,
+      currentRule,
+      challengePlayer,
+      ageDeck,
+      currentAgeIndex,
+      normalAgeCount,
+      merchantAgeCount,
+      catastropheAgeCount,
+      finalCatastropheMode,
+      playerMeanings,
+      selectedMeanings,
+      revealedMeanings,
+      dominantCardStates,
+      trinketState,
+      pocketedTrinkets,
+      trinketsPocketedThisTurn,
+      catastrophesInDeck,
+      showCatastropheList,
+      challengeRolledThisAge,
+    };
+
+    socketManager.syncGameState(currentRoom.id, syncPayload);
+  }, [
+    isHost, currentRoom, socketManager, isInitialLoadComplete, // Dependencies for when/who
+    playerCount, playerNames, catastropheMode, manualCatastropheOverride,
+    currentRule, challengePlayer, ageDeck, currentAgeIndex, normalAgeCount,
+    merchantAgeCount, catastropheAgeCount, finalCatastropheMode, playerMeanings,
+    selectedMeanings, revealedMeanings, dominantCardStates, trinketState,
+    pocketedTrinkets, trinketsPocketedThisTurn, catastrophesInDeck,
+    showCatastropheList, challengeRolledThisAge
+  ]);
 
   // GAME STATE PERSISTENCE
   useEffect(() => {
@@ -953,11 +1054,18 @@ export default function Home() {
           <button id="nav-age-setup" className="nav-button" onClick={() => showSection('ageSetup')}>Age Setup</button>
           <button id="nav-mol" className="nav-button" onClick={() => showSection('meaningOfLife')}>Meaning of Life</button>
           <button id="nav-trinkets" className="nav-button" onClick={() => showSection('trinkets')}>Trinkets</button>
+          <button id="nav-multiplayer" className="nav-button" onClick={() => showSection('multiplayer')}>Multiplayer</button>
           <button id="nav-game-turn" className="nav-button game-turn-button" onClick={() => showSection('gameTurn')}>Game Turn</button>
           <button className="tutorial-nav-btn" onClick={startTutorial}>❓ Tutorial</button>
         </div>
 
         {/* Sections */}
+        {activeSection === 'multiplayer' && (
+          <div className="full-height-section" style={{ display: 'block' }}>
+            <MultiplayerTab playerNames={playerNames.filter(name => name.trim() !== '')} playerCount={playerCount} />
+          </div>
+        )}
+
         {activeSection === 'gameTurn' && (
           <GameTurn
             playerCount={playerCount}
