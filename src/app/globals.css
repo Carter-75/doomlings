@@ -676,36 +676,39 @@ textarea:focus {
 /* Scroll to Top Button */
 .scroll-to-top-btn {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary-red), var(--primary-orange));
+  bottom: 24px;
+  right: 24px;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255, 69, 0, 0.95), rgba(214, 52, 71, 0.95));
+  backdrop-filter: blur(8px);
   color: white;
-  border: none;
-  font-size: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 26px;
+  font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: var(--shadow-primary);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   z-index: 1000;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   opacity: 0;
   visibility: hidden;
-  transform: translateY(20px);
+  transform: translateY(20px) scale(0.9);
 }
 
 .scroll-to-top-btn.visible {
   opacity: 1;
   visibility: visible;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
 }
 
 .scroll-to-top-btn:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.6);
+  transform: translateY(-6px) scale(1.08);
+  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  background: linear-gradient(135deg, rgba(255, 90, 20, 0.95), rgba(225, 65, 85, 0.95));
 }
 
 /* Warning Prompt Overlay */
@@ -1994,7 +1997,7 @@ input:checked+.catastrophe-slider:before {
 .tutorial-next-btn {
   background: linear-gradient(135deg, var(--accent-red), var(--primary-red));
   color: #fff;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 9px;
   padding: 0.55rem 1.2rem;
   font-size: 0.9rem;
@@ -2012,6 +2015,31 @@ input:checked+.catastrophe-slider:before {
 }
 
 .tutorial-next-btn:active {
+  transform: translateY(0);
+}
+
+.tutorial-back-btn {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 9px;
+  padding: 0.55rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  letter-spacing: 0.02em;
+}
+
+.tutorial-back-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.tutorial-back-btn:active {
   transform: translateY(0);
 }
 

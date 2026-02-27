@@ -304,6 +304,8 @@ const SettingsPage = () => {
             border-radius: 8px;
             box-sizing: border-box;
             overflow-x: hidden;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
         }
 
         .settings-section h2 {
@@ -318,18 +320,23 @@ const SettingsPage = () => {
             margin-bottom: 15px;
             flex-wrap: wrap;
             width: 100%;
+            max-width: 100%;
             box-sizing: border-box;
+            overflow: hidden;
         }
 
         .scale-control label {
             color: #fff;
             min-width: 200px;
             flex-shrink: 0;
+            max-width: 100%;
+            white-space: normal;
         }
 
         .scale-control input[type="range"] {
             flex: 1;
-            min-width: 200px;
+            min-width: 150px;
+            max-width: 100%;
         }
 
         .scale-value {
@@ -577,6 +584,9 @@ const SettingsPage = () => {
             border: 1px solid rgba(60, 130, 247, 0.2);
             border-radius: 8px;
             padding: 20px;
+            max-width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
         .setting-item label {
@@ -586,6 +596,8 @@ const SettingsPage = () => {
             color: #fff;
             font-weight: bold;
             cursor: pointer;
+            max-width: 100%;
+            flex-wrap: wrap;
         }
 
         .setting-item input[type="checkbox"] {
@@ -783,7 +795,7 @@ const SettingsPage = () => {
                         <h2>UI Scaling</h2>
                         <div className="scale-control">
                             <label htmlFor="ui-scale">Scale Interface:</label>
-                            <input type="range" id="ui-scale" min="50" max="150" value={scale} onChange={handleScaleChange} />
+                            <input type="range" id="ui-scale" min="50" max="125" value={scale} onChange={handleScaleChange} />
                             <span className="scale-value">{scale}%</span>
                         </div>
                         <button className="action-btn" onClick={applyScale}>Apply Scale</button>

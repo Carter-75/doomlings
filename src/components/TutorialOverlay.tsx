@@ -233,7 +233,7 @@ export default function TutorialOverlay({ steps, currentStep, onNext, onBack, on
 
                 <div className="tutorial-footer" style={{ display: 'flex', gap: '8px' }}>
                     {currentStep > 0 && (
-                        <button className="tutorial-skip-btn" onClick={onBack} style={{ flex: 1, padding: '12px', background: 'rgba(255, 255, 255, 0.15)', color: 'white', border: '1px solid rgba(255, 255, 255, 0.2)', borderRadius: '25px', cursor: 'pointer', fontWeight: 'bold' }}>
+                        <button className="tutorial-back-btn" onClick={onBack} style={{ flex: 1 }}>
                             ← Back
                         </button>
                     )}
