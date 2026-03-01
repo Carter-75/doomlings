@@ -23,8 +23,8 @@ interface CardCopy {
   selectedTier: string | null;
 }
 
-const DominantCard: React.FC<DominantCardProps> = ({ 
-  dominant, 
+const DominantCard: React.FC<DominantCardProps> = ({
+  dominant,
   players,
   assignedTo,
   selectedTier,
@@ -36,10 +36,10 @@ const DominantCard: React.FC<DominantCardProps> = ({
   const [showCopies, setShowCopies] = useState(false);
 
   // Check if any duplicates match the current search term
-  const hasMatchingDuplicates = cardCopies.some(copy => 
-    searchTerm && 
-    copy.assignedTo && 
-    copy.assignedTo !== 'Assign' && 
+  const hasMatchingDuplicates = cardCopies.some(copy =>
+    searchTerm &&
+    copy.assignedTo &&
+    copy.assignedTo !== 'Assign' &&
     copy.assignedTo.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -80,7 +80,7 @@ const DominantCard: React.FC<DominantCardProps> = ({
     const randomTierKey = tierKeys[Math.floor(Math.random() * tierKeys.length)];
     onChange({ selectedTier: randomTierKey || null });
   };
-  
+
   const handleAssignChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     onChange({ assignedTo: event.target.value });
   };
@@ -105,7 +105,7 @@ const DominantCard: React.FC<DominantCardProps> = ({
   };
 
   const updateCopy = (copyId: string, updates: Partial<CardCopy>) => {
-    setCardCopies(prev => prev.map(copy => 
+    setCardCopies(prev => prev.map(copy =>
       copy.id === copyId ? { ...copy, ...updates } : copy
     ));
   };
@@ -140,7 +140,7 @@ const DominantCard: React.FC<DominantCardProps> = ({
         <div className="tier-display">
           {selectedTier ? (
             <div>
-              <strong>Tier {selectedTier}:</strong> 
+              <strong>Tier {selectedTier}:</strong>
               <span className="tier-description">
                 {dominant.tiers[selectedTier]}
               </span>
@@ -154,22 +154,22 @@ const DominantCard: React.FC<DominantCardProps> = ({
       <div className="dominant-card-controls">
         {/* Tier Controls */}
         <div className="tier-controls">
-          <button 
-            className="button button-small tier-roll-button" 
+          <button
+            className="button button-small tier-roll-button"
             onClick={rollTier}
             type="button"
           >
             🎲 Roll Tier
           </button>
-          
+
           <div className="dropdown-wrapper">
-            <select 
-              value={selectedTier || ""} 
-              onChange={handleTierChange} 
+            <select
+              value={selectedTier || ""}
+              onChange={handleTierChange}
               className="styled-select"
             >
-              <option value="" disabled>
-                {selectedTier ? `Tier ${selectedTier}` : 'Set Tier'}
+              <option value="">
+                Set Tier
               </option>
               {Object.keys(dominant.tiers).map(tier => (
                 <option key={tier} value={tier}>
@@ -182,9 +182,9 @@ const DominantCard: React.FC<DominantCardProps> = ({
 
         {/* Assignment Control */}
         <div className="dropdown-wrapper">
-          <select 
-            value={assignedTo} 
-            onChange={handleAssignChange} 
+          <select
+            value={assignedTo}
+            onChange={handleAssignChange}
             className="styled-select"
           >
             <option value="Assign" disabled>
@@ -201,27 +201,27 @@ const DominantCard: React.FC<DominantCardProps> = ({
 
         {/* Duplication Controls */}
         <div className="duplication-controls">
-          <button 
-            className="button button-small" 
+          <button
+            className="button button-small"
             onClick={duplicateCard}
             type="button"
             title="Create a duplicate copy for multiple players"
           >
             📄 Duplicate
           </button>
-          
+
           {cardCopies.length > 0 && (
             <>
-              <button 
-                className="button button-small" 
+              <button
+                className="button button-small"
                 onClick={toggleShowCopies}
                 type="button"
               >
                 {showCopies ? 'Hide' : 'Show'} Copies ({cardCopies.length})
               </button>
-              
-              <button 
-                className="button button-small error" 
+
+              <button
+                className="button button-small error"
                 onClick={clearAllCopies}
                 type="button"
                 title="Remove all duplicate copies"
@@ -239,11 +239,11 @@ const DominantCard: React.FC<DominantCardProps> = ({
           <h4 className="copies-title">Duplicate Cards ({cardCopies.length})</h4>
           <div className="copies-grid">
             {cardCopies.map((copy, index) => {
-              const isMatching = searchTerm && 
-                                copy.assignedTo && 
-                                copy.assignedTo !== 'Assign' && 
-                                copy.assignedTo.toLowerCase().includes(searchTerm.toLowerCase());
-              
+              const isMatching = searchTerm &&
+                copy.assignedTo &&
+                copy.assignedTo !== 'Assign' &&
+                copy.assignedTo.toLowerCase().includes(searchTerm.toLowerCase());
+
               return (
                 <div key={copy.id} className={`copy-card ${isMatching ? 'search-match' : ''}`}>
                   <div className="copy-header">
@@ -251,72 +251,72 @@ const DominantCard: React.FC<DominantCardProps> = ({
                       Copy {index + 1}
                       {isMatching && <span className="match-indicator"> 🔍</span>}
                     </span>
-                  <button 
-                    className="button button-small error" 
-                    onClick={() => removeCopy(copy.id)}
-                    type="button"
-                    title="Remove this copy"
-                  >
-                    ❌
-                  </button>
-                </div>
+                    <button
+                      className="button button-small error"
+                      onClick={() => removeCopy(copy.id)}
+                      type="button"
+                      title="Remove this copy"
+                    >
+                      ❌
+                    </button>
+                  </div>
 
-                <div className="copy-tier-display">
-                  {copy.selectedTier ? (
-                    <div>
-                      <strong>Tier {copy.selectedTier}:</strong>
-                      <span className="tier-description">
-                        {dominant.tiers[copy.selectedTier]}
-                      </span>
+                  <div className="copy-tier-display">
+                    {copy.selectedTier ? (
+                      <div>
+                        <strong>Tier {copy.selectedTier}:</strong>
+                        <span className="tier-description">
+                          {dominant.tiers[copy.selectedTier]}
+                        </span>
+                      </div>
+                    ) : (
+                      <em>No tier selected</em>
+                    )}
+                  </div>
+
+                  <div className="copy-controls">
+                    <button
+                      className="button button-small"
+                      onClick={() => rollTierForCopy(copy.id)}
+                      type="button"
+                    >
+                      🎲 Roll
+                    </button>
+
+                    <div className="dropdown-wrapper">
+                      <select
+                        value={copy.selectedTier || ""}
+                        onChange={(e) => updateCopy(copy.id, { selectedTier: e.target.value || null })}
+                        className="styled-select"
+                      >
+                        <option value="">
+                          Set Tier
+                        </option>
+                        {Object.keys(dominant.tiers).map(tier => (
+                          <option key={tier} value={tier}>
+                            Tier {tier}
+                          </option>
+                        ))}
+                      </select>
                     </div>
-                  ) : (
-                    <em>No tier selected</em>
-                  )}
-                </div>
 
-                <div className="copy-controls">
-                  <button 
-                    className="button button-small" 
-                    onClick={() => rollTierForCopy(copy.id)}
-                    type="button"
-                  >
-                    🎲 Roll
-                  </button>
-
-                  <div className="dropdown-wrapper">
-                    <select 
-                      value={copy.selectedTier || ""} 
-                      onChange={(e) => updateCopy(copy.id, { selectedTier: e.target.value || null })} 
-                      className="styled-select"
-                    >
-                      <option value="" disabled>
-                        {copy.selectedTier ? `Tier ${copy.selectedTier}` : 'Set Tier'}
-                      </option>
-                      {Object.keys(dominant.tiers).map(tier => (
-                        <option key={tier} value={tier}>
-                          Tier {tier}
+                    <div className="dropdown-wrapper">
+                      <select
+                        value={copy.assignedTo}
+                        onChange={(e) => updateCopy(copy.id, { assignedTo: e.target.value })}
+                        className="styled-select"
+                      >
+                        <option value="Assign" disabled>
+                          {copy.assignedTo === 'Assign' ? 'Assign Player' : copy.assignedTo}
                         </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="dropdown-wrapper">
-                    <select 
-                      value={copy.assignedTo} 
-                      onChange={(e) => updateCopy(copy.id, { assignedTo: e.target.value })} 
-                      className="styled-select"
-                    >
-                      <option value="Assign" disabled>
-                        {copy.assignedTo === 'Assign' ? 'Assign Player' : copy.assignedTo}
-                      </option>
-                      <option value="Assign">Unassigned</option>
-                      {players.map(player => (
-                        <option key={player} value={player}>
-                          {player}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                        <option value="Assign">Unassigned</option>
+                        {players.map(player => (
+                          <option key={player} value={player}>
+                            {player}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 </div>
               );

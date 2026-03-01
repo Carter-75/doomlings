@@ -676,7 +676,7 @@ textarea:focus {
 /* Scroll to Top Button */
 .scroll-to-top-btn {
   position: fixed;
-  bottom: 24px;
+  bottom: calc(24px + var(--ad-banner-height));
   right: 24px;
   width: 52px;
   height: 52px;

@@ -1613,7 +1613,7 @@ export default function Home() {
         />
       )}
 
-      <footer style={{ textAlign: 'center', padding: '30px 0', marginTop: '40px', marginBottom: 'var(--ad-banner-height)', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+      <footer style={{ textAlign: 'center', padding: '30px 0', marginTop: '40px', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', flexWrap: 'wrap' }}>
           <Link href="/" style={{ color: '#ccc', textDecoration: 'none', transition: 'color 0.3s ease' }}>
             🏠 Home
