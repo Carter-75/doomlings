@@ -76,7 +76,7 @@ export default function HomePage() {
 
             {!adsRemoved && (
               <div className="mt-4">
-                <Link href="/premium" className="card" style={{ borderColor: 'rgba(255, 193, 7, 0.4)', background: 'rgba(255, 193, 7, 0.05)' }}>
+                <Link href="/premium" className="card" style={{ borderColor: 'rgba(255, 193, 7, 0.4)', background: 'linear-gradient(135deg, rgba(255, 193, 7, 0.08), rgba(255, 87, 34, 0.08))' }}>
                   <h3 className="text-center mb-2" style={{ color: '#ffc107' }}>✨ Remove Ads</h3>
                   <p className="text-center" style={{ color: '#ccc' }}>
                     Upgrade to Premium for an uninterrupted, ad-free experience.

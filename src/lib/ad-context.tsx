@@ -120,47 +120,59 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
         let cancelled = false;
 
         async function init() {
-            // Paint from cache immediately so UI doesn't flash
-            const persisted = await loadPersistedState();
+            let rcError = false;
+            try {
+                // Paint from cache immediately so UI doesn't flash
+                const persisted = await loadPersistedState();
 
-            // Start AdMob (no-op on web)
-            await initializeAdMob();
+                // Start AdMob (no-op on web)
+                await initializeAdMob().catch(e => console.warn('[AdMob] Init error:', e));
 
-            if (isNative() && RC_API_KEY) {
-                try {
-                    const rc = await getPurchases();
-                    if (rc) {
-                        const { Purchases, LOG_LEVEL } = rc;
+                if (isNative() && RC_API_KEY) {
+                    try {
+                        const rc = await getPurchases();
+                        if (rc) {
+                            const { Purchases, LOG_LEVEL } = rc;
 
-                        // Debug logging (matches RC quickstart)
-                        await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
+                            // Debug logging (matches RC quickstart)
+                            await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
 
-                        // Configure — same key for Android & iOS
-                        await Purchases.configure({ apiKey: RC_API_KEY });
+                            // Configure — same key for Android & iOS
+                            await Purchases.configure({ apiKey: RC_API_KEY });
 
-                        // Verify entitlement with RC backend
-                        const { customerInfo } = await Purchases.getCustomerInfo();
-                        if (!cancelled) {
-                            await applyAdsState(hasEntitlement(customerInfo));
+                            // Verify entitlement with RC backend
+                            const { customerInfo } = await Purchases.getCustomerInfo();
+                            if (!cancelled) {
+                                await applyAdsState(hasEntitlement(customerInfo));
+                            }
+
+                            // Fetch available packages to show in UI
+                            const offerings = await Purchases.getOfferings();
+                            if (offerings.current !== null && !cancelled) {
+                                setPackages(offerings.current.availablePackages);
+                            }
                         }
-
-                        // Fetch available packages to show in UI
-                        const offerings = await Purchases.getOfferings();
-                        if (offerings.current !== null && !cancelled) {
-                            setPackages(offerings.current.availablePackages);
-                        }
+                    } catch (e) {
+                        console.warn('[RC] Could not verify subscription or fetch offerings:', e);
+                        rcError = true;
                     }
-                } catch (e) {
-                    console.warn('[RC] Could not verify subscription or fetch offerings:', e);
-                    if (!cancelled && !persisted) setSubscriptionStatus('free');
+                } else {
+                    rcError = true;
                 }
-            } else {
-                if (!cancelled && !persisted) setSubscriptionStatus('free');
-            }
 
-            if (!cancelled) {
-                if (!adsRemoved && isNative()) await showBanner();
-                setLoading(false);
+                if (rcError && !cancelled && !persisted) {
+                    setSubscriptionStatus('free');
+                }
+
+                if (!cancelled) {
+                    if (!adsRemoved && isNative()) {
+                        await showBanner().catch(e => console.warn('[AdMob] showBanner error:', e));
+                    }
+                }
+            } finally {
+                if (!cancelled) {
+                    setLoading(false);
+                }
             }
         }
 
