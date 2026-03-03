@@ -1,7 +1,7 @@
 Build Information
 ==================
-Build Date: 2026-03-03_00-39-11
-Version: 3.3.5
+Build Date: 2026-03-03_14-30-57
+Version: 3.3.6
 
 Files Generated:
 - app-release.aab (Android App Bundle)

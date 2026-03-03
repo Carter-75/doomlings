@@ -380,6 +380,7 @@ button:disabled,
 /* Advanced Card System */
 .card,
 .box {
+  display: block;
   background: linear-gradient(135deg, var(--light-bg) 0%, var(--lighter-bg) 100%);
   border: 1px solid rgba(214, 52, 71, 0.2);
   border-radius: var(--border-radius);

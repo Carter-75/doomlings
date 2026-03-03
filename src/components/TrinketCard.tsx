@@ -25,7 +25,7 @@ const TrinketCard: React.FC<TrinketCardProps> = ({ trinket, onAdd, onRemove, onP
     <div className={`trinket-card card ${isFogged ? 'trinket-fogged' : ''}`}>
       <div className="card-content">
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-          {cardArtUrl && (
+          {cardArtUrl ? (
             <img
               src={cardArtUrl}
               alt={trinket.name}
@@ -38,6 +38,24 @@ const TrinketCard: React.FC<TrinketCardProps> = ({ trinket, onAdd, onRemove, onP
                 objectFit: 'contain'
               }}
             />
+          ) : (
+            <div style={{
+              width: '45px',
+              height: '63px',
+              borderRadius: '4px',
+              background: 'linear-gradient(135deg, #2c3e50, #3498db)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              fontSize: '10px',
+              fontWeight: 'bold',
+              textAlign: 'center',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.5)',
+              padding: '2px'
+            }}>
+              ?
+            </div>
           )}
           <h4 className="title is-5" style={{ margin: 0 }}>{trinket.name}</h4>
         </div>

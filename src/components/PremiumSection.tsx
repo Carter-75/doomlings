@@ -5,7 +5,7 @@ import { useAds } from '@/lib/ad-context';
 import { Capacitor } from '@capacitor/core';
 
 export const PremiumSection = () => {
-    const { adsRemoved, loading: adsLoading, packages, purchasePackage, restorePurchases } = useAds();
+    const { adsRemoved, loading: adsLoading, packages, purchaseProduct, restorePurchases } = useAds();
     const isNativeApp = typeof window !== 'undefined' && Capacitor.isNativePlatform();
 
     return (
@@ -30,16 +30,20 @@ export const PremiumSection = () => {
                 </ul>
             )}
 
-            {!adsRemoved && isNativeApp && packages.length > 0 && (
+            {!adsRemoved && (
                 <div className="packages-grid">
-                    {packages.map((pkg: any) => (
+                    {[
+                        { identifier: 'remove_ads_monthly', title: 'Monthly – Remove Ads', description: 'Ad-free for 1 month.', priceString: '$1.99/mo' },
+                        { identifier: 'remove_ads_yearly', title: 'Yearly – Remove Ads', description: 'Ad-free for 1 year.', priceString: '$14.99/yr' },
+                        { identifier: 'remove_ads_lifetime', title: 'Lifetime – Remove Ads', description: 'Ad-free forever.', priceString: '$29.99' }
+                    ].map((pkg) => (
                         <div key={pkg.identifier} className="package-card">
-                            <h3>{pkg.product.title}</h3>
-                            <p>{pkg.product.description}</p>
-                            <div className="package-price">{pkg.product.priceString}</div>
+                            <h3>{pkg.title}</h3>
+                            <p>{pkg.description}</p>
+                            <div className="package-price">{pkg.priceString}</div>
                             <button
                                 className="subscribe-btn"
-                                onClick={() => purchasePackage(pkg)}
+                                onClick={() => purchaseProduct(pkg.identifier)}
                                 disabled={adsLoading}
                             >
                                 Subscribe
@@ -47,10 +51,6 @@ export const PremiumSection = () => {
                         </div>
                     ))}
                 </div>
-            )}
-
-            {!adsRemoved && isNativeApp && packages.length === 0 && !adsLoading && (
-                <p style={{ color: '#ccc', fontStyle: 'italic', marginBottom: '20px' }}>No plans available right now.</p>
             )}
 
             <div className="premium-btn-row">
@@ -62,10 +62,6 @@ export const PremiumSection = () => {
                     🔄 Restore Purchases
                 </button>
             </div>
-
-            {!isNativeApp && (
-                <p className="web-only-note">Subscriptions are managed through Google Play on the Android app.</p>
-            )}
 
             <style jsx>{`
                 .premium-section {

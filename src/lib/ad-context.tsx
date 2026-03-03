@@ -22,6 +22,8 @@ interface AdContextValue {
     packages: any[];
     /** Purchases a specific package */
     purchasePackage: (pkg: any) => Promise<void>;
+    /** Purchases a specific product directly by its string identifier */
+    purchaseProduct: (productIdentifier: string) => Promise<void>;
     /** Restores previous purchases (native only) */
     restorePurchases: () => Promise<void>;
     /** Temporarily suppress ads (e.g., during tutorial) */
@@ -36,6 +38,7 @@ const AdContext = createContext<AdContextValue>({
     subscriptionStatus: 'checking',
     packages: [],
     purchasePackage: async () => { },
+    purchaseProduct: async () => { },
     restorePurchases: async () => { },
     setAdsSuppressed: () => { },
     bannerVisible: false,
@@ -181,7 +184,7 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // ─── Direct Purchase Method ───────────────────────────────────────────────
+    // ─── Direct Purchase Method (Mock Package) ────────────────────────────────
     const purchasePackage = useCallback(async (pkg: any) => {
         if (!isNative()) {
             alert('Subscriptions are only available in the Android app. Download it from Google Play!');
@@ -208,6 +211,46 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
         }
     }, [applyAdsState]);
 
+    // ─── Direct Purchase Method (By Product ID) ───────────────────────────────
+    const purchaseProduct = useCallback(async (productIdentifier: string) => {
+        if (!isNative()) {
+            alert('Subscriptions are only available in the Android app. Download it from Google Play!');
+            return;
+        }
+        try {
+            const rc = await getPurchases();
+            if (!rc) throw new Error('RC unavailable');
+
+            // Try to find the package in current offerings first
+            const existingPackage = packages.find(p => p.product.identifier === productIdentifier || p.identifier === productIdentifier);
+            let purchaseResult;
+
+            if (existingPackage) {
+                purchaseResult = await rc.Purchases.purchasePackage({ aPackage: existingPackage });
+            } else {
+                // Fallback: try to fetch the product directly
+                const { products } = await rc.Purchases.getProducts({ productIdentifiers: [productIdentifier] });
+                if (!products || products.length === 0) {
+                    throw new Error('Product not found dynamically: ' + productIdentifier);
+                }
+                purchaseResult = await rc.Purchases.purchaseStoreProduct({ product: products[0] });
+            }
+
+            if (hasEntitlement(purchaseResult.customerInfo)) {
+                await applyAdsState(true);
+                alert('✅ Subscription successful! Ads have been removed.');
+            }
+        } catch (e: any) {
+            console.error('[RC] Purchase error:', e);
+            const rc = await getPurchases();
+            if (rc && e.code === rc.PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) {
+                // User cancelled the purchase, do nothing
+            } else {
+                alert('Something went wrong processing your purchase. Please try again.');
+            }
+        }
+    }, [applyAdsState, packages]);
+
     // ─── Restore purchases ──────────────────────────────────────────────────────
     const restorePurchases = useCallback(async () => {
         if (!isNative()) { alert('Restore Purchases is only available in the Android app.'); return; }
@@ -229,7 +272,7 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
     return (
         <AdContext.Provider value={{
             adsRemoved, loading, subscriptionStatus, packages,
-            purchasePackage, restorePurchases,
+            purchasePackage, purchaseProduct, restorePurchases,
             setAdsSuppressed, bannerVisible,
         }}>
             {children}

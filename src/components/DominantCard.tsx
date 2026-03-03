@@ -138,7 +138,7 @@ const DominantCard: React.FC<DominantCardProps> = ({
       {/* Main Card */}
       <div className="dominant-card-main">
         <h3 className="dominant-name" style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-          {cardArtUrl && (
+          {cardArtUrl ? (
             <img
               src={cardArtUrl}
               alt={dominant.name}
@@ -150,6 +150,22 @@ const DominantCard: React.FC<DominantCardProps> = ({
                 objectFit: 'contain'
               }}
             />
+          ) : (
+            <div style={{
+              width: '60px',
+              height: '84px',
+              borderRadius: '4px',
+              background: 'linear-gradient(135deg, #d35400, #f39c12)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.5)'
+            }}>
+              ?
+            </div>
           )}
           <span>
             {dominant.name}

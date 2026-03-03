@@ -46,7 +46,7 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
       {(isSelected || isRevealed || isViewing) && (
         <div className="meaning-card-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
-            {cardArtUrl && (
+            {cardArtUrl ? (
               <img
                 src={cardArtUrl}
                 alt={card.name}
@@ -59,6 +59,22 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
                   objectFit: 'contain'
                 }}
               />
+            ) : (
+              <div style={{
+                width: '45px',
+                height: '63px',
+                borderRadius: '4px',
+                background: 'linear-gradient(135deg, #4b1b63, #9b59b6)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.5)'
+              }}>
+                ?
+              </div>
             )}
             <h4 className="meaning-card-name" style={{ margin: 0 }}>
               {card.name}

@@ -17,15 +17,37 @@ export function useCardImage() {
 
         if (!isFetching) {
             isFetching = true;
-            fetchPromise = fetch('/data/scrapedCards.json')
-                .then(res => res.json())
-                .then(data => {
-                    globalCardCache = data;
-                    setCards(data);
+            fetchPromise = Promise.all([
+                fetch('/data/scrapedCards.json').then(res => res.json()),
+                fetch('/data/missingCardsFoundFromScrape.json').then(res => res.json().catch(() => [])) // optional missing cards fallback
+            ])
+                .then(([scrapedData, missingData]) => {
+                    const combined = { ...scrapedData };
+
+                    // Add any missing cards that were manually aggregated
+                    if (Array.isArray(missingData)) {
+                        missingData.forEach((card: any) => {
+                            if (card && card.name) {
+                                // strictly normalize the key
+                                const key = card.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+                                combined[key] = card;
+                            }
+                        });
+                    }
+
+                    // Also duplicate existing keys in the cache to have a stripped-down alphanumeric key
+                    const finalizedCache: Record<string, any> = {};
+                    Object.keys(combined).forEach(originalKey => {
+                        const cleanKey = originalKey.toLowerCase().replace(/[^a-z0-9]/g, '');
+                        finalizedCache[cleanKey] = combined[originalKey];
+                    });
+
+                    globalCardCache = finalizedCache;
+                    setCards(finalizedCache);
                     setLoading(false);
                 })
                 .catch(err => {
-                    console.error('Error fetching scrapedCards.json:', err);
+                    console.error('Error fetching card data:', err);
                     setLoading(false);
                 })
                 .finally(() => {
@@ -44,13 +66,12 @@ export function useCardImage() {
 
     /**
      * Looks up a card by name and returns its image URL.
-     * Case-insensitive, ignores extra spaces.
+     * Uses strict alphanumeric matching to ignore whitespace and punctuation differences.
      */
     const getCardImage = (cardName: string): string | null => {
         if (!cardName || !globalCardCache) return null;
 
-        // Normalize to lowercase for reliable lookups
-        const normalized = cardName.toLowerCase().trim();
+        const normalized = cardName.toLowerCase().replace(/[^a-z0-9]/g, '');
         const cardData = globalCardCache[normalized];
 
         return cardData?.image || null;
@@ -61,7 +82,8 @@ export function useCardImage() {
      */
     const getCardData = (cardName: string) => {
         if (!cardName || !globalCardCache) return null;
-        const normalized = cardName.toLowerCase().trim();
+
+        const normalized = cardName.toLowerCase().replace(/[^a-z0-9]/g, '');
         return globalCardCache[normalized] || null;
     };
 

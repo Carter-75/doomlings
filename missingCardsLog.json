@@ -1,0 +1,1347 @@
+[
+  {
+    "file": "dominantData.json",
+    "name": "Slumbering",
+    "checkedKey": "slumbering"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "Titanic",
+    "checkedKey": "titanic"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "Gentle",
+    "checkedKey": "gentle"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "Hollow Bones",
+    "checkedKey": "hollow bones"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "Sorcerer",
+    "checkedKey": "sorcerer"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "Chronomancer",
+    "checkedKey": "chronomancer"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "Summoner",
+    "checkedKey": "summoner"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "Solar-Powered",
+    "checkedKey": "solar-powered"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "Steam-Powered",
+    "checkedKey": "steam-powered"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "Simulated Intelligence",
+    "checkedKey": "simulated intelligence"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "Back Propagation",
+    "checkedKey": "back propagation"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "IRONWOOD",
+    "checkedKey": "ironwood"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "HIVE MIND",
+    "checkedKey": "hive mind"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "FABLED",
+    "checkedKey": "fabled"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "FIERCE",
+    "checkedKey": "fierce"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "LEGENDARY V2",
+    "checkedKey": "legendary v2"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "CONSTRICTOR",
+    "checkedKey": "constrictor"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "BIG FELLER",
+    "checkedKey": "big feller"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "ADRENALIZED",
+    "checkedKey": "adrenalized"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "ETHEREAL",
+    "checkedKey": "ethereal"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "RAVENOUS",
+    "checkedKey": "ravenous"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "JIB WIB",
+    "checkedKey": "jib wib"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "STYGIAN",
+    "checkedKey": "stygian"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "RUGGEDIZED",
+    "checkedKey": "ruggedized"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "POPPLEBELLY",
+    "checkedKey": "popplebelly"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "PYROPHYTE",
+    "checkedKey": "pyrophyte"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "CAMOUFLAGE",
+    "checkedKey": "camouflage"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "VAMPIRISM",
+    "checkedKey": "vampirism"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "VIRAL",
+    "checkedKey": "viral"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "APEX PREDATOR",
+    "checkedKey": "apex predator"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "CARNOSAUR JAW",
+    "checkedKey": "carnosaur jaw"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "HYPER-INTELLIGENCE",
+    "checkedKey": "hyper-intelligence"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "INDOMITABLE",
+    "checkedKey": "indomitable"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "MIMICRY",
+    "checkedKey": "mimicry"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "REMARKABLE",
+    "checkedKey": "remarkable"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "SENTIENCE",
+    "checkedKey": "sentience"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "SPOTS",
+    "checkedKey": "spots"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "AWESOME",
+    "checkedKey": "awesome"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "LILY PAD",
+    "checkedKey": "lily pad"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "RAINBOW MAGIC",
+    "checkedKey": "rainbow magic"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "WILD",
+    "checkedKey": "wild"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "SKETCHY",
+    "checkedKey": "sketchy"
+  },
+  {
+    "file": "dominantData.json",
+    "name": "KEYSTONE",
+    "checkedKey": "keystone"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Age of Peace",
+    "checkedKey": "age of peace"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Glacial Drift",
+    "checkedKey": "glacial drift"
+  },
+  {
+    "file": "ageData.json",
+    "name": "High Tides",
+    "checkedKey": "high tides"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Age of Wonder",
+    "checkedKey": "age of wonder"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Alien Terraform",
+    "checkedKey": "alien terraform"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Awakening",
+    "checkedKey": "awakening"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Coastal Formations",
+    "checkedKey": "coastal formations"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Flourish",
+    "checkedKey": "flourish"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Natural Harmony",
+    "checkedKey": "natural harmony"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Tectonic Shift",
+    "checkedKey": "tectonic shift"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Tropical Lands",
+    "checkedKey": "tropical lands"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Lunar Retreat",
+    "checkedKey": "lunar retreat"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Northern Winds",
+    "checkedKey": "northern winds"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Galactic Drift",
+    "checkedKey": "galactic drift"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Birth of a Hero",
+    "checkedKey": "birth of a hero"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Prosperity",
+    "checkedKey": "prosperity"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Reforestation",
+    "checkedKey": "reforestation"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Age of Dracula",
+    "checkedKey": "age of dracula"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Age of Nietzsche",
+    "checkedKey": "age of nietzsche"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Eclipse",
+    "checkedKey": "eclipse"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Enlightenment",
+    "checkedKey": "enlightenment"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Arid Lands",
+    "checkedKey": "arid lands"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Comet Showers",
+    "checkedKey": "comet showers"
+  },
+  {
+    "file": "ageData.json",
+    "name": "The Messiah",
+    "checkedKey": "the messiah"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Age of Reason",
+    "checkedKey": "age of reason"
+  },
+  {
+    "file": "ageData.json",
+    "name": "The Birth of Life",
+    "checkedKey": "the birth of life"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Badlands",
+    "checkedKey": "badlands"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Age of Metadata",
+    "checkedKey": "age of metadata"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Joy",
+    "checkedKey": "joy"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Harlequin Falls",
+    "checkedKey": "harlequin falls"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Ozmorian Winds",
+    "checkedKey": "ozmorian winds"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Sea Kingdoms",
+    "checkedKey": "sea kingdoms"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Atmospheric Thickening",
+    "checkedKey": "atmospheric thickening"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Temporal Sands",
+    "checkedKey": "temporal sands"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Nostalgia",
+    "checkedKey": "nostalgia"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Summer Solstice",
+    "checkedKey": "summer solstice"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Rainstorms",
+    "checkedKey": "rainstorms"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Star Tails",
+    "checkedKey": "star tails"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Ramblin' River Markets",
+    "checkedKey": "ramblin' river markets"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Swamplands",
+    "checkedKey": "swamplands"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Rustling Meadows",
+    "checkedKey": "rustling meadows"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Age of Adventure",
+    "checkedKey": "age of adventure"
+  },
+  {
+    "file": "ageData.json",
+    "name": "The Legend of Mokoko Village",
+    "checkedKey": "the legend of mokoko village"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Age of Doubt",
+    "checkedKey": "age of doubt"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Lunar Advance",
+    "checkedKey": "lunar advance"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Dueling Moons",
+    "checkedKey": "dueling moons"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Age of Discovery",
+    "checkedKey": "age of discovery"
+  },
+  {
+    "file": "ageData.json",
+    "name": "The Stranger",
+    "checkedKey": "the stranger"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Misty Groves",
+    "checkedKey": "misty groves"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Crackletown",
+    "checkedKey": "crackletown"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Slumberwood",
+    "checkedKey": "slumberwood"
+  },
+  {
+    "file": "ageData.json",
+    "name": "King of the Jungle",
+    "checkedKey": "king of the jungle"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Age of Envy",
+    "checkedKey": "age of envy"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Age of Certainty",
+    "checkedKey": "age of certainty"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Backwoods Melodies",
+    "checkedKey": "backwoods melodies"
+  },
+  {
+    "file": "ageData.json",
+    "name": "The Painted Valley",
+    "checkedKey": "the painted valley"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Lingering Shadows",
+    "checkedKey": "lingering shadows"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Cleansing Rains",
+    "checkedKey": "cleansing rains"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Tangled Canopies",
+    "checkedKey": "tangled canopies"
+  },
+  {
+    "file": "ageData.json",
+    "name": "The Living Library",
+    "checkedKey": "the living library"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Glimmering Gardens",
+    "checkedKey": "glimmering gardens"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Fading Away",
+    "checkedKey": "fading away"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Glitterstorm",
+    "checkedKey": "glitterstorm"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Sunshine & Tea Parties",
+    "checkedKey": "sunshine & tea parties"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Carbon Boom",
+    "checkedKey": "carbon boom"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Age of the Last Dragons",
+    "checkedKey": "age of the last dragons"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Age of Solitude",
+    "checkedKey": "age of solitude"
+  },
+  {
+    "file": "ageData.json",
+    "name": "A Quiet Moment",
+    "checkedKey": "a quiet moment"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Moonlight",
+    "checkedKey": "moonlight"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Age of Reverie",
+    "checkedKey": "age of reverie"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Unusual Friends",
+    "checkedKey": "unusual friends"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Age of the First Ferns",
+    "checkedKey": "age of the first ferns"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Open Portals",
+    "checkedKey": "open portals"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Thousand-Year Slumber",
+    "checkedKey": "thousand-year slumber"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Return of the Ancients",
+    "checkedKey": "return of the ancients"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Age of Blunder",
+    "checkedKey": "age of blunder"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Industrial Revolution",
+    "checkedKey": "industrial revolution"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Age of Stability",
+    "checkedKey": "age of stability"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Shadow Puppets",
+    "checkedKey": "shadow puppets"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Toddles' Emporium of Lost Things",
+    "checkedKey": "toddles' emporium of lost things"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Castle Glass",
+    "checkedKey": "castle glass"
+  },
+  {
+    "file": "ageData.json",
+    "name": "Magic Hour",
+    "checkedKey": "magic hour"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Glass Hammer",
+    "checkedKey": "glass hammer"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Glitter Pouch",
+    "checkedKey": "glitter pouch"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Tome of Hidden Knowledge",
+    "checkedKey": "tome of hidden knowledge"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Unlabeled Vial",
+    "checkedKey": "unlabeled vial"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Galaxy in a Jar",
+    "checkedKey": "galaxy in a jar"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Muffins",
+    "checkedKey": "muffins"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Philosopher's Key",
+    "checkedKey": "philosopher's key"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Shade Berry",
+    "checkedKey": "shade berry"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Collector's Cap",
+    "checkedKey": "collector's cap"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Forbidden Mushroom",
+    "checkedKey": "forbidden mushroom"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Half-Off Sandwich",
+    "checkedKey": "half-off sandwich"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Tiny House",
+    "checkedKey": "tiny house"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Treasure Goggles",
+    "checkedKey": "treasure goggles"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Unicorn Horn",
+    "checkedKey": "unicorn horn"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Apathy Stone",
+    "checkedKey": "apathy stone"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Bottled Air",
+    "checkedKey": "bottled air"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Chu Box",
+    "checkedKey": "chu box"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Lemony Lemons",
+    "checkedKey": "lemony lemons"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Mysterious Lantern",
+    "checkedKey": "mysterious lantern"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Omniscient Ball",
+    "checkedKey": "omniscient ball"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Invisible Painting",
+    "checkedKey": "invisible painting"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Spyglass",
+    "checkedKey": "spyglass"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Unsolvable Puzzle",
+    "checkedKey": "unsolvable puzzle"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Anxiety Elixir",
+    "checkedKey": "anxiety elixir"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Dimming Hat",
+    "checkedKey": "dimming hat"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Gilded Lily",
+    "checkedKey": "gilded lily"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Party Mask",
+    "checkedKey": "party mask"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Pointy Stick",
+    "checkedKey": "pointy stick"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Silby Bark",
+    "checkedKey": "silby bark"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Tome of Common Knowledge",
+    "checkedKey": "tome of common knowledge"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "World's End Insurance",
+    "checkedKey": "world's end insurance"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Harmonic Sea Shell",
+    "checkedKey": "harmonic sea shell"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Perpetual Motion Machine",
+    "checkedKey": "perpetual motion machine"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Terror Root",
+    "checkedKey": "terror root"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Unusual Tooth",
+    "checkedKey": "unusual tooth"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Crackle Ore",
+    "checkedKey": "crackle ore"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Fool's Gold",
+    "checkedKey": "fool's gold"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "T.O.M. Four",
+    "checkedKey": "t.o.m. four"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Weird Map",
+    "checkedKey": "weird map"
+  },
+  {
+    "file": "trinketData.json",
+    "name": "Izzy",
+    "checkedKey": "izzy"
+  },
+  {
+    "file": "merchantAgeData.json",
+    "name": "TODDLES",
+    "checkedKey": "toddles"
+  },
+  {
+    "file": "merchantAgeData.json",
+    "name": "FOWLER",
+    "checkedKey": "fowler"
+  },
+  {
+    "file": "merchantAgeData.json",
+    "name": "HUK",
+    "checkedKey": "huk"
+  },
+  {
+    "file": "merchantAgeData.json",
+    "name": "HUK",
+    "checkedKey": "huk"
+  },
+  {
+    "file": "merchantAgeData.json",
+    "name": "TODDLES",
+    "checkedKey": "toddles"
+  },
+  {
+    "file": "merchantAgeData.json",
+    "name": "TODDLES",
+    "checkedKey": "toddles"
+  },
+  {
+    "file": "merchantAgeData.json",
+    "name": "TODDLES",
+    "checkedKey": "toddles"
+  },
+  {
+    "file": "merchantAgeData.json",
+    "name": "FOWLER",
+    "checkedKey": "fowler"
+  },
+  {
+    "file": "merchantAgeData.json",
+    "name": "FOWLER",
+    "checkedKey": "fowler"
+  },
+  {
+    "file": "merchantAgeData.json",
+    "name": "FOWLER",
+    "checkedKey": "fowler"
+  },
+  {
+    "file": "merchantAgeData.json",
+    "name": "BON",
+    "checkedKey": "bon"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Deus Ex Machina",
+    "checkedKey": "deus ex machina"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Overpopulation",
+    "checkedKey": "overpopulation"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Glacial Meltdown",
+    "checkedKey": "glacial meltdown"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Mega Tsunami",
+    "checkedKey": "mega tsunami"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "The Four Horsemen",
+    "checkedKey": "the four horsemen"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "The Big One",
+    "checkedKey": "the big one"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Ice Age",
+    "checkedKey": "ice age"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Grey Goo",
+    "checkedKey": "grey goo"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Mass Extinction",
+    "checkedKey": "mass extinction"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Super Volcano",
+    "checkedKey": "super volcano"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "AI Takeover",
+    "checkedKey": "ai takeover"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Bioengineered Plague",
+    "checkedKey": "bioengineered plague"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Nuclear Winter",
+    "checkedKey": "nuclear winter"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Solar Flare",
+    "checkedKey": "solar flare"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Pulse Event",
+    "checkedKey": "pulse event"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Retrovirus",
+    "checkedKey": "retrovirus"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Impact Event",
+    "checkedKey": "impact event"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Eyes Open From Behind the Stars",
+    "checkedKey": "eyes open from behind the stars"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Choking Vines",
+    "checkedKey": "choking vines"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Jungle Rot",
+    "checkedKey": "jungle rot"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Algal Superbloom",
+    "checkedKey": "algal superbloom"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Tragedy of the Commons",
+    "checkedKey": "tragedy of the commons"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Sacrifice",
+    "checkedKey": "sacrifice"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Ancient Corruption",
+    "checkedKey": "ancient corruption"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Great Deluge",
+    "checkedKey": "great deluge"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Tropical Superstorm",
+    "checkedKey": "tropical superstorm"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Endless Monsoon",
+    "checkedKey": "endless monsoon"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Volcanic Winter",
+    "checkedKey": "volcanic winter"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Strange Matter",
+    "checkedKey": "strange matter"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Planetary Deforestation",
+    "checkedKey": "planetary deforestation"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Ashlands",
+    "checkedKey": "ashlands"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Abyss Stares Back",
+    "checkedKey": "abyss stares back"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Isolation",
+    "checkedKey": "isolation"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Discovery of Magic",
+    "checkedKey": "discovery of magic"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Invasive Species",
+    "checkedKey": "invasive species"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Ecological Collapse",
+    "checkedKey": "ecological collapse"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Moonpocalypse",
+    "checkedKey": "moonpocalypse"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Too Much Pink",
+    "checkedKey": "too much pink"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Anoxic Event",
+    "checkedKey": "anoxic event"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Regret",
+    "checkedKey": "regret"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Planned Obsolescence",
+    "checkedKey": "planned obsolescence"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Titan's Call",
+    "checkedKey": "titan's call"
+  },
+  {
+    "file": "catastropheData.json",
+    "name": "Still Water",
+    "checkedKey": "still water"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Genial Outsider",
+    "checkedKey": "the genial outsider"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Bush Kid",
+    "checkedKey": "the bush kid"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Silent Elder",
+    "checkedKey": "the silent elder"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Painter",
+    "checkedKey": "the painter"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Child and the Bear",
+    "checkedKey": "the child and the bear"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Parrot's Riddle",
+    "checkedKey": "the parrot's riddle"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Monkey Thief",
+    "checkedKey": "the monkey thief"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Lunar Guard",
+    "checkedKey": "the lunar guard"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Diamond Butterfly",
+    "checkedKey": "the diamond butterfly"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Ruby Tortoise",
+    "checkedKey": "the ruby tortoise"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Clashing Crabs",
+    "checkedKey": "the clashing crabs"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "Thunder Frogs",
+    "checkedKey": "thunder frogs"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Armored Melon",
+    "checkedKey": "the armored melon"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Stylite",
+    "checkedKey": "the stylite"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Golden Shrew",
+    "checkedKey": "the golden shrew"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Blind Dragon",
+    "checkedKey": "the blind dragon"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Blind Dragon",
+    "checkedKey": "the blind dragon"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Bramble Brawler",
+    "checkedKey": "the bramble brawler"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Fire Bandit",
+    "checkedKey": "the fire bandit"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Jungler",
+    "checkedKey": "the jungler"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Sapphire Ladybug",
+    "checkedKey": "the sapphire ladybug"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Emerald Slug",
+    "checkedKey": "the emerald slug"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Tracker",
+    "checkedKey": "the tracker"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Truffle Hunter",
+    "checkedKey": "the truffle hunter"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Hero",
+    "checkedKey": "the hero"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Wilted Flower",
+    "checkedKey": "the wilted flower"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Medicine Master",
+    "checkedKey": "the medicine master"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Fortunate Alchemist",
+    "checkedKey": "the fortunate alchemist"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The River Mist",
+    "checkedKey": "the river mist"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Dancer",
+    "checkedKey": "the dancer"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Fellmonger",
+    "checkedKey": "the fellmonger"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Magician",
+    "checkedKey": "the magician"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Maven",
+    "checkedKey": "the maven"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Vagrant",
+    "checkedKey": "the vagrant"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Vixen",
+    "checkedKey": "the vixen"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Rain Golem",
+    "checkedKey": "the rain golem"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Forest Keeper",
+    "checkedKey": "the forest keeper"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Forest Keeper",
+    "checkedKey": "the forest keeper"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Bilbies",
+    "checkedKey": "the bilbies"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Cabochon",
+    "checkedKey": "the cabochon"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Cosmic Jinx",
+    "checkedKey": "the cosmic jinx"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Jellyfish",
+    "checkedKey": "the jellyfish"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Logician",
+    "checkedKey": "the logician"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Lumberjack",
+    "checkedKey": "the lumberjack"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Soothsayer",
+    "checkedKey": "the soothsayer"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Spirit Gardener",
+    "checkedKey": "the spirit gardener"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Tigris",
+    "checkedKey": "the tigris"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Warbler",
+    "checkedKey": "the warbler"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Warrior",
+    "checkedKey": "the warrior"
+  },
+  {
+    "file": "meaningOfLifeData.json",
+    "name": "The Weaver",
+    "checkedKey": "the weaver"
+  }
+]
