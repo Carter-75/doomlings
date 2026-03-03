@@ -1,16 +1,46 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useIframe } from '@/lib/iframe-context';
 import { useRouter } from 'next/navigation';
+import { Preferences } from '@capacitor/preferences';
+import { useAds } from '@/lib/ad-context';
+import { PremiumSection } from '@/components/PremiumSection';
 
 export default function HomePage() {
   const { isIframe, isPortfolioEmbed } = useIframe();
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showModeModal, setShowModeModal] = useState(false);
 
+  const { adsRemoved, loading: adsLoading } = useAds();
+  const [showPremiumPopup, setShowPremiumPopup] = useState(false);
+
   const router = useRouter();
+
+  useEffect(() => {
+    async function checkLaunches() {
+      if (adsLoading || adsRemoved) return;
+      if (sessionStorage.getItem('launch_counted')) return; // Check if already counted this session
+
+      const { value } = await Preferences.get({ key: 'app_launch_count' });
+      const currentCount = value ? parseInt(value, 10) : 0;
+      const newCount = currentCount + 1;
+
+      await Preferences.set({ key: 'app_launch_count', value: newCount.toString() });
+      sessionStorage.setItem('launch_counted', 'true');
+
+      if (newCount === 2) {
+        setShowPremiumPopup(true);
+      }
+    }
+
+    const timer = setTimeout(() => {
+      checkLaunches();
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [adsLoading, adsRemoved]);
 
   const handlePlayGameClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -43,6 +73,17 @@ export default function HomePage() {
                 </p>
               </Link>
             </div>
+
+            {!adsRemoved && (
+              <div className="mt-4">
+                <Link href="/premium" className="card" style={{ borderColor: 'rgba(255, 193, 7, 0.4)', background: 'rgba(255, 193, 7, 0.05)' }}>
+                  <h3 className="text-center mb-2" style={{ color: '#ffc107' }}>✨ Remove Ads</h3>
+                  <p className="text-center" style={{ color: '#ccc' }}>
+                    Upgrade to Premium for an uninterrupted, ad-free experience.
+                  </p>
+                </Link>
+              </div>
+            )}
 
             {/* Inline Mode Selection */}
             {showModeModal && (
@@ -156,6 +197,51 @@ export default function HomePage() {
         </main>
       </div>
 
+      {showPremiumPopup && (
+        <>
+          <div
+            style={{
+              position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.7)', zIndex: 9999
+            }}
+            onClick={() => setShowPremiumPopup(false)}
+          />
+          <div
+            style={{
+              position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+              width: '90%', maxWidth: '500px', zIndex: 10000,
+              backgroundColor: '#111', borderRadius: '12px', padding: '15px',
+              border: '1px solid rgba(255, 193, 7, 0.4)',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.8)'
+            }}
+          >
+            <button
+              onClick={() => setShowPremiumPopup(false)}
+              style={{
+                position: 'absolute', top: '10px', right: '15px',
+                background: 'transparent', border: 'none', color: '#888',
+                fontSize: '24px', cursor: 'pointer', zIndex: 10
+              }}
+            >
+              ×
+            </button>
+            <div style={{ maxHeight: '80vh', overflowY: 'auto', padding: '10px' }}>
+              <PremiumSection />
+            </div>
+            <div style={{ textAlign: 'center', marginTop: '-15px', marginBottom: '10px' }}>
+              <button
+                onClick={() => setShowPremiumPopup(false)}
+                style={{
+                  background: 'transparent', border: '1px solid #444', color: '#aaa',
+                  padding: '8px 20px', borderRadius: '6px', cursor: 'pointer'
+                }}
+              >
+                Maybe Later
+              </button>
+            </div>
+          </div>
+        </>
+      )}
 
     </div>
   );

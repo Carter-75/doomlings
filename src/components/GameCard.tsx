@@ -3,6 +3,7 @@
 
 import React from 'react';
 import { Card } from '@/modules/doomlings/types/Card';
+import { useCardImage } from '../hooks/useCardImage';
 
 interface GameCardProps {
   card: Card;
@@ -29,6 +30,8 @@ const GameCard: React.FC<GameCardProps> = ({
   onHover,
   showDetails = true
 }) => {
+  const { getCardImage } = useCardImage();
+  const cardArtUrl = getCardImage(card.name);
 
   const getCardColorStyles = (color?: string) => {
     const baseGradient = 'bg-gradient-to-br';
@@ -121,89 +124,94 @@ const GameCard: React.FC<GameCardProps> = ({
       {/* Main Card */}
       <div className={`
         relative w-full h-full rounded-lg overflow-hidden
-        ${getCardColorStyles(card.color)}
+        ${cardArtUrl ? 'bg-[#1a1a1a]' : getCardColorStyles(card.color)}
         ${getRarityBorder()}
         backdrop-blur-sm
       `}>
+        {cardArtUrl && <img src={cardArtUrl} alt={card.name} className="absolute inset-0 w-full h-full object-cover z-0" />}
 
-        {/* Holo Effect */}
-        {card.rarity === 'holo' && (
-          <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-white/20 opacity-50 animate-pulse" />
-        )}
-
-        {/* Card Header */}
-        <div className="relative p-1.5 border-b border-white/20">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-1">
-              <span className="text-xs font-bold uppercase tracking-wider">
-                {card.type}
-              </span>
-              {card.variety && (
-                <span className="text-xs bg-white/20 px-1 rounded">
-                  {card.variety.charAt(0).toUpperCase()}
-                </span>
-              )}
-            </div>
-            {card.faceValue !== undefined && (
-              <div className="w-6 h-6 bg-white/30 rounded-full flex items-center justify-center text-xs font-bold">
-                {card.faceValue}
-              </div>
+        {!cardArtUrl && (
+          <div className="absolute inset-0 flex flex-col pointer-events-none z-10">
+            {/* Holo Effect */}
+            {card.rarity === 'holo' && (
+              <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-white/20 opacity-50 animate-pulse" />
             )}
-          </div>
-        </div>
 
-        {/* Card Body */}
-        <div className="relative flex-1 p-1.5">
-          {/* Type Icon */}
-          <div className="text-center mb-1">
-            <div className="text-2xl mb-1">{getCardTypeIcon()}</div>
-            <div className="text-xs font-bold truncate px-1" title={card.name}>
-              {card.name}
-            </div>
-          </div>
-
-          {/* Card Effect Text */}
-          {showDetails && (
-            <div className="text-xs leading-tight opacity-90 px-1">
-              <div className="line-clamp-3" title={card.textPlaceholder}>
-                {card.textPlaceholder.length > 60
-                  ? `${card.textPlaceholder.substring(0, 60)}...`
-                  : card.textPlaceholder
-                }
+            {/* Card Header */}
+            <div className="relative p-1.5 border-b border-white/20">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-1">
+                  <span className="text-xs font-bold uppercase tracking-wider">
+                    {card.type}
+                  </span>
+                  {card.variety && (
+                    <span className="text-xs bg-white/20 px-1 rounded">
+                      {card.variety.charAt(0).toUpperCase()}
+                    </span>
+                  )}
+                </div>
+                {card.faceValue !== undefined && (
+                  <div className="w-6 h-6 bg-white/30 rounded-full flex items-center justify-center text-xs font-bold">
+                    {card.faceValue}
+                  </div>
+                )}
               </div>
             </div>
-          )}
 
-          {/* Species/Variety Badge */}
-          {(card.species || card.variety) && (
-            <div className="absolute top-1 right-1">
-              <div className="w-4 h-4 bg-black/50 rounded-full flex items-center justify-center text-xs">
-                {card.species ? '🧬' : card.variety ? '✨' : ''}
+            {/* Card Body */}
+            <div className="relative flex-1 p-1.5">
+              {/* Type Icon */}
+              <div className="text-center mb-1">
+                <div className="text-2xl mb-1">{getCardTypeIcon()}</div>
+                <div className="text-xs font-bold truncate px-1" title={card.name}>
+                  {card.name}
+                </div>
+              </div>
+
+              {/* Card Effect Text */}
+              {showDetails && (
+                <div className="text-xs leading-tight opacity-90 px-1">
+                  <div className="line-clamp-3" title={card.textPlaceholder}>
+                    {card.textPlaceholder.length > 60
+                      ? `${card.textPlaceholder.substring(0, 60)}...`
+                      : card.textPlaceholder
+                    }
+                  </div>
+                </div>
+              )}
+
+              {/* Species/Variety Badge */}
+              {(card.species || card.variety) && (
+                <div className="absolute top-1 right-1">
+                  <div className="w-4 h-4 bg-black/50 rounded-full flex items-center justify-center text-xs">
+                    {card.species ? '🧬' : card.variety ? '✨' : ''}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Card Footer */}
+            <div className="relative p-1.5 border-t border-white/20">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-1">
+                  {card.dominantLimitImpact > 0 && (
+                    <span className="text-xs bg-red-500/50 px-1 rounded" title="Counts toward Dominant limit">
+                      D
+                    </span>
+                  )}
+                  {card.genePoolDelta && (
+                    <span className="text-xs bg-blue-500/50 px-1 rounded" title="Gene Pool modifier">
+                      {card.genePoolDelta > 0 ? '+' : ''}{card.genePoolDelta}
+                    </span>
+                  )}
+                </div>
+                <div className="text-xs font-bold bg-yellow-500/50 px-1.5 py-0.5 rounded">
+                  {card.pointValue}pts
+                </div>
               </div>
             </div>
-          )}
-        </div>
-
-        {/* Card Footer */}
-        <div className="relative p-1.5 border-t border-white/20">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-1">
-              {card.dominantLimitImpact > 0 && (
-                <span className="text-xs bg-red-500/50 px-1 rounded" title="Counts toward Dominant limit">
-                  D
-                </span>
-              )}
-              {card.genePoolDelta && (
-                <span className="text-xs bg-blue-500/50 px-1 rounded" title="Gene Pool modifier">
-                  {card.genePoolDelta > 0 ? '+' : ''}{card.genePoolDelta}
-                </span>
-              )}
-            </div>
-            <div className="text-xs font-bold bg-yellow-500/50 px-1.5 py-0.5 rounded">
-              {card.pointValue}pts
-            </div>
           </div>
-        </div>
+        )}
 
         {/* Selection Indicator */}
         {isSelected && (

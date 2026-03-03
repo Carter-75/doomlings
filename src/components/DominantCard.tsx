@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useCardImage } from '../hooks/useCardImage';
 
 interface Dominant {
   name: string;
@@ -32,6 +33,9 @@ const DominantCard: React.FC<DominantCardProps> = ({
   searchTerm = '',
   resetTrigger = 0
 }) => {
+  const { getCardImage } = useCardImage();
+  const cardArtUrl = getCardImage(dominant.name);
+
   const [cardCopies, setCardCopies] = useState<CardCopy[]>([]);
   const [showCopies, setShowCopies] = useState(false);
 
@@ -133,9 +137,24 @@ const DominantCard: React.FC<DominantCardProps> = ({
     <div className={`dominant-card ${hasAssignedCards ? 'is-assigned' : ''} ${hasMatchingDuplicates ? 'has-matching-duplicates' : ''}`}>
       {/* Main Card */}
       <div className="dominant-card-main">
-        <h3 className="dominant-name">
-          {dominant.name}
-          {hasMatchingDuplicates && <span className="match-indicator"> 🔍</span>}
+        <h3 className="dominant-name" style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+          {cardArtUrl && (
+            <img
+              src={cardArtUrl}
+              alt={dominant.name}
+              title={dominant.name}
+              style={{
+                width: '60px',
+                borderRadius: '4px',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                objectFit: 'contain'
+              }}
+            />
+          )}
+          <span>
+            {dominant.name}
+            {hasMatchingDuplicates && <span className="match-indicator"> 🔍</span>}
+          </span>
         </h3>
         <div className="tier-display">
           {selectedTier ? (

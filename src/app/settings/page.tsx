@@ -34,7 +34,7 @@ const CloudSyncSection = () => (
 );
 
 const SettingsPage = () => {
-    const { adsRemoved, subscriptionStatus, purchaseSubscription, restorePurchases, openCustomerCenter, loading: adsLoading } = useAds();
+    const { adsRemoved, subscriptionStatus, packages, purchasePackage, restorePurchases, loading: adsLoading } = useAds();
     const { theme, setTheme } = useTheme();
     const isNativeApp = typeof window !== 'undefined' && Capacitor.isNativePlatform();
 
@@ -718,6 +718,37 @@ const SettingsPage = () => {
             font-size: 0.8em;
             margin-top: 12px;
         }
+        .packages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .package-card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .package-card h3 {
+            color: #ffc107;
+            margin: 0;
+            font-size: 1.1em;
+        }
+        .package-card p {
+            color: #ccc;
+            margin: 0;
+            font-size: 0.9em;
+        }
+        .package-price {
+            font-size: 1.25em;
+            font-weight: bold;
+            color: #fff;
+            margin: 5px 0;
+        }
             `}</style>
 
             {/* Overlay and Confirmation Dialog */}
@@ -738,7 +769,7 @@ const SettingsPage = () => {
                     {/* ── Remove Ads Premium Section ── */}
                     <div className="premium-section">
                         <h2>✨ Remove Ads</h2>
-                        <p>Enjoy an ad-free experience for just $3.99/month</p>
+                        <p>Enjoy an ad-free experience with our Monthly, Yearly, or Lifetime plans!</p>
 
                         {adsLoading ? (
                             <div className="status-badge free">⏳ Checking subscription…</div>
@@ -757,25 +788,30 @@ const SettingsPage = () => {
                             </ul>
                         )}
 
+                        {!adsRemoved && isNativeApp && packages.length > 0 && (
+                            <div className="packages-grid">
+                                {packages.map((pkg: any) => (
+                                    <div key={pkg.identifier} className="package-card">
+                                        <h3>{pkg.product.title}</h3>
+                                        <p>{pkg.product.description}</p>
+                                        <div className="package-price">{pkg.product.priceString}</div>
+                                        <button
+                                            className="subscribe-btn"
+                                            onClick={() => purchasePackage(pkg)}
+                                            disabled={adsLoading}
+                                        >
+                                            Subscribe
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {!adsRemoved && isNativeApp && packages.length === 0 && !adsLoading && (
+                            <p style={{ color: '#ccc', fontStyle: 'italic', marginBottom: '20px' }}>No plans available right now.</p>
+                        )}
+
                         <div className="premium-btn-row">
-                            {!adsRemoved && (
-                                <button
-                                    className="subscribe-btn"
-                                    onClick={purchaseSubscription}
-                                    disabled={adsLoading}
-                                >
-                                    {isNativeApp ? '🛒 View Plans' : '📱 Available in the Android App'}
-                                </button>
-                            )}
-                            {adsRemoved && isNativeApp && (
-                                <button
-                                    className="manage-btn"
-                                    onClick={openCustomerCenter}
-                                    disabled={adsLoading}
-                                >
-                                    ⚙️ Manage Subscription
-                                </button>
-                            )}
                             <button
                                 className="restore-btn"
                                 onClick={restorePurchases}

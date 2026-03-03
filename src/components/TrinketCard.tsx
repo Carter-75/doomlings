@@ -1,4 +1,5 @@
 import React from 'react';
+import { useCardImage } from '../hooks/useCardImage';
 
 interface Trinket {
   name: string;
@@ -17,10 +18,29 @@ interface TrinketCardProps {
 }
 
 const TrinketCard: React.FC<TrinketCardProps> = ({ trinket, onAdd, onRemove, onPocket, isPocketDisabled, isFogged }) => {
+  const { getCardImage } = useCardImage();
+  const cardArtUrl = getCardImage(trinket.name);
+
   return (
     <div className={`trinket-card card ${isFogged ? 'trinket-fogged' : ''}`}>
       <div className="card-content">
-        <h4 className="title is-5">{trinket.name}</h4>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
+          {cardArtUrl && (
+            <img
+              src={cardArtUrl}
+              alt={trinket.name}
+              title={trinket.name}
+              style={{
+                width: '45px',
+                height: '63px',
+                borderRadius: '4px',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                objectFit: 'contain'
+              }}
+            />
+          )}
+          <h4 className="title is-5" style={{ margin: 0 }}>{trinket.name}</h4>
+        </div>
         <p className="subtitle is-6"><strong>Power:</strong> {trinket.power}</p>
         <div className="content">
           <p><strong>Objective:</strong> {trinket.objective}</p>

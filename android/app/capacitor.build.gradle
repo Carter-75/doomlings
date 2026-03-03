@@ -13,7 +13,6 @@ dependencies {
     implementation project(':capacitor-app')
     implementation project(':capacitor-preferences')
     implementation project(':revenuecat-purchases-capacitor')
-    implementation project(':revenuecat-purchases-capacitor-ui')
 
 }
 

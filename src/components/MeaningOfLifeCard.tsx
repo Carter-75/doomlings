@@ -1,8 +1,9 @@
 import React from 'react';
+import { useCardImage } from '../hooks/useCardImage';
 
 interface Meaning {
-    name: string;
-    description: string;
+  name: string;
+  description: string;
 }
 
 interface MeaningOfLifeCardProps {
@@ -14,14 +15,17 @@ interface MeaningOfLifeCardProps {
   canSelect?: boolean; // New prop to indicate if selection is still allowed
 }
 
-const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({ 
-  card, 
-  isRevealed, 
-  isSelected, 
-  onChoose, 
+const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
+  card,
+  isRevealed,
+  isSelected,
+  onChoose,
   isViewing,
   canSelect = true
 }) => {
+  const { getCardImage } = useCardImage();
+  const cardArtUrl = getCardImage(card.name);
+
   const cardClasses = [
     'meaning-card',
     isRevealed ? 'revealed' : '',
@@ -29,22 +33,38 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
     !canSelect ? 'selection-locked' : '',
     canSelect && !isSelected ? 'selectable' : ''
   ].filter(Boolean).join(' ');
-  
+
   const handleClick = () => {
     if (canSelect && !isRevealed) {
       onChoose();
     }
   };
-  
+
   return (
     <div className={cardClasses} onClick={handleClick}>
       {/* Always show header for selected cards, or when viewing/revealed */}
       {(isSelected || isRevealed || isViewing) && (
         <div className="meaning-card-header">
-          <h4 className="meaning-card-name">
-            {card.name}
-            {isSelected && <span className="selection-badge">✓ SELECTED</span>}
-          </h4>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
+            {cardArtUrl && (
+              <img
+                src={cardArtUrl}
+                alt={card.name}
+                title={card.name}
+                style={{
+                  width: '45px',
+                  height: '63px',
+                  borderRadius: '4px',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                  objectFit: 'contain'
+                }}
+              />
+            )}
+            <h4 className="meaning-card-name" style={{ margin: 0 }}>
+              {card.name}
+              {isSelected && <span className="selection-badge">✓ SELECTED</span>}
+            </h4>
+          </div>
           {isSelected && !isRevealed && (
             <div className="selection-indicator">
               <span className="selection-icon">🎯</span>
@@ -53,13 +73,13 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
           )}
         </div>
       )}
-      
+
       {(isRevealed || isViewing) && (
         <div className="meaning-description">
           <p>{card.description}</p>
         </div>
       )}
-      
+
       {!isRevealed && !isViewing && (
         <div className="card-back">
           <div className="card-back-content">
@@ -83,7 +103,7 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
           </div>
         </div>
       )}
-      
+
       <style jsx>{`
         .meaning-card {
           background: linear-gradient(135deg, var(--light-bg), var(--lighter-bg));

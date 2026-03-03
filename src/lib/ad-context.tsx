@@ -18,12 +18,12 @@ interface AdContextValue {
     adsRemoved: boolean;
     loading: boolean;
     subscriptionStatus: 'active' | 'free' | 'checking';
-    /** Opens the RevenueCat paywall (native only) */
-    purchaseSubscription: () => Promise<void>;
+    /** Available RevenueCat packages (monthly, yearly, lifetime, etc.) */
+    packages: any[];
+    /** Purchases a specific package */
+    purchasePackage: (pkg: any) => Promise<void>;
     /** Restores previous purchases (native only) */
     restorePurchases: () => Promise<void>;
-    /** Opens the RevenueCat Customer Center — lets users manage/cancel subs (native only) */
-    openCustomerCenter: () => Promise<void>;
     /** Temporarily suppress ads (e.g., during tutorial) */
     setAdsSuppressed: (suppressed: boolean) => void;
     /** Whether the banner ad is currently intended to be visible */
@@ -34,9 +34,9 @@ const AdContext = createContext<AdContextValue>({
     adsRemoved: false,
     loading: true,
     subscriptionStatus: 'checking',
-    purchaseSubscription: async () => { },
+    packages: [],
+    purchasePackage: async () => { },
     restorePurchases: async () => { },
-    openCustomerCenter: async () => { },
     setAdsSuppressed: () => { },
     bannerVisible: false,
 });
@@ -48,13 +48,8 @@ export function useAds() {
 // ── Lazy-load RC — only used on native, keeps web bundle clean ────────────────
 async function getPurchases() {
     if (!isNative()) return null;
-    const { Purchases, LOG_LEVEL } = await import('@revenuecat/purchases-capacitor');
-    return { Purchases, LOG_LEVEL };
-}
-
-async function getPaywallUI() {
-    if (!isNative()) return null;
-    return import('@revenuecat/purchases-capacitor-ui');
+    const { Purchases, LOG_LEVEL, PURCHASES_ERROR_CODE } = await import('@revenuecat/purchases-capacitor');
+    return { Purchases, LOG_LEVEL, PURCHASES_ERROR_CODE };
 }
 
 // ── Helper: check entitlement from CustomerInfo ───────────────────────────────
@@ -70,6 +65,7 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
     const [subscriptionStatus, setSubscriptionStatus] = useState<'active' | 'free' | 'checking'>('checking');
     const [adsSuppressed, setAdsSuppressed] = useState(false);
     const [bannerVisible, setBannerVisible] = useState(false);
+    const [packages, setPackages] = useState<any[]>([]);
 
     const persistState = useCallback(async (removed: boolean) => {
         try { await Preferences.set({ key: ADS_REMOVED_KEY, value: removed ? 'true' : 'false' }); }
@@ -144,10 +140,18 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
 
                         // Verify entitlement with RC backend
                         const { customerInfo } = await Purchases.getCustomerInfo();
-                        if (!cancelled) await applyAdsState(hasEntitlement(customerInfo));
+                        if (!cancelled) {
+                            await applyAdsState(hasEntitlement(customerInfo));
+                        }
+
+                        // Fetch available packages to show in UI
+                        const offerings = await Purchases.getOfferings();
+                        if (offerings.current !== null && !cancelled) {
+                            setPackages(offerings.current.availablePackages);
+                        }
                     }
                 } catch (e) {
-                    console.warn('[RC] Could not verify subscription:', e);
+                    console.warn('[RC] Could not verify subscription or fetch offerings:', e);
                     if (!cancelled && !persisted) setSubscriptionStatus('free');
                 }
             } else {
@@ -165,38 +169,30 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // ─── Subscribe — presents RC Paywall (Monthly / Yearly / Lifetime) ──────────
-    // Products are configured in the RC dashboard → Offerings
-    // Create 3 products in Play Console, link them in RC, assign them to offerings:
-    //   monthly, yearly, lifetime
-    const purchaseSubscription = useCallback(async () => {
+    // ─── Direct Purchase Method ───────────────────────────────────────────────
+    const purchasePackage = useCallback(async (pkg: any) => {
         if (!isNative()) {
             alert('Subscriptions are only available in the Android app. Download it from Google Play!');
             return;
         }
         try {
-            const ui = await getPaywallUI();
-            if (!ui) throw new Error('Paywall UI unavailable');
+            const rc = await getPurchases();
+            if (!rc) throw new Error('RC unavailable');
 
-            const { RevenueCatUI, PAYWALL_RESULT } = ui;
-            const { result } = await RevenueCatUI.presentPaywall();
-
-            switch (result) {
-                case PAYWALL_RESULT.PURCHASED:
-                case PAYWALL_RESULT.RESTORED:
-                    await applyAdsState(true);
-                    break;
-                case PAYWALL_RESULT.NOT_PRESENTED:
-                case PAYWALL_RESULT.ERROR:
-                    alert('Could not load subscription options. Try again later.');
-                    break;
-                case PAYWALL_RESULT.CANCELLED:
-                default:
-                    break; // user dismissed — do nothing
+            // Perform native purchase
+            const purchaseResult = await rc.Purchases.purchasePackage({ aPackage: pkg });
+            if (hasEntitlement(purchaseResult.customerInfo)) {
+                await applyAdsState(true);
+                alert('✅ Subscription successful! Ads have been removed.');
             }
-        } catch (e) {
-            console.error('[RC] Paywall error:', e);
-            alert('Something went wrong. Please try again.');
+        } catch (e: any) {
+            console.error('[RC] Purchase error:', e);
+            const rc = await getPurchases();
+            if (rc && e.code === rc.PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) {
+                // User cancelled the purchase, do nothing
+            } else {
+                alert('Something went wrong processing your purchase. Please try again.');
+            }
         }
     }, [applyAdsState]);
 
@@ -218,24 +214,10 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
         }
     }, [applyAdsState]);
 
-    // ─── Customer Center — lets users manage/cancel subscription ───────────────
-    // docs: https://www.revenuecat.com/docs/tools/customer-center
-    const openCustomerCenter = useCallback(async () => {
-        if (!isNative()) { alert('Customer Center is only available in the Android app.'); return; }
-        try {
-            const ui = await getPaywallUI();
-            if (!ui) throw new Error('UI unavailable');
-            await ui.RevenueCatUI.presentCustomerCenter();
-        } catch (e) {
-            console.error('[RC] Customer Center error:', e);
-            alert('Could not open subscription management. Try again later.');
-        }
-    }, []);
-
     return (
         <AdContext.Provider value={{
-            adsRemoved, loading, subscriptionStatus,
-            purchaseSubscription, restorePurchases, openCustomerCenter,
+            adsRemoved, loading, subscriptionStatus, packages,
+            purchasePackage, restorePurchases,
             setAdsSuppressed, bannerVisible,
         }}>
             {children}
