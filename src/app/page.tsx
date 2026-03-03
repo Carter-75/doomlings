@@ -209,10 +209,11 @@ export default function HomePage() {
           <div
             style={{
               position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-              width: '90%', maxWidth: '500px', zIndex: 10000,
-              backgroundColor: '#111', borderRadius: '12px', padding: '15px',
+              width: '90%', maxWidth: '400px', zIndex: 10000,
+              backgroundColor: '#111', borderRadius: '12px', padding: '10px 0',
               border: '1px solid rgba(255, 193, 7, 0.4)',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.8)'
+              boxShadow: '0 10px 30px rgba(0,0,0,0.8)',
+              display: 'flex', flexDirection: 'column', alignItems: 'center'
             }}
           >
             <button
@@ -225,7 +226,7 @@ export default function HomePage() {
             >
               ×
             </button>
-            <div style={{ maxHeight: '80vh', overflowY: 'auto', padding: '10px' }}>
+            <div style={{ width: '100%', padding: '0 10px', transform: 'scale(0.95)', transformOrigin: 'top center' }}>
               <PremiumSection />
             </div>
             <div style={{ textAlign: 'center', marginTop: '-15px', marginBottom: '10px' }}>
@@ -233,8 +234,11 @@ export default function HomePage() {
                 onClick={() => setShowPremiumPopup(false)}
                 style={{
                   background: 'transparent', border: '1px solid #444', color: '#aaa',
-                  padding: '8px 20px', borderRadius: '6px', cursor: 'pointer'
+                  padding: '8px 20px', borderRadius: '6px', cursor: 'pointer',
+                  fontSize: '14px', transition: 'all 0.2s'
                 }}
+                onMouseOver={(e) => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#666'; }}
+                onMouseOut={(e) => { e.currentTarget.style.color = '#aaa'; e.currentTarget.style.borderColor = '#444'; }}
               >
                 Maybe Later
               </button>

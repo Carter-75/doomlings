@@ -33,9 +33,9 @@ export const PremiumSection = () => {
             {!adsRemoved && (
                 <div className="packages-grid">
                     {[
-                        { identifier: 'remove_ads_monthly', title: 'Monthly – Remove Ads', description: 'Ad-free for 1 month.', priceString: '$1.99/mo' },
-                        { identifier: 'remove_ads_yearly', title: 'Yearly – Remove Ads', description: 'Ad-free for 1 year.', priceString: '$14.99/yr' },
-                        { identifier: 'remove_ads_lifetime', title: 'Lifetime – Remove Ads', description: 'Ad-free forever.', priceString: '$29.99' }
+                        { identifier: 'remove_ads_monthly', title: 'Monthly – Remove Ads', description: 'Ad-free for 1 month.', priceString: '$3.99/mo' },
+                        { identifier: 'remove_ads_yearly', title: 'Yearly – Remove Ads', description: 'Ad-free for 1 year. Includes a 1-week free trial!', priceString: '$39.99/yr' },
+                        { identifier: 'remove_ads_lifetime', title: 'Lifetime – Remove Ads', description: 'Ad-free forever.', priceString: '$49.99' }
                     ].map((pkg) => (
                         <div key={pkg.identifier} className="package-card">
                             <h3>{pkg.title}</h3>
