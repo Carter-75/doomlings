@@ -97,9 +97,5 @@
         android:name="android.software.webview" 
         android:required="true" />
     
-    <!-- Minimum SDK requirements -->
-    <uses-sdk 
-        android:minSdkVersion="24" 
-        android:targetSdkVersion="35" 
-        android:compileSdkVersion="35" />
+
 </manifest>
