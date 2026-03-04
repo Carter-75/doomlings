@@ -13,21 +13,28 @@ export const PremiumSection = () => {
             <h2>✨ Remove Ads</h2>
             <p>Enjoy an ad-free experience with our Monthly, Yearly, or Lifetime plans!</p>
 
-            {adsLoading ? (
-                <div className="status-badge free">⏳ Checking subscription…</div>
-            ) : adsRemoved ? (
-                <div className="status-badge active">✅ Premium Active — Ads Removed</div>
-            ) : (
-                <div className="status-badge free">🔔 Free Tier — Ads Enabled</div>
-            )}
+            <div className="premium-header">
+                {adsLoading ? (
+                    <div className="status-badge loading">⏳ Checking subscription…</div>
+                ) : adsRemoved ? (
+                    <div className="status-badge active">✅ Premium Active — Ads Removed</div>
+                ) : (
+                    <div className="status-badge free">
+                        <span className="pulse-dot"></span>
+                        Current Status: Free Tier (Ads Enabled)
+                    </div>
+                )}
+            </div>
 
             {!adsRemoved && (
-                <ul className="premium-feature-list">
-                    <li>🚫 No banner ads</li>
-                    <li>🚫 No interstitial ads</li>
-                    <li>⚡ Faster, cleaner gameplay</li>
-                    <li>❤️ Support the developer</li>
-                </ul>
+                <div className="features-container">
+                    <ul className="premium-feature-list">
+                        <li>🚫 No banner ads</li>
+                        <li>🚫 No interstitial ads</li>
+                        <li>⚡ Faster, cleaner gameplay</li>
+                        <li>❤️ Support the developer</li>
+                    </ul>
+                </div>
             )}
 
             {!adsRemoved && (
@@ -81,25 +88,61 @@ export const PremiumSection = () => {
                     margin-bottom: 18px;
                     font-size: 0.95em;
                 }
+                .premium-header {
+                    margin: 15px 0 25px 0;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    width: 100%;
+                }
                 .status-badge {
                     display: inline-flex;
                     align-items: center;
-                    gap: 8px;
-                    padding: 6px 16px;
-                    border-radius: 20px;
+                    gap: 10px;
+                    padding: 8px 24px;
+                    border-radius: 30px;
                     font-weight: bold;
-                    font-size: 0.85em;
-                    margin-bottom: 20px;
+                    font-size: 0.95em;
+                    letter-spacing: 0.5px;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                    transition: all 0.3s ease;
                 }
                 .status-badge.active {
-                    background: rgba(0, 255, 136, 0.15);
-                    border: 1px solid rgba(0, 255, 136, 0.4);
+                    background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 200, 100, 0.2));
+                    border: 1px solid rgba(0, 255, 136, 0.5);
                     color: #00ff88;
+                    box-shadow: 0 0 20px rgba(0, 255, 136, 0.15);
                 }
                 .status-badge.free {
-                    background: rgba(255, 193, 7, 0.15);
-                    border: 1px solid rgba(255, 193, 7, 0.4);
+                    background: linear-gradient(135deg, rgba(255, 193, 7, 0.15), rgba(255, 152, 0, 0.15));
+                    border: 1px solid rgba(255, 193, 7, 0.5);
                     color: #ffc107;
+                }
+                .status-badge.loading {
+                    background: rgba(255, 255, 255, 0.1);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    color: #aaa;
+                }
+                .pulse-dot {
+                    width: 8px;
+                    height: 8px;
+                    background-color: #ffc107;
+                    border-radius: 50%;
+                    box-shadow: 0 0 8px #ffc107;
+                    animation: pulse 2s infinite;
+                }
+                @keyframes pulse {
+                    0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); }
+                    70% { box-shadow: 0 0 0 6px rgba(255, 193, 7, 0); }
+                    100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+                }
+                .features-container {
+                    background: rgba(0,0,0,0.2);
+                    border-radius: 12px;
+                    padding: 15px 25px;
+                    display: inline-block;
+                    margin-bottom: 25px;
+                    border: 1px solid rgba(255,255,255,0.05);
                 }
                 .packages-grid {
                     display: grid;
@@ -170,14 +213,17 @@ export const PremiumSection = () => {
                 .premium-feature-list {
                     list-style: none;
                     padding: 0;
-                    margin: 0 0 18px 0;
+                    margin: 0;
                     text-align: left;
-                    display: inline-block;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
                 }
                 .premium-feature-list li {
                     color: #e0e0e0;
-                    padding: 4px 0;
-                    font-size: 0.9em;
+                    font-size: 0.95em;
+                    display: flex;
+                    align-items: center;
                 }
                 .web-only-note {
                     color: #888;
