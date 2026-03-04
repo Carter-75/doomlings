@@ -4,4 +4,5 @@
     <string name="title_activity_main">DOOMlings Companion</string>
     <string name="package_name">com.doomlings.companion</string>
     <string name="custom_url_scheme">com.doomlings.companion</string>
+    <string name="public_license_key">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxmXsM2iKsDvzGFUSQuZQ9ACfVfYEcGxhu1Dc+WCWQ7v2pCo2leUa0ZX6uUo9ZbuZUAJxaTnZ3j/Nj1SkiQcJ0YJaQEBoq92igck/kuTO9IfGd3DbtmzM23wchkFiO7ByzhKkDoyPatp6OY5voGyRkp3kUDhOsuwj11YSYDCm73qNpI2izte1m9f74qep5Zv9puZ4lHLOchZXwC6tPCUyEo/Zb2S+IGkSoNrgB3YVZ9qDjvVE1iXhvcUVoF9UnOFXSic5zSUHMnvMDEsD1Rrzf1dq9hdUyftlIrTi5xe5GKw/0CypcWyyMWOF0PJcIll/J+werTCnXPMerWLUEc0O+QIDAQAB</string>
 </resources>
