@@ -1066,7 +1066,8 @@ const SettingsPage = () => {
 
             <footer style={{
                 textAlign: 'center',
-                padding: '30px 0',
+                paddingTop: '30px',
+                paddingBottom: 'calc(30px + var(--ad-banner-height, 0px))',
                 marginTop: '40px',
                 borderTop: '1px solid rgba(255, 255, 255, 0.1)'
             }}>

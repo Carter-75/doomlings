@@ -102,7 +102,8 @@ const PrivacyPolicyPage = () => {
 
                 .footer-nav {
                     text-align: center;
-                    padding: 30px 0;
+                    padding-top: 30px;
+                    padding-bottom: calc(30px + var(--ad-banner-height, 0px));
                     margin-top: 40px;
                     border-top: 1px solid rgba(255, 255, 255, 0.1);
                 }
