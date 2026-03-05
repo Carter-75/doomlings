@@ -95,7 +95,7 @@
         android:required="true" />
     <uses-feature 
         android:name="android.software.webview" 
-        android:required="true" />
+        android:required="false" />
     
 
 </manifest>
