@@ -15,11 +15,6 @@
     "description": "Appealing"
   },
   {
-    "name": "Artboard 2",
-    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/62191b86ea23102623b1c1da_Artboard%202.png",
-    "description": "Artboard 2"
-  },
-  {
     "name": "Automimicry",
     "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/63a083e6518995acb05d9b82_Automimicry.png",
     "description": "Automimicry"
@@ -33,11 +28,6 @@
     "name": "Blubber",
     "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bf7963380cbc1c8d6dc0e_6171e2bd558520b3b7aab977_Blubber.png",
     "description": "Blubber"
-  },
-  {
-    "name": "Blue",
-    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/61b2563214da872b5a834473_Blue.png",
-    "description": "Blue"
   },
   {
     "name": "Boredom",
@@ -58,16 +48,6 @@
     "name": "Cold Blood",
     "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bf7d80c53dacdc3b953df_6171e46c9d9bb281b34d03ac_Cold%20Blood.png",
     "description": "Cold Blood"
-  },
-  {
-    "name": "Colorless",
-    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/61b25642c444615d1a8f6c9c_Colorless.png",
-    "description": "Colorless"
-  },
-  {
-    "name": "Common",
-    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/63ea9f0341f19ebd17067d93_Common.png",
-    "description": "Common"
   },
   {
     "name": "Confusion",
@@ -105,11 +85,6 @@
     "description": "Eloquence"
   },
   {
-    "name": "Endangered",
-    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/63ea9f81919f872ab2cfbabc_Endangered.png",
-    "description": "Endangered"
-  },
-  {
     "name": "Fear",
     "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfcd8e68270a3b9977a71_6172da23a649c4036dee0db1_Fear.png",
     "description": "Fear"
@@ -145,11 +120,6 @@
     "description": "Gratitude"
   },
   {
-    "name": "Green",
-    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/61b2563bbd78c885b9035a97_Green.png",
-    "description": "Green"
-  },
-  {
     "name": "Introspective",
     "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfd165c81c009728a772d_6172dc4ae73df782bc7b1c53_Introspective.png",
     "description": "Introspective"
@@ -178,11 +148,6 @@
     "name": "Migratory",
     "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bf8a4f95add8bf3be1fe5_6171f05b625a4ce30f4a5589_Migratory.png",
     "description": "Migratory"
-  },
-  {
-    "name": "MultiColor",
-    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/61b2566ab282c60f6181092f_MultiColor.png",
-    "description": "MultiColor"
   },
   {
     "name": "NoResults",
@@ -215,19 +180,9 @@
     "description": "Propagation"
   },
   {
-    "name": "Purple",
-    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/61b2564c86d2b06054717304_Purple.png",
-    "description": "Purple"
-  },
-  {
     "name": "Random Fertilization",
     "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfad05bc384ae101755fb_6172ef9cee14f86271aba1ae_Random%20Fertilization.png",
     "description": "Random Fertilization"
-  },
-  {
-    "name": "Red",
-    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/61b2565989b81b4c7f2ddb35_Red.png",
-    "description": "Red"
   },
   {
     "name": "Regenerative Tissue",
@@ -235,19 +190,9 @@
     "description": "Regenerative Tissue"
   },
   {
-    "name": "s End",
-    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/61b255c8f730d7e661582776_World_s%20End.png",
-    "description": "s End"
-  },
-  {
     "name": "Saliva",
     "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bf8ebb1b8b241ee2638dc_6171f0f4dcc6440b53756dce_Saliva.png",
     "description": "Saliva"
-  },
-  {
-    "name": "Scarce",
-    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/63eac1804a9310103c937d70_Scarce.png",
-    "description": "Scarce"
   },
   {
     "name": "Scutes",
@@ -313,16 +258,6 @@
     "name": "Trunk",
     "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfbbaf0186b017c0712e8_6172f1da3b935ce4a15f9b9a_Trunk.png",
     "description": "Trunk"
-  },
-  {
-    "name": "Unusual",
-    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/63ea9f705f3cc65888f3b5be_Unusual.png",
-    "description": "Unusual"
-  },
-  {
-    "name": "variable v2",
-    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/61b257bc994eb5d2f25211c3_variable%20v2.png",
-    "description": "variable v2"
   },
   {
     "name": "Woody Stems",

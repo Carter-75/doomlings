@@ -1,0 +1,16 @@
+Launching browser...
+Navigating to Webflow source...
+Appealing matches: [
+  {
+    src: '626bf9c6aeab040606ced357_6171e1cd0c4030cc81fd132a_Appealing.png',
+    className: 'card-main',
+    alt: 'APPEALING',
+    width: 197,
+    height: 277,
+    naturalWidth: 400,
+    naturalHeight: 563,
+    parentClass: 'link-block w-inline-block'
+  }
+]
+Indomitable matches: []
+Random cards by parentClass containing "card": []

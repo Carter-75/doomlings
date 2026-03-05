@@ -2,6 +2,7 @@ import React from 'react';
 import AnimatedButton from './AnimatedButton';
 import TrinketCard from './TrinketCard';
 import { Rule, Age, Trinket, TrinketState } from '../lib/types';
+import { useCardImage } from '../hooks/useCardImage';
 
 interface GameTurnProps {
   playerCount: number;
@@ -38,6 +39,8 @@ const GameTurn: React.FC<GameTurnProps> = ({
   handleTrinketPocket,
   catastropheMode,
 }) => {
+  const { getCardImage } = useCardImage();
+
   return (
     <div id="gameTurn" className="section-content">
       <h1 className="title is-2 has-text-centered page-title">Game Turn</h1>
@@ -73,6 +76,39 @@ const GameTurn: React.FC<GameTurnProps> = ({
                   <p className="has-text-weight-bold is-size-5" style={{ color: isCatastrophe ? '#e74c3c' : 'var(--gold-light)' }}>
                     {isCatastrophe ? 'Final Catastrophe!' : 'The Last Age!'}
                   </p>
+                )}
+                {getCardImage(currentAge.name) ? (
+                  <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem', marginBottom: '1rem' }}>
+                    <img
+                      src={getCardImage(currentAge.name) || ''}
+                      alt={currentAge.name}
+                      style={{
+                        width: '100%',
+                        maxWidth: '200px',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+                        objectFit: 'contain'
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem', marginBottom: '1rem' }}>
+                    <div style={{
+                      width: '200px',
+                      height: '280px',
+                      borderRadius: '8px',
+                      background: 'linear-gradient(135deg, #d35400, #f39c12)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white',
+                      fontSize: '48px',
+                      fontWeight: 'bold',
+                      boxShadow: '0 4px 8px rgba(0,0,0,0.3)'
+                    }}>
+                      ?
+                    </div>
+                  </div>
                 )}
                 <h4 className="title is-4 mt-4">{currentAge.name}</h4>
                 <p>{currentAge.description}</p>

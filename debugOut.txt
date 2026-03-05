@@ -1,0 +1,72 @@
+Launching browser...
+Navigating to Webflow source...
+Legendary matches: [
+  {
+    src: '63ea9f8dc0cafbbfeaba3574_Legendary.png',
+    className: 'filter-icon',
+    alt: 'Legendary',
+    width: 0,
+    height: 0,
+    parentClass: 'filter-values w-inline-block jetboost-filter-trigger'
+  },
+  {
+    src: '63ea9f8dc0cafbbfeaba3574_Legendary.png',
+    className: 'filter-icon-selected',
+    alt: 'Legendary',
+    width: 0,
+    height: 0,
+    parentClass: 'filter-values w-inline-block jetboost-filter-trigger'
+  }
+]
+Astronauts matches: [
+  {
+    src: '61a944ddf18a778be5dde71e_Astronauts.png',
+    className: 'header-characters',
+    alt: '',
+    width: 500,
+    height: 116,
+    parentClass: 'centered-container w-container'
+  }
+]
+Sample cards: [
+  {
+    src: '61a944ddf18a778be5dde71e_Astronauts.png',
+    className: 'header-characters',
+    alt: '',
+    width: 500,
+    height: 116,
+    parentClass: 'centered-container w-container'
+  },
+  {
+    src: '67c4cbfab13b60623bf4ae44_Classic_unpressed.png',
+    className: 'filter-icon',
+    alt: '',
+    width: 0,
+    height: 0,
+    parentClass: 'filter-values w-inline-block jetboost-filter-trigger jetboost-filter-active'
+  },
+  {
+    src: '67c4cc05c0a261b6feb34ae0_Classic_pressed.png',
+    className: 'filter-icon-selected',
+    alt: '',
+    width: 0,
+    height: 0,
+    parentClass: 'filter-values w-inline-block jetboost-filter-trigger jetboost-filter-active'
+  },
+  {
+    src: '67c4ccfd06c32bfbbfae2ce3_Deluxe_unpressed.png',
+    className: 'filter-icon',
+    alt: '',
+    width: 0,
+    height: 0,
+    parentClass: 'filter-values w-inline-block jetboost-filter-trigger'
+  },
+  {
+    src: '67c4ccf57eb531753580b07a_Deluxe_pressed.png',
+    className: 'filter-icon-selected',
+    alt: '',
+    width: 0,
+    height: 0,
+    parentClass: 'filter-values w-inline-block jetboost-filter-trigger'
+  }
+]

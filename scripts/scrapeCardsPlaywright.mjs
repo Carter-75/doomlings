@@ -52,19 +52,26 @@ async function scrapeCards() {
     }
 
     const result = await page.evaluate(() => {
-        const images = Array.from(document.querySelectorAll('img')).map(img => img.src);
+        const images = Array.from(document.querySelectorAll('img')).map(img => img); // Map to img elements, not just src
         const results = {};
 
-        // Filter Webflow CDN images that look like cards (e.g. 1234_CardName.png)
-        images.forEach(src => {
+        images.forEach(img => {
+            const src = img.src;
             if (src && src.includes('cdn.prod.website-files.com') && !src.includes('Logo') && !src.includes('Icon')) {
-                // Try to extract the name from the url, e.g. "foo_Attentive.png"
-                const match = src.match(/_([A-Za-z0-9%-]+)\.(png|jpg|jpeg)/i);
-                if (match) {
-                    let name = decodeURIComponent(match[1]).replace(/-/g, ' ');
-                    // Basic cleanup
-                    if (name.length > 2) {
-                        results[name.toLowerCase()] = { name, image: src, description: '', rawText: name };
+                // Ensure the image isn't a UI element like a filter button or header graphic
+                const isUI = (img.className || '').includes('filter') ||
+                    (img.className || '').includes('header') ||
+                    (img.parentElement && (img.parentElement.className || '').includes('filter'));
+
+                if (!isUI) {
+                    // Try to extract the name from the url, e.g. "foo_Attentive.png"
+                    const match = src.match(/_([A-Za-z0-9%-]+)\.(png|jpg|jpeg)/i);
+                    if (match) {
+                        let name = decodeURIComponent(match[1]).replace(/-/g, ' ');
+                        // Basic cleanup
+                        if (name.length > 2) {
+                            results[name.toLowerCase()] = { name, image: src, description: '', rawText: name };
+                        }
                     }
                 }
             }
@@ -154,7 +161,7 @@ async function scrapeCards() {
 
             const normalized = normalizeName(scrapedName);
 
-            if (normalized.includes('meaningoflife') || normalized.includes('astronauts') || normalized.includes('kse') || normalized.includes('dinolings') || normalized.includes('mythlings') || normalized.includes('techlings') || normalized.includes('effectless') || normalized.includes('genepool') || normalized.includes('persistent') || normalized.includes('playwhen') || normalized.includes('action') || normalized.includes('dominant') || normalized.includes('trait') || normalized.includes('agev2') || normalized.includes('dropoflife') || normalized.includes('catastrophe') || normalized === 'pressed' || normalized === 'unpressed' || normalized === 'classic') {
+            if (normalized === 'pressed' || normalized === 'unpressed' || normalized === 'classic') {
                 continue;
             }
 
