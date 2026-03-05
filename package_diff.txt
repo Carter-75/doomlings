@@ -1,0 +1,12 @@
+diff --git a/package.json b/package.json
+index b5fa70f..03f5a31 100644
+--- a/package.json
++++ b/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "doomlings-companion",
+-  "version": "3.3.9",
++  "version": "3.4.3",
+   "private": true,
+   "scripts": {
+     "dev": "next dev",

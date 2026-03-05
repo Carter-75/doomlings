@@ -1,0 +1,46 @@
+diff --git a/android/app/build.gradle b/android/app/build.gradle
+index df2b0bc..7d0c1e9 100644
+--- a/android/app/build.gradle
++++ b/android/app/build.gradle
+@@ -14,8 +14,8 @@ android {
+         applicationId "com.doomlings.companion"
+         minSdkVersion 24
+         targetSdkVersion 35
+-        versionCode 64
+-        versionName "3.3.9"
++        versionCode 68
++        versionName "3.4.3"
+         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+         
+         // Vector drawable support
+diff --git a/android/app/src/main/AndroidManifest.xml b/android/app/src/main/AndroidManifest.xml
+index 6df6de5..b110c55 100644
+--- a/android/app/src/main/AndroidManifest.xml
++++ b/android/app/src/main/AndroidManifest.xml
+@@ -74,6 +74,11 @@
+         <meta-data
+             android:name="com.google.android.gms.ads.APPLICATION_ID"
+             android:value="ca-app-pub-3940256099942544~3347511713" />
++
++        <!-- Google Play Licensing Key -->
++        <meta-data
++            android:name="com.android.vending.public_key"
++            android:value="@string/public_license_key" />
+     </application>
+ 
+     <!-- Permissions -->
+@@ -90,11 +95,7 @@
+         android:required="true" />
+     <uses-feature 
+         android:name="android.software.webview" 
+-        android:required="true" />
++        android:required="false" />
+     
+-    <!-- Minimum SDK requirements -->
+-    <uses-sdk 
+-        android:minSdkVersion="24" 
+-        android:targetSdkVersion="35" 
+-        android:compileSdkVersion="35" />
++
+ </manifest>
+\ No newline at end of file
