@@ -1,8 +1,8 @@
 ext {
     // Android SDK versions - Updated for Android 15 compatibility
     minSdkVersion = 24
-    compileSdkVersion = 34
-    targetSdkVersion = 34
+    compileSdkVersion = 35
+    targetSdkVersion = 35
     
     // AndroidX library versions - Latest stable versions
     androidxActivityVersion = '1.8.2'
