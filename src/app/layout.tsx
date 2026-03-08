@@ -33,6 +33,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Content Security Policy — allows card artwork images to load from the
+            Webflow CDN (cdn.prod.website-files.com) inside Capacitor's WebView.
+            Without an explicit img-src directive the Android WebView may block
+            cross-origin image requests, causing every card to show the ? fallback. */}
+        <meta
+          httpEquiv="Content-Security-Policy"
+          content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' https: data: blob:; connect-src 'self' https: wss:; font-src 'self' https: data:;"
+        />
         {/* AdSense account verification — always present on web */}
         <meta name="google-adsense-account" content="ca-pub-8347349621527130" />
         {/* Google AdSense script — website only (native app uses AdMob) */}

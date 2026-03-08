@@ -34,7 +34,7 @@ class CardDataService {
   private gameData: GameData | null = null;
   private loading = false;
 
-  private constructor() {}
+  private constructor() { }
 
   static getInstance(): CardDataService {
     if (!CardDataService.instance) {
@@ -289,7 +289,7 @@ class CardDataService {
     const deck: Card[] = [];
 
     // Add traits based on expansions
-    deck.push(...this.gameData.traits.filter(card => 
+    deck.push(...this.gameData.traits.filter(card =>
       expansions.includes(card.expansion || 'base')
     ));
 
@@ -301,7 +301,7 @@ class CardDataService {
 
   createAgeDeck(settings: {
     normalAges: number;
-    merchantAges: number; 
+    merchantAges: number;
     catastropheAges: number;
     finalCatastrophe?: boolean;
   }): Card[] {
@@ -310,7 +310,7 @@ class CardDataService {
     }
 
     const ageDeck: Card[] = [];
-    
+
     // Add normal ages
     const shuffledNormalAges = this.shuffleDeck([...this.gameData.ages.filter(a => a.expansion === 'base')]);
     ageDeck.push(...shuffledNormalAges.slice(0, settings.normalAges));
@@ -322,12 +322,16 @@ class CardDataService {
     // Add catastrophes
     const shuffledCatastrophes = this.shuffleDeck([...this.gameData.catastrophes]);
     const catastrophesToAdd = shuffledCatastrophes.slice(0, settings.catastropheAges);
-    
+
     if (settings.finalCatastrophe && catastrophesToAdd.length > 0) {
       // Save one catastrophe for the end
       const finalCat = catastrophesToAdd.pop();
       ageDeck.push(...catastrophesToAdd);
-      ageDeck.push(...this.shuffleDeck(ageDeck.slice(1))); // Shuffle everything except first
+
+      const [first, ...rest] = ageDeck;
+      ageDeck.length = 0;
+      ageDeck.push(first, ...this.shuffleDeck(rest));
+
       if (finalCat) ageDeck.push(finalCat);
     } else {
       ageDeck.push(...catastrophesToAdd);

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
 import { initializeAdMob, showBanner, hideBanner, isNative } from './admob-service';
@@ -64,6 +64,7 @@ function hasEntitlement(info: CustomerInfo): boolean {
 // ─────────────────────────────────────────────────────────────────────────────
 export function AdProvider({ children }: { children: React.ReactNode }) {
     const [adsRemoved, setAdsRemoved] = useState(false);
+    const adsRemovedRef = useRef(false);
     const [loading, setLoading] = useState(true);
     const [subscriptionStatus, setSubscriptionStatus] = useState<'active' | 'free' | 'checking'>('checking');
     const [adsSuppressed, setAdsSuppressed] = useState(false);
@@ -78,10 +79,10 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
     const loadPersistedState = useCallback(async (): Promise<boolean> => {
         try {
             const { value } = await Preferences.get({ key: ADS_REMOVED_KEY });
-            if (value === 'true') { setAdsRemoved(true); setSubscriptionStatus('active'); return true; }
+            if (value === 'true') { setAdsRemoved(true); adsRemovedRef.current = true; setSubscriptionStatus('active'); return true; }
         } catch {
             if (typeof window !== 'undefined' && localStorage.getItem(ADS_REMOVED_KEY) === 'true') {
-                setAdsRemoved(true); setSubscriptionStatus('active'); return true;
+                setAdsRemoved(true); adsRemovedRef.current = true; setSubscriptionStatus('active'); return true;
             }
         }
         return false;
@@ -89,6 +90,7 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
 
     const applyAdsState = useCallback(async (removed: boolean) => {
         setAdsRemoved(removed);
+        adsRemovedRef.current = removed;
         setSubscriptionStatus(removed ? 'active' : 'free');
         await persistState(removed);
         if (isNative()) {
@@ -168,8 +170,13 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
                 }
 
                 if (!cancelled) {
-                    if (!adsRemoved && isNative()) {
+                    if (!adsRemovedRef.current && isNative()) {
                         await showBanner().catch(e => console.warn('[AdMob] showBanner error:', e));
+                        // Immediately mark banner as visible so the CSS body class and
+                        // --ad-banner-height variable are applied in sync with the
+                        // native overlay appearing. Without this, the overlay shows
+                        // before padding is applied, causing content to be covered.
+                        setBannerVisible(true);
                     }
                 }
             } finally {

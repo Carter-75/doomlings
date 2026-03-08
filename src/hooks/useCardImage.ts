@@ -18,8 +18,15 @@ export function useCardImage() {
         if (!isFetching) {
             isFetching = true;
             fetchPromise = Promise.all([
-                fetch('/data/scrapedCards.json').then(res => res.json()),
-                fetch('/data/missingCardsFoundFromScrape.json').then(res => res.json().catch(() => [])) // optional missing cards fallback
+                fetch('/data/scrapedCards.json').then(res => {
+                    if (!res.ok) throw new Error(`scrapedCards.json fetch failed: ${res.status} ${res.statusText}`);
+                    return res.json();
+                }),
+                fetch('/data/missingCardsFoundFromScrape.json').then(res => {
+                    // This file is optional — swallow all failures gracefully
+                    if (!res.ok) return [];
+                    return res.json().catch(() => []);
+                }).catch(() => []) // Also catch network-level errors for the optional file
             ])
                 .then(([scrapedData, missingData]) => {
                     const combined = { ...scrapedData };

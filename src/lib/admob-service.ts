@@ -42,9 +42,9 @@ export async function initializeAdMob(): Promise<void> {
     if (!ok || !AdMob) return;
 
     await AdMob.initialize({
-        // requestTrackingAuthorization disables ATT prompt on Android (iOS only)
+        requestTrackingAuthorization: false,
         // initializeForTesting: true  ← uncomment this line to force test ads in production builds during QA
-    });
+    } as any);
     initialized = true;
 }
 
