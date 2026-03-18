@@ -40,6 +40,12 @@ const GameTurn: React.FC<GameTurnProps> = ({
   catastropheMode,
 }) => {
   const { getCardImage } = useCardImage();
+  const cardArtUrl = currentAge ? getCardImage(currentAge.name) : null;
+  const [imgError, setImgError] = React.useState(false);
+
+  React.useEffect(() => {
+    setImgError(false);
+  }, [cardArtUrl]);
 
   return (
     <div id="gameTurn" className="section-content">
@@ -77,11 +83,12 @@ const GameTurn: React.FC<GameTurnProps> = ({
                     {isCatastrophe ? 'Final Catastrophe!' : 'The Last Age!'}
                   </p>
                 )}
-                {getCardImage(currentAge.name) ? (
+                {cardArtUrl && !imgError ? (
                   <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem', marginBottom: '1rem' }}>
                     <img
-                      src={getCardImage(currentAge.name) || ''}
+                      src={cardArtUrl}
                       alt={currentAge.name}
+                      onError={() => setImgError(true)}
                       style={{
                         width: '100%',
                         maxWidth: '200px',

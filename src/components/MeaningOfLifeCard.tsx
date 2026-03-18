@@ -25,6 +25,7 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
 }) => {
   const { getCardImage } = useCardImage();
   const cardArtUrl = getCardImage(card.name);
+  const [imgError, setImgError] = React.useState(false);
 
   const cardClasses = [
     'meaning-card',
@@ -46,11 +47,12 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
       {(isSelected || isRevealed || isViewing) && (
         <div className="meaning-card-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
-            {cardArtUrl ? (
+            {cardArtUrl && !imgError ? (
               <img
                 src={cardArtUrl}
                 alt={card.name}
                 title={card.name}
+                onError={() => setImgError(true)}
                 style={{
                   width: '45px',
                   height: '63px',

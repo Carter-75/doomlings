@@ -34,7 +34,7 @@
   --desktop: 1024px;
   --large: 1440px;
   --ui-scale: 1;
-  --ad-banner-height: 0px;
+  --ad-banner-height: 120px;
   --border-radius: 12px;
   --border-radius-small: 8px;
   --border-radius-large: 16px;
@@ -193,9 +193,7 @@
   --glow-primary: 0 0 20px rgba(110, 231, 183, 0.5);
 }
 
-body.ads-visible {
-  --ad-banner-height: 120px;
-}
+/* Ads Banner space is now permanent defined in root */
 
 /* Enhanced Typography Scale */
 html {

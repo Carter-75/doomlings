@@ -110,14 +110,10 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
         }
     }, [adsSuppressed, adsRemoved, loading]);
 
-    // Apply class to body for CSS padding
+    // Ad space padding is strictly managed through CSS root variables now.
+    // The banner will overlay this pre-calculated static space properly at bottom center.
     useEffect(() => {
-        if (typeof document === 'undefined') return;
-        if (bannerVisible) {
-            document.body.classList.add('ads-visible');
-        } else {
-            document.body.classList.remove('ads-visible');
-        }
+        // No dynamic body classes toggled to prevent layout shift.
     }, [bannerVisible]);
 
     // ─── Init ──────────────────────────────────────────────────────────────────

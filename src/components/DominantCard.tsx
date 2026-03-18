@@ -35,6 +35,7 @@ const DominantCard: React.FC<DominantCardProps> = ({
 }) => {
   const { getCardImage } = useCardImage();
   const cardArtUrl = getCardImage(dominant.name);
+  const [imgError, setImgError] = useState(false);
 
   const [cardCopies, setCardCopies] = useState<CardCopy[]>([]);
   const [showCopies, setShowCopies] = useState(false);
@@ -138,11 +139,12 @@ const DominantCard: React.FC<DominantCardProps> = ({
       {/* Main Card */}
       <div className="dominant-card-main">
         <h3 className="dominant-name" style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-          {cardArtUrl ? (
+          {cardArtUrl && !imgError ? (
             <img
               src={cardArtUrl}
               alt={dominant.name}
               title={dominant.name}
+              onError={() => setImgError(true)}
               style={{
                 width: '60px',
                 borderRadius: '4px',

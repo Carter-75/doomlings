@@ -20,16 +20,18 @@ interface TrinketCardProps {
 const TrinketCard: React.FC<TrinketCardProps> = ({ trinket, onAdd, onRemove, onPocket, isPocketDisabled, isFogged }) => {
   const { getCardImage } = useCardImage();
   const cardArtUrl = getCardImage(trinket.name);
+  const [imgError, setImgError] = React.useState(false);
 
   return (
     <div className={`trinket-card card ${isFogged ? 'trinket-fogged' : ''}`}>
       <div className="card-content">
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-          {cardArtUrl ? (
+          {cardArtUrl && !imgError ? (
             <img
               src={cardArtUrl}
               alt={trinket.name}
               title={trinket.name}
+              onError={() => setImgError(true)}
               style={{
                 width: '45px',
                 height: '63px',

@@ -1,5 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import VercelGameManager from './vercelGameManager';
+import { Capacitor } from '@capacitor/core';
 
 class GameSocketManager {
   private static instance: GameSocketManager;
@@ -40,8 +41,12 @@ class GameSocketManager {
             // Preview deployments - use public demo server
             serverUrl = 'https://doomlings-socket-demo.glitch.me';
           } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
-            // Local development - use local server
-            serverUrl = window.location.origin;
+            // Local development or Capacitor Native
+            if (typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform()) {
+              serverUrl = 'https://doomlings-socket-demo.glitch.me';
+            } else {
+              serverUrl = window.location.origin;
+            }
           } else {
             // Other domains - use public demo server
             serverUrl = 'https://doomlings-socket-demo.glitch.me';
