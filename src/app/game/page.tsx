@@ -115,6 +115,12 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     section: 'gameTurn',
   },
   {
+    title: '🚨 Reset All & Themes',
+    message: 'Need a fresh start? Hit "Reset All App Data" below to safely wipe everything except this tutorial! You can also find this, along with customizable layout Themes, in the main Settings page.',
+    highlightId: 'reset-all-btn',
+    section: 'gameTurn',
+  },
+  {
     title: "🎉 You're all set!",
     message: "That's the whole app! Use the ? Tutorial button in the nav any time you need a refresher. Have fun playing DOOMlings!",
     highlightId: null,

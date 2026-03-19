@@ -294,7 +294,7 @@ p {
   max-width: 1200px;
   margin: 0 auto;
   padding: clamp(1rem, 3vw, 2rem);
-  padding-bottom: calc(clamp(1rem, 3vw, 2rem) + var(--ad-banner-height));
+  padding-bottom: clamp(1rem, 3vw, 2rem);
   position: relative;
 }
 

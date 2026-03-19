@@ -1061,6 +1061,23 @@ const SettingsPage = () => {
                             )}
                         </div>
                     </div>
+
+                    {/* Danger Zone Section */}
+                    <div className="settings-section" style={{ border: '1px solid rgba(255, 68, 68, 0.3)', background: 'rgba(255, 0, 0, 0.05)' }}>
+                        <h2>⚠️ Danger Zone</h2>
+                        <button className="subscribe-btn" style={{ background: 'linear-gradient(135deg, #ff4444, #cc0000)', width: '100%', color: 'white' }} onClick={() => {
+                            if (window.confirm("Are you sure you want to reset all app data? This cannot be undone.")) {
+                                const tutorialSeen = localStorage.getItem('doomlingsTutorialSeen');
+                                localStorage.clear();
+                                if (tutorialSeen) {
+                                    localStorage.setItem('doomlingsTutorialSeen', tutorialSeen);
+                                }
+                                window.location.reload();
+                            }
+                        }}>
+                            Reset All App Data
+                        </button>
+                    </div>
                 </div>
             </div>
 

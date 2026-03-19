@@ -32,24 +32,19 @@ class GameSocketManager {
         let serverUrl = 'http://localhost:3000'; // Default for local development
 
         if (typeof window !== 'undefined') {
-          const hostname = window.location.hostname;
-
-          if (hostname === 'doomlings.vercel.app') {
-            // Production Vercel deployment - use public demo server
+          if (typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform()) {
+            // ALWAYS route to Glitch on Native apps
             serverUrl = 'https://doomlings-socket-demo.glitch.me';
-          } else if (hostname.includes('.vercel.app')) {
-            // Preview deployments - use public demo server
-            serverUrl = 'https://doomlings-socket-demo.glitch.me';
-          } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
-            // Local development or Capacitor Native
-            if (typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform()) {
+          } else {
+            const hostname = window.location.hostname;
+            if (hostname === 'doomlings.vercel.app' || hostname.includes('.vercel.app')) {
+              // Production Vercel deployment - use public demo server
               serverUrl = 'https://doomlings-socket-demo.glitch.me';
             } else {
+              // Local development and local network (e.g. 192.168.x.x)
+              // Local socket server runs on same host/port origin
               serverUrl = window.location.origin;
             }
-          } else {
-            // Other domains - use public demo server
-            serverUrl = 'https://doomlings-socket-demo.glitch.me';
           }
         }
 

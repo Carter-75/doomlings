@@ -54,10 +54,10 @@ export async function showBanner(): Promise<void> {
 
     await AdMob.showBanner({
         adId: BANNER_ID,
-        adSize: BannerAdSize.ADAPTIVE_BANNER,
-        position: BannerAdPosition.BOTTOM_CENTER,
+        adSize: BannerAdSize.BANNER,
+        position: BannerAdPosition.TOP_CENTER,
         margin: 0,
-        isTesting: BANNER_ID.includes('3940256099942544'), // auto-detect test IDs
+        isTesting: process.env.NODE_ENV !== 'production',
     });
 }
 

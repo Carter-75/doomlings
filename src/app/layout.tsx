@@ -58,6 +58,7 @@ export default function RootLayout({
           <IframeProvider>
             <AdProvider>
               <IframeWrapper>
+                <div className="ad-space-placeholder" style={{ width: '100%', height: 'var(--ad-banner-height)', display: 'block', flexShrink: 0, pointerEvents: 'none' }} />
                 <BackHandler />
                 {children}
               </IframeWrapper>

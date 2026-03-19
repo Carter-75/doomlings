@@ -162,6 +162,21 @@ const GameTurn: React.FC<GameTurnProps> = ({
           })}
         </div>
       </div>
+
+      <div className="player-control box mt-4">
+        <AnimatedButton id="reset-all-btn" className="is-danger is-fullwidth" onClick={() => {
+            if (window.confirm("Are you sure you want to reset all app data? This cannot be undone.")) {
+                const tutorialSeen = localStorage.getItem('doomlingsTutorialSeen');
+                localStorage.clear();
+                if (tutorialSeen) {
+                    localStorage.setItem('doomlingsTutorialSeen', tutorialSeen);
+                }
+                window.location.reload();
+            }
+        }}>
+          Reset All App Data
+        </AnimatedButton>
+      </div>
     </div>
   );
 };
