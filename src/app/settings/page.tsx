@@ -6,6 +6,7 @@ import { Preferences } from '@capacitor/preferences';
 import { useAds } from '@/lib/ad-context';
 import { useTheme } from '@/lib/theme-context';
 import { Capacitor } from '@capacitor/core';
+import DeveloperSettings from '@/components/DeveloperSettings';
 
 // Cloud Sync Section - Coming Soon
 const CloudSyncSection = () => (
@@ -1078,6 +1079,9 @@ const SettingsPage = () => {
                             Reset All App Data
                         </button>
                     </div>
+
+                    {/* Developer Settings */}
+                    <DeveloperSettings />
                 </div>
             </div>
 
