@@ -55,7 +55,7 @@ export async function showBanner(): Promise<void> {
     await AdMob.showBanner({
         adId: BANNER_ID,
         adSize: BannerAdSize.BANNER,
-        position: BannerAdPosition.TOP_CENTER,
+        position: BannerAdPosition.BOTTOM_CENTER,
         margin: 0,
         isTesting: process.env.NODE_ENV !== 'production',
     });

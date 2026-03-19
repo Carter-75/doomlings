@@ -58,6 +58,11 @@ const SettingsPage = () => {
     // Game Preferences State
     const [showScrollToTop, setShowScrollToTop] = useState(true);
     const [warnUnpocketedTrinkets, setWarnUnpocketedTrinkets] = useState(true);
+    
+    // Advanced Settings State
+    const [enableAnimations, setEnableAnimations] = useState(true);
+    const [showTooltips, setShowTooltips] = useState(true);
+    const [developerMode, setDeveloperMode] = useState(false);
 
     useEffect(() => {
         const savedScaling = localStorage.getItem('uiScaling');
@@ -73,6 +78,20 @@ const SettingsPage = () => {
         const savedWarnUnpocketedTrinkets = localStorage.getItem('warnUnpocketedTrinkets');
         if (savedWarnUnpocketedTrinkets !== null) {
             setWarnUnpocketedTrinkets(savedWarnUnpocketedTrinkets === 'true');
+        }
+
+        // Load Advanced Settings
+        const savedEnableAnimations = localStorage.getItem('enableAnimations');
+        if (savedEnableAnimations !== null) {
+            setEnableAnimations(savedEnableAnimations === 'true');
+        }
+        const savedShowTooltips = localStorage.getItem('showTooltips');
+        if (savedShowTooltips !== null) {
+            setShowTooltips(savedShowTooltips === 'true');
+        }
+        const savedDeveloperMode = localStorage.getItem('developerMode');
+        if (savedDeveloperMode !== null) {
+            setDeveloperMode(savedDeveloperMode === 'true');
         }
 
         fetchJsonFiles();
@@ -94,6 +113,24 @@ const SettingsPage = () => {
         const checked = e.target.checked;
         setWarnUnpocketedTrinkets(checked);
         localStorage.setItem('warnUnpocketedTrinkets', String(checked));
+    };
+
+    const handleEnableAnimationsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const checked = e.target.checked;
+        setEnableAnimations(checked);
+        localStorage.setItem('enableAnimations', String(checked));
+    };
+
+    const handleShowTooltipsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const checked = e.target.checked;
+        setShowTooltips(checked);
+        localStorage.setItem('showTooltips', String(checked));
+    };
+
+    const handleDeveloperModeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const checked = e.target.checked;
+        setDeveloperMode(checked);
+        localStorage.setItem('developerMode', String(checked));
     };
 
     const applyScale = () => {
@@ -984,21 +1021,33 @@ const SettingsPage = () => {
                         <div className="advanced-settings">
                             <div className="setting-item">
                                 <label>
-                                    <input type="checkbox" defaultChecked />
+                                    <input 
+                                        type="checkbox" 
+                                        checked={enableAnimations} 
+                                        onChange={handleEnableAnimationsChange}
+                                    />
                                     <span>Enable animations and transitions</span>
                                 </label>
                                 <small>Disable for better performance on older devices</small>
                             </div>
                             <div className="setting-item">
                                 <label>
-                                    <input type="checkbox" defaultChecked />
+                                    <input 
+                                        type="checkbox" 
+                                        checked={showTooltips} 
+                                        onChange={handleShowTooltipsChange}
+                                    />
                                     <span>Show tooltips and help text</span>
                                 </label>
                                 <small>Display helpful hints throughout the app</small>
                             </div>
                             <div className="setting-item">
                                 <label>
-                                    <input type="checkbox" />
+                                    <input 
+                                        type="checkbox" 
+                                        checked={developerMode} 
+                                        onChange={handleDeveloperModeChange}
+                                    />
                                     <span>Developer mode</span>
                                 </label>
                                 <small>Show additional debugging information</small>
