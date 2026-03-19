@@ -1130,7 +1130,7 @@ const SettingsPage = () => {
                     </div>
 
                     {/* Developer Settings */}
-                    <DeveloperSettings />
+                    {developerMode && <DeveloperSettings />}
                 </div>
             </div>
 

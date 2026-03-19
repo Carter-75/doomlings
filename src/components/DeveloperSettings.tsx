@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Preferences } from '@capacitor/preferences';
-import { generateCardFromJson } from '@/lib/openaiDeveloperService';
+import { OpenAIDeveloperService } from '../lib/openaiDeveloperService';
 import CardDataService from '@/lib/cardDataService';
 
 interface DeveloperSettingsProps {
@@ -80,7 +80,8 @@ export default function DeveloperSettings({ onCancel }: DeveloperSettingsProps) 
                     
                     setStatus({ message: 'Calling OpenAI to parse card...', type: 'info' });
 
-                    const generatedJson = await generateCardFromJson(base64Image, openAiKey);
+                    const aiService = new OpenAIDeveloperService(openAiKey);
+                    const generatedJson = await aiService.generateCardFromImage(base64Image);
 
                     // Check duplicate logic locally
                     const cardService = CardDataService.getInstance();
@@ -153,24 +154,25 @@ export default function DeveloperSettings({ onCancel }: DeveloperSettingsProps) 
                 branch: 'main'
             };
 
-            const response = await fetch(`https://api.github.com/repos/Carter-75/doomlings/contents/public/data/generated_cards/${exportFileName}`, {
-                method: 'PUT',
+            const response = await fetch('/api/developer/export-cards', {
+                method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${githubToken}`,
-                    'Accept': 'application/vnd.github.v3+json',
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(githubPayload)
+                body: JSON.stringify({
+                    cards,
+                    githubToken
+                })
             });
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || 'GitHub export failed.');
+                throw new Error(errorData.error || 'GitHub export failed.');
             }
 
             await Preferences.remove({ key: 'developer_generated_cards' });
             setSavedCardsCount(0);
-            setStatus({ message: `Exported successfully to GitHub as ${exportFileName}! Local storage cleared.`, type: 'success' });
+            setStatus({ message: `Exported successfully to GitHub! Local storage cleared.`, type: 'success' });
 
         } catch (e: any) {
             console.error('Export Error:', e);

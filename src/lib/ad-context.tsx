@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
-import { initializeAdMob, showBanner, hideBanner, isNative } from './admob-service';
+import { initializeAdMob, showBanner, hideBanner, isNative, showInterstitial } from './admob-service';
 
 // ─── RevenueCat config ────────────────────────────────────────────────────────
 // docs: https://www.revenuecat.com/docs/getting-started/installation/capacitor
@@ -30,6 +30,8 @@ interface AdContextValue {
     setAdsSuppressed: (suppressed: boolean) => void;
     /** Whether the banner ad is currently intended to be visible */
     bannerVisible: boolean;
+    /** Records a click/interaction to trigger interstitial ads after a threshold */
+    recordClick: () => void;
 }
 
 const AdContext = createContext<AdContextValue>({
@@ -42,6 +44,7 @@ const AdContext = createContext<AdContextValue>({
     restorePurchases: async () => { },
     setAdsSuppressed: () => { },
     bannerVisible: false,
+    recordClick: () => { },
 });
 
 export function useAds() {
@@ -70,6 +73,8 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
     const [adsSuppressed, setAdsSuppressed] = useState(false);
     const [bannerVisible, setBannerVisible] = useState(false);
     const [packages, setPackages] = useState<any[]>([]);
+    const [clickCount, setClickCount] = useState(0);
+    const AD_CLICK_THRESHOLD = 15;
 
     const persistState = useCallback(async (removed: boolean) => {
         try { await Preferences.set({ key: ADS_REMOVED_KEY, value: removed ? 'true' : 'false' }); }
@@ -272,11 +277,44 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
         }
     }, [applyAdsState]);
 
+    // ─── Record Click / Trigger Interstitial ──────────────────────────────────
+    const recordClick = useCallback(() => {
+        if (adsRemoved || adsSuppressed) return;
+        
+        setClickCount(prev => {
+            const next = prev + 1;
+            if (next >= AD_CLICK_THRESHOLD) {
+                if (isNative()) {
+                    showInterstitial().catch(e => console.warn('[AdMob] Interstitial error:', e));
+                }
+                return 0; // Reset counter
+            }
+            return next;
+        });
+    }, [adsRemoved, adsSuppressed]);
+
+    // Global Click Listener for ease of use
+    useEffect(() => {
+        const handleGlobalClick = (e: MouseEvent) => {
+            // Find if we clicked a button, link, or something with a cursor pointer
+            const target = e.target as HTMLElement;
+            const isClickable = target.closest('button, a, .clickable, [role="button"]') || 
+                               window.getComputedStyle(target).cursor === 'pointer';
+            
+            if (isClickable) {
+                recordClick();
+            }
+        };
+
+        window.addEventListener('click', handleGlobalClick);
+        return () => window.removeEventListener('click', handleGlobalClick);
+    }, [recordClick]);
+
     return (
         <AdContext.Provider value={{
             adsRemoved, loading, subscriptionStatus, packages,
             purchasePackage, purchaseProduct, restorePurchases,
-            setAdsSuppressed, bannerVisible,
+            setAdsSuppressed, bannerVisible, recordClick
         }}>
             {children}
         </AdContext.Provider>

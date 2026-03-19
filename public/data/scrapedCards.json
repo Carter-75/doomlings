@@ -1,25 +1,25 @@
 {
   "echolocation": {
     "name": "Echolocation",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/61740063898f6aa46470714d_Echolocation%20Dolphin.png",
     "description": "",
     "rawText": "Echolocation"
   },
   "immunity": {
     "name": "Immunity",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/61740098d2e52d8ea49e2389_Immunity%20Shaman.png",
     "description": "",
     "rawText": "Immunity"
   },
   "tiny": {
     "name": "Tiny",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/61740049c4d3c25f8a864456_Tiny%20Golden.png",
     "description": "",
     "rawText": "Tiny"
   },
   "automimicry": {
     "name": "Automimicry",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/63a083e6518995acb05d9b82_Automimicry.png",
     "description": "",
     "rawText": "Automimicry"
   },
@@ -31,67 +31,67 @@
   },
   "blubber": {
     "name": "Blubber",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bf7963380cbc1c8d6dc0e_6171e2bd558520b3b7aab977_Blubber.png",
     "description": "",
     "rawText": "Blubber"
   },
   "chromatophores": {
     "name": "Chromatophores",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bf7bf0339567901b5733d_6171e3cc06762f869796fcd0_Chromatophores.png",
     "description": "",
     "rawText": "Chromatophores"
   },
   "cold blood": {
     "name": "Cold Blood",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bf7d80c53dacdc3b953df_6171e46c9d9bb281b34d03ac_Cold%20Blood.png",
     "description": "",
     "rawText": "Cold Blood"
   },
   "costly signaling": {
     "name": "Costly Signaling",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bf812f0186b6fab06f3ec_6171e4c8a347d02eef44c933_Costly%20Signaling.png",
     "description": "",
     "rawText": "Costly Signaling"
   },
   "egg clusters": {
     "name": "Egg Clusters",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bf82d3380cb02b1d6ddc9_6171ef690043285a90a613ff_Egg%20Clusters.png",
     "description": "",
     "rawText": "Egg Clusters"
   },
   "flight": {
     "name": "Flight",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bf84263b98850b3d1a8bd_6171efec49738acdad2358a5_Flight.png",
     "description": "",
     "rawText": "Flight"
   },
   "gills": {
     "name": "Gills",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bf86929598bd649df022c_6171effdbc40e42c87af520d_Gills.png",
     "description": "",
     "rawText": "Gills"
   },
   "iridescent scales": {
     "name": "Iridescent Scales",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bf8890d74e0a7c5ed7c17_6171f026285ae507885398c4_Iridescent%20Scales.png",
     "description": "",
     "rawText": "Iridescent Scales"
   },
   "migratory": {
     "name": "Migratory",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bf8a4f95add8bf3be1fe5_6171f05b625a4ce30f4a5589_Migratory.png",
     "description": "",
     "rawText": "Migratory"
   },
   "painted shell": {
     "name": "Painted Shell",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bf8ba7a3df121be0704c3_6171f0830abda7f66c3e6c2e_Painted%20Shell.png",
     "description": "",
     "rawText": "Painted Shell"
   },
   "regenerative tissue": {
     "name": "Regenerative Tissue",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/63a11182ae022561cbde31b2_Regenerative-Tissue.png",
     "description": "",
     "rawText": "Regenerative Tissue"
   },
@@ -103,37 +103,37 @@
   },
   "saliva": {
     "name": "Saliva",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bf8ebb1b8b241ee2638dc_6171f0f4dcc6440b53756dce_Saliva.png",
     "description": "",
     "rawText": "Saliva"
   },
   "scutes": {
     "name": "Scutes",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bf90424e84977d665fdc5_6171f18cf929d42cc293f014_Scutes.png",
     "description": "",
     "rawText": "Scutes"
   },
   "selective memory": {
     "name": "Selective Memory",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bf91d0a448977b4a9dc1d_6171f1ba885d2f2a252de215_Selective%20Memory.png",
     "description": "",
     "rawText": "Selective Memory"
   },
   "spiny": {
     "name": "Spiny",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bf93063b98829ced1c437_6171f1c530bba50e970cf352_Spiny.png",
     "description": "",
     "rawText": "Spiny"
   },
   "sweat": {
     "name": "Sweat",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bf945b52c790bfb682f9e_6171f1d907527f6c4514e254_Sweat.png",
     "description": "",
     "rawText": "Sweat"
   },
   "tentacles": {
     "name": "Tentacles",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/63a1129d62ffe93059726c98_Tentacles.png",
     "description": "",
     "rawText": "Tentacles"
   },
@@ -145,13 +145,13 @@
   },
   "heroic": {
     "name": "Heroic",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/6174003bd42572bb41bccc2b_Heroic%20Holofoil.png",
     "description": "",
     "rawText": "Heroic"
   },
   "pack behavior": {
     "name": "Pack Behavior",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/63a1114018ceba0870d98d3f_Pack-Behavior_Variant.png",
     "description": "",
     "rawText": "Pack Behavior"
   },
@@ -163,43 +163,43 @@
   },
   "symbiosis": {
     "name": "Symbiosis",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bf99c03395604bdb58a15_6172f084e8d622c79e9eba9a_Symbiosis.png",
     "description": "",
     "rawText": "Symbiosis"
   },
   "appealing": {
     "name": "Appealing",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bf9c6aeab040606ced357_6171e1cd0c4030cc81fd132a_Appealing.png",
     "description": "",
     "rawText": "Appealing"
   },
   "bark": {
     "name": "Bark",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bf9dd7e91d0274e742540_6171e226eb4d4571bcc36f0c_Bark.png",
     "description": "",
     "rawText": "Bark"
   },
   "branches": {
     "name": "Branches",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bf9f17a3df16a7a0707e9_6171e31822c7f222a45d0a21_Branches.png",
     "description": "",
     "rawText": "Branches"
   },
   "deep roots": {
     "name": "Deep Roots",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfa080c53da01fdb95a74_6171e5334d7abaa376647e0e_Deep%20Roots.png",
     "description": "",
     "rawText": "Deep Roots"
   },
   "fecundity": {
     "name": "Fecundity",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfa2fd40a1c7e41e00e6e_6172da3255a71c07ddf9a89a_Fecundity.png",
     "description": "",
     "rawText": "Fecundity"
   },
   "fortunate": {
     "name": "Fortunate",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/63a10f0f9eeb4e7b5a3844e7_Fortunate.png",
     "description": "",
     "rawText": "Fortunate"
   },
@@ -211,7 +211,7 @@
   },
   "leaves": {
     "name": "Leaves",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/6967cfe28af1d5d0eb8635ca_Leaves_Adapted_Rarity.png",
     "description": "",
     "rawText": "Leaves"
   },
@@ -223,37 +223,37 @@
   },
   "overgrowth": {
     "name": "Overgrowth",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfa7198a545373d8a44d1_6172e91e5ced0d804c3885c7_Overgrowth.png",
     "description": "",
     "rawText": "Overgrowth"
   },
   "photosynthesis": {
     "name": "Photosynthesis",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfa88e6827032a3976ff8_6172e9639a5d495c7df99d3f_Photosynthesis.png",
     "description": "",
     "rawText": "Photosynthesis"
   },
   "pollination": {
     "name": "Pollination",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfa9bca55ab46bdd2c2dc_6172ef2cd544ada445781f45_Pollination.png",
     "description": "",
     "rawText": "Pollination"
   },
   "propagation": {
     "name": "Propagation",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfab3018b2a8336b22258_6172ef4a559f775581d85bf5_Propagation.png",
     "description": "",
     "rawText": "Propagation"
   },
   "random fertilization": {
     "name": "Random Fertilization",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfad05bc384ae101755fb_6172ef9cee14f86271aba1ae_Random%20Fertilization.png",
     "description": "",
     "rawText": "Random Fertilization"
   },
   "self replicating": {
     "name": "Self Replicating",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/63a112050962510ff77b1958_Self-Replicating.png",
     "description": "",
     "rawText": "Self Replicating"
   },
@@ -301,31 +301,31 @@
   },
   "tiny little melons": {
     "name": "Tiny Little Melons",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfba47987ab078680dbd8_6172f1b63f5a1326952c241d_Tiny%20Little%20Melons.png",
     "description": "",
     "rawText": "Tiny Little Melons"
   },
   "trunk": {
     "name": "Trunk",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfbbaf0186b017c0712e8_6172f1da3b935ce4a15f9b9a_Trunk.png",
     "description": "",
     "rawText": "Trunk"
   },
   "woody stems": {
     "name": "Woody Stems",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfbd7a90327635eee1325_6172f2286684d4733a32227e_Woody%20Stems.png",
     "description": "",
     "rawText": "Woody Stems"
   },
   "denial": {
     "name": "Denial",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/6174008a1368c5a66698c095_Denial%20Initials.png",
     "description": "",
     "rawText": "Denial"
   },
   "faith": {
     "name": "Faith",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/63a10eed23a6b7681b872440_Faith.png",
     "description": "",
     "rawText": "Faith"
   },
@@ -337,85 +337,85 @@
   },
   "optimistic nihilism": {
     "name": "Optimistic Nihilism",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/617400a48038c204807f6747_Optimistic%20Nihilism%20Box%20Art.png",
     "description": "",
     "rawText": "Optimistic Nihilism"
   },
   "altruistic": {
     "name": "Altruistic",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfc512022d914b7d0f862_6171e1999d9bb20038498a66_Altruistic.png",
     "description": "",
     "rawText": "Altruistic"
   },
   "boredom": {
     "name": "Boredom",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/63a10c4a18ceba8802d935f5_622ba12aac989157de002ad7_c_Boredom.png",
     "description": "",
     "rawText": "Boredom"
   },
   "boredom ks": {
     "name": "Boredom Ks",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/63a10c0965bf7befcc91f825_Boredom_KS.png",
     "description": "",
     "rawText": "Boredom Ks"
   },
   "confusion": {
     "name": "Confusion",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfc7e2022d9cf44d0f8c2_6171e4b3666af46307e4062d_Confusion.png",
     "description": "",
     "rawText": "Confusion"
   },
   "delicious": {
     "name": "Delicious",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfc96047f9922b14521f6_6171e544acb1313121cfba96_Delicious.png",
     "description": "",
     "rawText": "Delicious"
   },
   "doting": {
     "name": "Doting",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfcabf95add7309be3b83_6171e5dd9ca78b942b6fa6ec_Doting.png",
     "description": "",
     "rawText": "Doting"
   },
   "eloquence": {
     "name": "Eloquence",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfcc1b94c1a18f93bcb82_6171ef9a49738ae0bd22fd78_Eloquence.png",
     "description": "",
     "rawText": "Eloquence"
   },
   "fear": {
     "name": "Fear",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfcd8e68270a3b9977a71_6172da23a649c4036dee0db1_Fear.png",
     "description": "",
     "rawText": "Fear"
   },
   "flatulence": {
     "name": "Flatulence",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfcef06ae64468fdcf8b1_6172da64a5791815d410afe2_Flatulence.png",
     "description": "",
     "rawText": "Flatulence"
   },
   "gratitude": {
     "name": "Gratitude",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfd04953301ae17241c44_6172db038897ba6e06a1518a_Gratitude.png",
     "description": "",
     "rawText": "Gratitude"
   },
   "introspective": {
     "name": "Introspective",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfd165c81c009728a772d_6172dc4ae73df782bc7b1c53_Introspective.png",
     "description": "",
     "rawText": "Introspective"
   },
   "just": {
     "name": "Just",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfd342022d97777d0fae3_6172dc773f715b94e0eb1b11_Just.png",
     "description": "",
     "rawText": "Just"
   },
   "late": {
     "name": "Late",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/63a1103a1daf1491ce0b7600_Late.png",
     "description": "",
     "rawText": "Late"
   },
@@ -427,31 +427,31 @@
   },
   "mindful": {
     "name": "Mindful",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfef929598b49cfdf381d_6172e84963457f56689c9840_Mindful.png",
     "description": "",
     "rawText": "Mindful"
   },
   "mitochondrion": {
     "name": "Mitochondrion",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bff0c0d74e01723edc808_6172e853325bfb58246f888a_Mitochondrion.png",
     "description": "",
     "rawText": "Mitochondrion"
   },
   "morality": {
     "name": "Morality",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bff241bfe11bbb26cdf55_6172e85c27cea1070834c9bd_Morality.png",
     "description": "",
     "rawText": "Morality"
   },
   "prepper": {
     "name": "Prepper",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bff41d71c72895ebdfa8c_6172ef37c1aa8f30aaa09c9f_Prepper.png",
     "description": "",
     "rawText": "Prepper"
   },
   "saudade": {
     "name": "Saudade",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/63a111ac4780e2493310a2b1_Saudade.png",
     "description": "",
     "rawText": "Saudade"
   },
@@ -463,7 +463,7 @@
   },
   "self awareness": {
     "name": "Self Awareness",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/63a111c21daf14b9790b8d9d_Self-Awareness.png",
     "description": "",
     "rawText": "Self Awareness"
   },
@@ -475,7 +475,7 @@
   },
   "the third eye": {
     "name": "The Third Eye",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/66e1dc7217ab23675352f564_TheThirdEye.png",
     "description": "",
     "rawText": "The Third Eye"
   },
@@ -487,7 +487,7 @@
   },
   "camouflage": {
     "name": "Camouflage",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/63a10ce3bbe7323c7b51bf9b_Camouflage_Chameleon.png",
     "description": "",
     "rawText": "Camouflage"
   },
@@ -499,103 +499,103 @@
   },
   "vampirism": {
     "name": "Vampirism",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/617400576eab3d65a4386b84_Vampirism%20Swarm.png",
     "description": "",
     "rawText": "Vampirism"
   },
   "viral": {
     "name": "Viral",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/63a113b38fe687d619ef83f2_Viral_Multicolor.png",
     "description": "",
     "rawText": "Viral"
   },
   "adorable": {
     "name": "Adorable",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626c00257b318fd0747899a0_6171e10214b0bba24a2fc54a_Adorable.png",
     "description": "",
     "rawText": "Adorable"
   },
   "big ears": {
     "name": "Big Ears",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626c0039e0794d22b366721d_6171e24c889f9f47b4330f18_Big%20Ears.png",
     "description": "",
     "rawText": "Big Ears"
   },
   "clever": {
     "name": "Clever",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626c00539eaa4958125ab17c_6171e3f5ae74c524c73ca0cd_Clever.png",
     "description": "",
     "rawText": "Clever"
   },
   "directly register": {
     "name": "Directly Register",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626c0067d40a1ce261e0413a_6171e5b49ca78b954d6f7c3a_Directly%20Register.png",
     "description": "",
     "rawText": "Directly Register"
   },
   "dreamer": {
     "name": "Dreamer",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626c00832828b36a239c2465_6171edeb8a949dffdeb594e6_Dreamer.png",
     "description": "",
     "rawText": "Dreamer"
   },
   "fine motor skills": {
     "name": "Fine Motor Skills",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626c0097b9b30b7c3fb96254_6172da4e31d048058bfc602d_Fine%20Motor%20Skills.png",
     "description": "",
     "rawText": "Fine Motor Skills"
   },
   "impatience": {
     "name": "Impatience",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626c00aab52c793a9a68628a_6172dc36dd5cc8378da871b3_Impatience.png",
     "description": "",
     "rawText": "Impatience"
   },
   "inventive": {
     "name": "Inventive",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626c00bcd71c726302be0092_6172dc5378503f530cd58dc8_Inventive.png",
     "description": "",
     "rawText": "Inventive"
   },
   "memory": {
     "name": "Memory",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bf91d0a448977b4a9dc1d_6171f1ba885d2f2a252de215_Selective%20Memory.png",
     "description": "",
     "rawText": "Memory"
   },
   "nocturnal": {
     "name": "Nocturnal",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626c00e9f0186be1ae075624_6172e89f51bf3bd5f1892696_Nocturnal.png",
     "description": "",
     "rawText": "Nocturnal"
   },
   "nosy": {
     "name": "Nosy",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626c00fc0a44891bceaa22f8_6172e8b659d43e71a0c5d5f8_Nosy.png",
     "description": "",
     "rawText": "Nosy"
   },
   "parasitic": {
     "name": "Parasitic",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626c011098a54548b08a6c3a_6172e94caa44388f2d229fee_Parasitic.png",
     "description": "",
     "rawText": "Parasitic"
   },
   "persuasive": {
     "name": "Persuasive",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626c012989bf78ce1f5137ba_6172e955b6047240663552cd_Persuasive.png",
     "description": "",
     "rawText": "Persuasive"
   },
   "poisonous": {
     "name": "Poisonous",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626c014e7987ab7027811969_6172ff0839d3997c4367530a_Poisonous.png",
     "description": "",
     "rawText": "Poisonous"
   },
   "selfish": {
     "name": "Selfish",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626c016506ae64ff07dd1e3f_6172f02cf0ba1b5f528027c3_Selfish.png",
     "description": "",
     "rawText": "Selfish"
   },
@@ -649,7 +649,7 @@
   },
   "hyper intelligence": {
     "name": "Hyper Intelligence",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65edf701a2162d7beb24613e_HyperIntelligenceFavicon.png",
     "description": "",
     "rawText": "Hyper Intelligence"
   },
@@ -667,7 +667,7 @@
   },
   "bad": {
     "name": "Bad",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfc35033956689cb599ef_6172da0ae426804a07bad53f_Faith.png",
     "description": "",
     "rawText": "Bad"
   },
@@ -1339,7 +1339,7 @@
   },
   "legendary": {
     "name": "Legendary",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/63ea9f8dc0cafbbfeaba3574_Legendary.png",
     "description": "",
     "rawText": "Legendary"
   },
@@ -2407,7 +2407,7 @@
   },
   "spots": {
     "name": "Spots",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfb46cdd51f7a6382591b_6172f4fbd1c02546a3b16402_Swarm%20Spots.png",
     "description": "",
     "rawText": "Spots"
   },
@@ -2419,7 +2419,7 @@
   },
   "mimicry": {
     "name": "Mimicry",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/63a083e6518995acb05d9b82_Automimicry.png",
     "description": "",
     "rawText": "Mimicry"
   },
@@ -4813,7 +4813,7 @@
   },
   "repressed": {
     "name": "Repressed",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/67c4d44543fcffccd75eaf1a_Treasure_pressed.png",
     "description": "",
     "rawText": "Repressed"
   },
@@ -4873,7 +4873,7 @@
   },
   "furp": {
     "name": "Furp",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/626bfb814fe55c38fbc387be_6172f43fdf1b35797a731993_Swarm%20Fur.png",
     "description": "",
     "rawText": "Furp"
   },
@@ -4975,7 +4975,7 @@
   },
   "shadow puppets": {
     "name": "Shadow Puppets",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/68584efacc30a649aa6349a2_ShadowPuppets_unpressed.png",
     "description": "",
     "rawText": "Shadow Puppets"
   },
@@ -5407,7 +5407,7 @@
   },
   "unusual": {
     "name": "Unusual",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/63ea9f705f3cc65888f3b5be_Unusual.png",
     "description": "",
     "rawText": "Unusual"
   },
@@ -5839,7 +5839,7 @@
   },
   "attentive": {
     "name": "Attentive",
-    "image": "https://cdn.prod.website-files.com/612d407a6dfd3c1f0df39809/65f89e8b6d96de60f6b656fd_Alt%20Art%20Main.png",
+    "image": "https://cdn.prod.website-files.com/61494314e1322b4a29b5462a/66bb8bb8ef5de83cdb5008c7_Attentive.png",
     "description": "",
     "rawText": "Attentive"
   }

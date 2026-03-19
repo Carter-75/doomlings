@@ -80,8 +80,15 @@ export function useCardImage() {
 
         const normalized = cardName.toLowerCase().replace(/[^a-z0-9]/g, '');
         const cardData = globalCardCache[normalized];
+        const imageUrl = cardData?.image || null;
 
-        return cardData?.image || null;
+        // If the image is the generic "Alt Art Main" placeholder (which looks like a paintbrush),
+        // treat it as null so the component triggers the '?' fallback instead.
+        if (imageUrl && imageUrl.includes('Alt%20Art%20Main.png')) {
+            return null;
+        }
+
+        return imageUrl;
     };
 
     /**
