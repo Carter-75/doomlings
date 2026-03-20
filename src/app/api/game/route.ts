@@ -60,8 +60,7 @@ async function getAllRooms() {
     const lastUp = room.lastUpdate || room.createdAt || 0;
     // If a room has gone 35 seconds without a host heartbeat, it's a ghost
     if (now - lastUp > 35000) {
-      staleKeys.push(
-oom:);
+      staleKeys.push(`room:${room.id}`);
     } else {
       validRooms.push(room);
     }
@@ -138,8 +137,7 @@ export async function POST(request: NextRequest) {
             const lastUp = existingRoom.lastUpdate || existingRoom.createdAt || 0;
             // Ghost room detection: either it's been dead 30+ seconds OR it's from the exact same wifi IP
             if (nowRequest - lastUp > 30000 || existingRoom.wifiIp === clientIpRequest) {
-              await redis.del(
-oom:);
+              await redis.del(`room:${existingRoom.id}`);
               continue; // Safe to replace the dead/old room
             }
             return NextResponse.json({
