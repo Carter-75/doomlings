@@ -10,7 +10,7 @@ interface MultiplayerTabProps {
 export default function MultiplayerTab({ playerNames, playerCount }: MultiplayerTabProps) {
     const [socketManager] = useState(() => GameSocketManager.getInstance());
     const [localRooms, setLocalRooms] = useState<any[]>([]);
-    const [currentRoom, setCurrentRoom] = useState<any>(null);
+    const [currentRoom, setCurrentRoom] = useState<any>(() => socketManager.getCurrentRoom());
     const [isConnecting, setIsConnecting] = useState(false);
     const [error, setError] = useState('');
 
@@ -22,38 +22,46 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
     const hostName = playerNames[0] || 'Player 1';
 
     useEffect(() => {
-        // Ensure connection is established (restores session if exists)
-        socketManager.connect().then(() => {
-            loadLocalRooms();
-        });
+        // Since GameSocketManager connects globally in page.tsx, we just load rooms
+        loadLocalRooms();
 
-        socketManager.onRoomJoined((room: any) => {
+        const handleRoomJoined = (room: any) => {
             setCurrentRoom(room);
             setIsConnecting(false);
             setError('');
-        });
+        };
 
-        socketManager.onRoomUpdated((room: any) => {
+        const handleRoomUpdated = (room: any) => {
             setCurrentRoom(room);
-        });
+        };
 
-        socketManager.onRoomLeft(() => {
+        const handleRoomLeft = () => {
             setCurrentRoom(null);
-        });
+        };
 
-        socketManager.onError((errorMsg: string) => {
+        const handleError = (errorMsg: string) => {
             setError(errorMsg);
             setIsConnecting(false);
-        });
+        };
 
-        socketManager.onRoomListUpdated(() => {
+        const handleRoomListUpdated = () => {
             loadLocalRooms();
-        });
+        };
+
+        socketManager.onRoomJoined(handleRoomJoined);
+        socketManager.onRoomUpdated(handleRoomUpdated);
+        socketManager.onRoomLeft(handleRoomLeft);
+        socketManager.onError(handleError);
+        socketManager.onRoomListUpdated(handleRoomListUpdated);
 
         return () => {
-            // Cleanup handled by manager
+            socketManager.off('room-joined', handleRoomJoined);
+            socketManager.off('room-updated', handleRoomUpdated);
+            socketManager.off('room-left', handleRoomLeft);
+            socketManager.off('error', handleError);
+            socketManager.off('room-list-updated', handleRoomListUpdated);
         };
-    }, []);
+    }, [socketManager]);
 
     const loadLocalRooms = async () => {
         try {

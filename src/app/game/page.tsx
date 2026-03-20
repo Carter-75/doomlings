@@ -241,10 +241,18 @@ export default function Home() {
   const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false);
   const isMounted = useRef(false);
 
-  // Multiplayer State Initialization
   const [socketManager] = useState(() => GameSocketManager.getInstance());
-  const [isHost, setIsHost] = useState(false);
-  const [currentRoom, setCurrentRoom] = useState<any>(null);
+  
+  // Make sure we connect at the app level so we don't rely purely on MultiplayerTab
+  useEffect(() => {
+    socketManager.connect().catch(console.error);
+  }, [socketManager]);
+
+  const [currentRoom, setCurrentRoom] = useState<any>(() => socketManager.getCurrentRoom());
+  const [isHost, setIsHost] = useState(() => {
+    const room = socketManager.getCurrentRoom();
+    return room ? room.hostId === socketManager.getPlayerId() : false;
+  });
   const lastSyncedStateHash = useRef<string>('');
 
   // SYNC LISTENER (Incoming State)
@@ -366,10 +374,14 @@ export default function Home() {
 
       socketManager.onSyncGameState(handleSync);
       socketManager.onRoomJoined(handleRoomJoined);
+      socketManager.onRoomUpdated(handleRoomJoined); // Keep room object fresh
       socketManager.onRoomLeft(handleRoomLeft);
 
       return () => {
-        // Keep active to prevent stale references, or handle cleanup carefully mapped
+        socketManager.off('sync-game-state', handleSync);
+        socketManager.off('room-joined', handleRoomJoined);
+        socketManager.off('room-updated', handleRoomJoined);
+        socketManager.off('room-left', handleRoomLeft);
       };
     }, [socketManager]);
   // SYNC PUSH (Outgoing State)

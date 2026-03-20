@@ -98,6 +98,10 @@ class GameSocketManager {
     this.vercelManager.onRoomListUpdated(callback);
   }
 
+  off(event: string, callback: (...args: any[]) => void) {
+    this.vercelManager.off(event, callback);
+  }
+
   isConnected(): boolean {
     return this.vercelManager.isConnected();
   }
@@ -108,6 +112,10 @@ class GameSocketManager {
 
   getPlayerName(): string | null {
     return this.vercelManager.getPlayerName();
+  }
+
+  getCurrentRoom(): any {
+    return this.vercelManager.getCurrentRoom();
   }
 
   offAllListeners() {

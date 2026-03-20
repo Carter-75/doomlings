@@ -118,7 +118,7 @@ class VercelGameManager {
       const savedPlayerId = localStorage.getItem('doomlings_playerId');
       const savedRoomId = localStorage.getItem('doomlings_roomId');
       
-      if (savedPlayerId && !this.playerId) {
+      if (savedPlayerId) {
         this.playerId = savedPlayerId;
         this.playerName = localStorage.getItem('doomlings_playerName') || 'Player';
         
@@ -141,7 +141,16 @@ class VercelGameManager {
       }
     }
     
+    // Emitting immediately if already connected lets fast-components sync up
+    if (this.lastRoomState) {
+        setTimeout(() => this.emit('room-joined', this.lastRoomState), 50);
+    }
+    
     return Promise.resolve(this);
+  }
+
+  getCurrentRoom(): any {
+    return this.lastRoomState;
   }
 
   async registerPlayer(playerName: string): Promise<string> {
@@ -356,6 +365,12 @@ class VercelGameManager {
   onRoomListUpdated(callback: Function) {
     if (!this.listeners['room-list-updated']) this.listeners['room-list-updated'] = [];
     this.listeners['room-list-updated'].push(callback);
+  }
+
+  off(event: string, callback: Function) {
+    if (this.listeners[event]) {
+      this.listeners[event] = this.listeners[event].filter(cb => cb !== callback);
+    }
   }
 
   // Utility methods
