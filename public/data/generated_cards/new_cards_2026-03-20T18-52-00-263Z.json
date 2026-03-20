@@ -4,10 +4,10 @@
     "type": "dominant",
     "tiers": {
       "1": "Excluding dominants, if you have 6 or fewer traits in your trait pile, they cannot be swapped or stolen. Start of your turns: You may suppress 1 trait in your trait pile. +3pt.",
-      "2": "Excluding dominants, if you have 7 or fewer traits in your trait pile, they cannot be swapped or stolen. Start of your turns: You may suppress 1 trait in your trait pile. +4pt.",
-      "3": "Excluding dominants, if you have 8 or fewer traits in your trait pile, they cannot be swapped or stolen. Start of your turns: You may suppress 1 trait in your trait pile. +5pt.",
-      "4": "Excluding dominants, if you have 9 or fewer traits in your trait pile, they cannot be swapped or stolen. Start of your turns: You may suppress 1 trait in your trait pile. +6pt.",
-      "5": "Excluding dominants, if you have 10 or fewer traits in your trait pile, they cannot be swapped or stolen. Start of your turns: You may suppress 1 trait in your trait pile. +7pt."
+      "2": "Excluding dominants, if you have 8 or fewer traits in your trait pile, they cannot be swapped or stolen. Start of your turns: You may suppress 1 trait in your trait pile. +4pt.",
+      "3": "Excluding dominants, if you have 10 or fewer traits in your trait pile, they cannot be swapped or stolen. Start of your turns: You may suppress 1 trait in your trait pile. +5pt.",
+      "4": "Excluding dominants, if you have 12 or fewer traits in your trait pile, they cannot be swapped or stolen. Start of your turns: You may suppress 1 trait in your trait pile. +6pt.",
+      "5": "Excluding dominants, if you have 14 or fewer traits in your trait pile, they cannot be swapped or stolen. Start of your turns: You may suppress 1 trait in your trait pile. +7pt."
     }
   },
   {
@@ -15,9 +15,9 @@
     "type": "dominant",
     "tiers": {
       "1": "Start of your turns: You may discard all of 1 color from your hand. +3pt.",
-      "2": "Start of your turns: You may discard all of 2 colors from your hand. +4pt.",
-      "3": "Start of your turns: You may discard all of 3 colors from your hand. +5pt.",
-      "4": "Start of your turns: You may discard all of 4 colors from your hand. +6pt.",
+      "2": "Start of your turns: You may discard all of at most 2 colors from your hand. +4pt.",
+      "3": "Start of your turns: You may discard all of at most 3 colors from your hand. +5pt.",
+      "4": "Start of your turns: You may discard all of at most 4 colors from your hand. +6pt.",
       "5": "Start of your turns: You may discard all cards from your hand. +7pt."
     }
   },
@@ -26,10 +26,10 @@
     "type": "dominant",
     "tiers": {
       "1": "Swap Gene Pools with an opponent. +4pt.",
-      "2": "Swap Gene Pools with an opponent. +3pt.",
-      "3": "Swap Gene Pools with an opponent. +2pt.",
-      "4": "Swap Gene Pools with an opponent. +1pt.",
-      "5": "Swap Gene Pools with an opponent. +0pt."
+      "2": "Swap Gene Pools with an opponent. +6pt.",
+      "3": "Swap Gene Pools with an opponent. +10pt.",
+      "4": "Swap Gene Pools with an opponent. +16t.",
+      "5": "Swap Gene Pools with an opponent. +24pt."
     }
   },
   {
@@ -37,32 +37,32 @@
     "type": "dominant",
     "tiers": {
       "1": "Start of your turns: Choose a color. If you have traits of that color in your trait pile, discard them. +6pt.",
-      "2": "Start of your turns: Choose a color. Discard 1 trait of that color. +7pt.",
-      "3": "Start of your turns: Choose a color. Discard 2 traits of that color. +8pt.",
-      "4": "Start of your turns: Choose a color. Discard 3 traits of that color. +9pt.",
-      "5": "Start of your turns: Choose a color. Discard 4 traits of that color. +10pt."
+      "2": "Start of your turns: Choose a color. Discard 1 trait of that color. +8pt.",
+      "3": "Start of your turns: Choose a color. Discard 2 traits of that color. +11pt.",
+      "4": "Start of your turns: Choose a color. Discard 3 traits of that color. +15pt.",
+      "5": "Start of your turns: Choose a color. Discard 4 traits of that color. +20pt."
     }
   },
   {
     "name": "Ancestral",
     "type": "dominant",
     "tiers": {
-      "1": "At World's End: You may discard 1 from your trait pile. +3 for each color in your trait pile with exactly 2 traits.",
-      "2": "• Tier 2: Gain +5 for each color in your trait pile with exactly 2 traits. +1pt.",
-      "3": "• Tier 3: Gain +7 for each color in your trait pile with exactly 2 traits. +2pts.",
-      "4": "• Tier 4: Gain +9 for each color in your trait pile with exactly 2 traits. +3pts.",
-      "5": "• Tier 5: Gain +11 for each color in your trait pile with exactly 2 traits. +4pts."
+      "1": "At World's End: You may discard 1 from your trait pile. +3 for each color in your trait pile with exactly 2 traits. +1pt.",
+      "2": "At World's End: You may discard up to 2 from your trait pile. +6 for each color in your trait pile with exactly 2 traits. +2pt.",
+      "3": "At World's End: You may discard up to 3 from your trait pile. +9 for each color in your trait pile with exactly 2 traits. +3pt."",
+      "4": "At World's End: You may discard up to 4 from your trait pile. +12 for each color in your trait pile with exactly 2 traits. +4pt.",
+      "5": "At World's End: You may discard up to 5 from your trait pile. +15 for each color in your trait pile with exactly 2 traits. +5pt."
     }
   },
   {
     "name": "Gravetender",
     "type": "dominant",
     "tiers": {
-      "1": "At World's End: Draw 1 for each color missing from your trait pile. +2 for each card drawn this way.",
-      "2": "• Tier 2: Draw 2 for each color missing from your trait pile. +2 for each card drawn this way. +2pt.",
-      "3": "• Tier 3: Draw 3 for each color missing from your trait pile. +2 for each card drawn this way. +3pt.",
-      "4": "• Tier 4: Draw 4 for each color missing from your trait pile. +2 for each card drawn this way. +4pt.",
-      "5": "• Tier 5: Draw 5 for each color missing from your trait pile. +2 for each card drawn this way. +5pt."
+      "1": "At World's End: Draw 1 for each color missing from your trait pile. +2 for each card drawn this way. +4pt.",
+      "2": "• Tier 2: Draw 2 for each color missing from your trait pile. +3 for each card drawn this way. +5pt.",
+      "3": "• Tier 3: Draw 3 for each color missing from your trait pile. +4 for each card drawn this way. +7pt.",
+      "4": "• Tier 4: Draw 4 for each color missing from your trait pile. +5 for each card drawn this way. +10pt.",
+      "5": "• Tier 5: Draw 5 for each color missing from your trait pile. +5 for each card drawn this way. +15pt."
     }
   },
   {
@@ -95,7 +95,7 @@
       "2": "You may play 2 traits of each color. Ignore actions (⚫). +2pt.",
       "3": "You may play 3 traits of each color. Ignore actions (⚫). +3pt.",
       "4": "You may play 4 traits of each color. Ignore actions (⚫). +5pt.",
-      "5": "You may play unlimited traits of each color. Ignore actions (⚫). +8pt."
+      "5": "You may play 5 traits of each color. Don't ignore actions (⚫). +8pt."
     }
   },
   {
@@ -103,10 +103,10 @@
     "type": "dominant",
     "tiers": {
       "1": "Play Sunny at any time to stabilize to 8. +3pt.",
-      "2": "Play Sunny at any time to stabilize to 9. +4pt.",
-      "3": "Play Sunny at any time to stabilize to 10. +5pt.",
-      "4": "Play Sunny at any time to stabilize to 11. +6pt.",
-      "5": "Play Sunny at any time to stabilize to 12. +7pt."
+      "2": "Play Sunny at any time to stabilize to 8. +8pt.",
+      "3": "Play Sunny at any time to stabilize to 8. +14pt.",
+      "4": "Play Sunny at any time to stabilize to 8. +19pt.",
+      "5": "Play Sunny at any time to stabilize to 8. +25pt."
     }
   },
   {
@@ -114,10 +114,10 @@
     "type": "dominant",
     "tiers": {
       "1": "At World's End: You may discard up to 3 from your trait pile. Then reveal 1 from the top of the trait deck for each trait discarded this way. Add their face values to your final score. +2pt.",
-      "2": "At World's End: Discard up to 3 from your trait pile. Reveal 2 cards from the trait deck for each discarded trait. Add their face values to your score. +2pt.",
-      "3": "At World's End: Discard up to 3 traits. Reveal 3 cards from the trait deck for each discarded trait. Add values to your score. +2pt.",
-      "4": "At World's End: Discard traits. Reveal 4 cards per discarded trait. Add values to score. +2pt.",
-      "5": "At World's End: Discard traits. Reveal 5 cards per discarded trait. Add values to score. +2pt."
+      "2": "At World's End: You may Discard up to 3 from your trait pile. Reveal 2 cards from the trait deck for each discarded trait. Add their face values to your score. +2pt.",
+      "3": "At World's End: You may Discard up to 3 traits. Reveal 3 cards from the trait deck for each discarded trait. Add values to your score. +3pt.",
+      "4": "At World's End: You may Discard traits. Reveal 4 cards per discarded trait. Add values to score. +4pt.",
+      "5": "At World's End: You may Discard traits. Reveal 5 cards per discarded trait. Add values to score. +4pt."
     }
   },
   {
@@ -126,9 +126,9 @@
     "tiers": {
       "1": "If you have 11 or fewer traits in your trait pile, triple the face value of all your dominants. +1pt.",
       "2": "If you have 11 or fewer traits in your trait pile, quadruple the face value of all your dominants. +2pt.",
-      "3": "If you have 9 or fewer traits in your trait pile, quintuple the face value of all your dominants. +3pt.",
-      "4": "If you have 8 or fewer traits in your trait pile, sextuple the face value of all your dominants. +4pt.",
-      "5": "If you have 7 or fewer traits in your trait pile, septuple the face value of all your dominants. +5pt."
+      "3": "If you have 15 or fewer traits in your trait pile, quintuple the face value of all your dominants. +3pt.",
+      "4": "If you have 15 or fewer traits in your trait pile, sextuple the face value of all your dominants. +4pt.",
+      "5": "If you have 20 or fewer traits in your trait pile, septuple the face value of all your dominants. +5pt."
     }
   },
   {
@@ -138,8 +138,8 @@
       "1": "Play all traits of a face value of your choice. Ignore actions (A). +0pt.",
       "2": "Play all traits of two face values of your choice. Ignore actions (A). +1pt.",
       "3": "Play all traits of three face values of your choice. Ignore actions (A). +2pt.",
-      "4": "Play all traits of four face values of your choice. Ignore actions (A). +3pt.",
-      "5": "Play all traits of five face values of your choice. Ignore actions (A). +4pt."
+      "4": "Play all traits of four face values of your choice. Don't ignore actions (A). +3pt.",
+      "5": "Play all traits of five face values of your choice. Don't ignore actions (A). +4pt."
     }
   },
   {
@@ -148,9 +148,9 @@
     "tiers": {
       "1": "-2 for each purple in your trait pile. +1 for each green. +1 for each red. +1pt.",
       "2": "-3 for each purple in your trait pile. +2 for each green. +2 for each red. +2pt.",
-      "3": "-4 for each purple in your trait pile. +3 for each green. +3 for each red. +3pt.",
-      "4": "-5 for each purple in your trait pile. +4 for each green. +4 for each red. +4pt.",
-      "5": "-6 for each purple in your trait pile. +5 for each green. +5 for each red. +5pt."
+      "3": "-3 for each purple in your trait pile. +3 for each green. +3 for each red. +3pt.",
+      "4": "-3 for each purple in your trait pile. +4 for each green. +4 for each red. +4pt.",
+      "5": "-3 for each purple in your trait pile. +5 for each green. +5 for each red. +5pt."
     }
   },
   {
@@ -159,9 +159,9 @@
     "tiers": {
       "1": "• Tier 1: Peek at the top 4 of the trait deck. Draw 1. You may play it. If any are negative, you may play them into any trait pile(s) and ignore actions (A). +4pt.",
       "2": "• Tier 2: Peek at the top 5 of the trait deck. Draw 1. You may play it. If any are negative, you may play them into any trait pile(s) and ignore actions (A). +5pt.",
-      "3": "• Tier 3: Peek at the top 6 of the trait deck. Draw 1. You may play it. If any are negative, you may play them into any trait pile(s) and ignore actions (A). +6pt.",
-      "4": "• Tier 4: Peek at the top 7 of the trait deck. Draw 1. You may play it. If any are negative, you may play them into any trait pile(s) and ignore actions (A). +7pt.",
-      "5": "• Tier 5: Peek at the top 8 of the trait deck. Draw 1. You may play it. If any are negative, you may play them into any trait pile(s) and ignore actions (A). +8pt."
+      "3": "• Tier 3: Peek at the top 6 of the trait deck. Draw 2. You may play them. If any are negative, you may play them into any trait pile(s) and ignore actions (A). +6pt.",
+      "4": "• Tier 4: Peek at the top 7 of the trait deck. Draw 2. You may play them. If any are negative, you may play them into any trait pile(s) and ignore actions (A). +7pt.",
+      "5": "• Tier 5: Peek at the top 8 of the trait deck. Draw 3. You may play them. If any are negative, you may play them into any trait pile(s) and don't ignore actions (A). +8pt."
     }
   },
   {
@@ -172,7 +172,7 @@
       "2": "• Tier 2: Start of your turns: You may give an opponent 2 from your hand. +5pt.",
       "3": "• Tier 3: Start of your turns: You may give an opponent 2 from your hand and draw 1 card. +6pt.",
       "4": "• Tier 4: Start of your turns: You may give an opponent 2 from your hand and draw 2 cards. +7pt.",
-      "5": "• Tier 5: Start of your turns: You may give an opponent 3 from your hand and draw 2 cards. +8pt."
+      "5": "• Tier 5: Start of your turns: You may give an opponent 3 from your hand and draw 3 cards. +8pt."
     }
   },
   {
@@ -181,9 +181,9 @@
     "tiers": {
       "1": "Double the face value of each trait in your trait pile that is the only trait of that color. This effect excludes dominants entirely. +4pt.",
       "2": "Triple the face value of each trait in your trait pile that is the only trait of that color. This effect excludes dominants entirely. +6pt.",
-      "3": "Quadruple the face value of each trait in your trait pile that is the only trait of that color. This effect excludes dominants entirely. +8pt.",
-      "4": "Quintuple the face value of each trait in your trait pile that is the only trait of that color. This effect excludes dominants entirely. +10pt.",
-      "5": "Sextuple the face value of each trait in your trait pile that is the only trait of that color. This effect excludes dominants entirely. +12pt."
+      "3": "Quadruple the face value of each trait in your trait pile that has under 5 traits of that color. This effect excludes dominants entirely. +8pt.",
+      "4": "Quintuple the face value of each trait in your trait pile that has under 6 traits of that color. This effect excludes dominants entirely. +10pt.",
+      "5": "Sextuple the face value of each trait in your trait pile that has under 7 traits of that color. This effect excludes dominants entirely. +12pt."
     }
   }
 ]
