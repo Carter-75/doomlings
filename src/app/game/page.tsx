@@ -249,7 +249,8 @@ export default function Home() {
   // SYNC LISTENER (Incoming State)
   useEffect(() => {
     const handleSync = (payload: any) => {
-      if (!payload || payload.hostId === socketManager.getPlayerId()) return; // Don't apply our own sync back
+      // Allow any payload to process as long as we were not the immediate sender
+      if (!payload || (payload.senderId && payload.senderId === socketManager.getPlayerId()) || (payload.hostId && payload.hostId === socketManager.getPlayerId())) return; 
 
       // Carefully apply incoming state, ignore local UI preferences
       // We wrap in batch updates by React 18 implicitly, but just to be safe:
@@ -283,22 +284,68 @@ export default function Home() {
       setIsHost(iAmHost);
     };
 
-    socketManager.onSyncGameState(handleSync);
-    socketManager.onRoomJoined(handleRoomJoined);
+      const handleRoomLeft = () => {
+        setCurrentRoom(null);
+        setIsHost(true);
+        const savedStateJSON = localStorage.getItem('doomlingsGameState');
+        if (savedStateJSON) {
+          try {
+            const savedState = JSON.parse(savedStateJSON);
+            setPlayerCount(parseInt(savedState.playerCount, 10) || 2);
+            setPlayerNames(savedState.playerNames || Array(6).fill(''));
+            setCatastropheMode(savedState.catastropheMode || false);
+            setManualCatastropheOverride(savedState.manualCatastropheOverride || false);
+            setCurrentRule(savedState.currentRule || null);
+            setChallengePlayer(savedState.challengePlayer || null);
+            setAgeDeck(savedState.ageDeck || []);
+            setCurrentAgeIndex(savedState.currentAgeIndex || 0);
+            setNormalAgeCount(savedState.normalAgeCount || 0);
+            setMerchantAgeCount(savedState.merchantAgeCount || 0);
+            setCatastropheAgeCount(savedState.catastropheAgeCount || 0);
+            setFinalCatastropheMode(savedState.finalCatastropheMode ?? true);
+            setPlayerMeanings(savedState.playerMeanings || {});
+            setSelectedMeanings(savedState.selectedMeanings || {});
+            setRevealedMeanings(savedState.revealedMeanings || {});
+            setDominantCardStates(savedState.dominantCardStates || {});
 
-    return () => {
-      // Keep active to prevent stale references, or handle cleanup carefully mapped
-    };
-  }, [socketManager]);
+            const loadedTrinketState = savedState.trinketState || {
+              deck: savedState.trinketDeck || [],
+              playerTrinkets: savedState.playerTrinkets || {}
+            };
+            setTrinketState(loadedTrinketState);
+            setPocketedTrinkets(savedState.pocketedTrinkets || {});
+            setTrinketsPocketedThisTurn(savedState.trinketsPocketedThisTurn || {});
 
+            setActiveSection(savedState.activeSection || 'challenges');
+            setViewingPlayer(savedState.viewingPlayer || null);
+            setInitialTrinketCount(savedState.initialTrinketCount || 0);
+            setCatastrophesInDeck(savedState.catastrophesInDeck || []);
+            setShowCatastropheList(savedState.showCatastropheList || false);
+            setAgeMultiplierMode(savedState.ageMultiplierMode || 'auto');
+            setManualAgeMultiplier(savedState.manualAgeMultiplier || 1);
+            setChallengeRolledThisAge(savedState.challengeRolledThisAge || false);
+          } catch (err) {
+            console.error('Failed to parse single player state details', err);
+          }
+        }
+      };
+
+      socketManager.onSyncGameState(handleSync);
+      socketManager.onRoomJoined(handleRoomJoined);
+      socketManager.onRoomLeft(handleRoomLeft);
+
+      return () => {
+        // Keep active to prevent stale references, or handle cleanup carefully mapped
+      };
+    }, [socketManager]);
   // SYNC PUSH (Outgoing State)
   useEffect(() => {
-    // Only host pushes state changes
-    if (!isHost || !currentRoom) return;
+    // Anyone in the room can sync state changes!
+    if (!currentRoom) return;
     if (!isInitialLoadComplete || !isMounted.current) return;
 
     const syncPayload = {
-      hostId: socketManager.getPlayerId(),
+      senderId: socketManager.getPlayerId(),
       playerCount,
       playerNames,
       catastropheMode,
@@ -337,6 +384,12 @@ export default function Home() {
   // GAME STATE PERSISTENCE
   useEffect(() => {
     if (!isInitialLoadComplete || !isMounted.current) {
+      return;
+    }
+
+    // Do NOT overwrite local app save data if we are visiting someone else's room.
+    // If you are the host, you are using your local save data.
+    if (currentRoom && (!isHost || currentRoom.hostId !== socketManager.getPlayerId())) {
       return;
     }
 

@@ -247,7 +247,7 @@ class VercelGameManager {
   }
 
   async getPublicRooms() {
-    const result = await this.apiCall('get-public-rooms');
+    const result = await this.apiCall('get-public-rooms', { playerId: this.playerId });
     if (result.success) {
       return result.rooms;
     }
@@ -255,7 +255,7 @@ class VercelGameManager {
   }
 
   async getLocalRooms() {
-    const result = await this.apiCall('get-local-rooms');
+    const result = await this.apiCall('get-local-rooms', { playerId: this.playerId });
     if (result.success) {
       return result.rooms;
     }
@@ -271,6 +271,11 @@ class VercelGameManager {
   onRoomJoined(callback: Function) {
     if (!this.listeners['room-joined']) this.listeners['room-joined'] = [];
     this.listeners['room-joined'].push(callback);
+  }
+
+  onRoomLeft(callback: Function) {
+    if (!this.listeners['room-left']) this.listeners['room-left'] = [];
+    this.listeners['room-left'].push(callback);
   }
 
   onError(callback: Function) {
@@ -334,6 +339,7 @@ class VercelGameManager {
     this.currentRoomId = null;
     this.lastRoomState = null;
     this.stopPolling();
+    this.emit('room-left', null);
   }
 
   disconnect() {

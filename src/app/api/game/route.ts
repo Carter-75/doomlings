@@ -309,9 +309,10 @@ export async function POST(request: NextRequest) {
       }
 
       case 'get-public-rooms': {
+        const fetchingPlayerId = validateId(data.playerId);
         const allRooms = await getAllRooms();
         const publicRooms = allRooms
-          .filter((room: any) => !room.isPrivate && room.status === 'waiting' && !room.isLocal)
+          .filter((room: any) => !room.isPrivate && room.status === 'waiting' && !room.isLocal && (!fetchingPlayerId || !room.players.some((p:any) => p.id === fetchingPlayerId)))
           .map((room: any) => ({
             id: room.id,
             name: room.name,
@@ -328,9 +329,10 @@ export async function POST(request: NextRequest) {
 
       case 'get-local-rooms': {
         const clientIp = (request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '127.0.0.1').split(',')[0];
+        const fetchingPlayerId = validateId(data.playerId);
         const allRooms = await getAllRooms();
         const localRooms = allRooms
-          .filter((room: any) => room.isLocal && room.wifiIp === clientIp && room.status === 'waiting')
+          .filter((room: any) => room.isLocal && room.wifiIp === clientIp && room.status === 'waiting' && (!fetchingPlayerId || !room.players.some((p:any) => p.id === fetchingPlayerId)))
           .map((room: any) => ({
             id: room.id,
             name: room.name,
@@ -356,9 +358,10 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ success: false, error: 'Room not found' }, { headers: corsHeaders });
         }
 
-        // Ensure only the host can forcefully push full game state syncs
-        if (syncRoom.hostId !== syncPlayerId) {
-          return NextResponse.json({ success: false, error: 'Only the host can sync game state' }, { headers: corsHeaders });
+        // Ensure the player is actually in the room to sync state
+        const isPlayerInRoom = syncRoom.players.some((p: any) => p.id === syncPlayerId);
+        if (!isPlayerInRoom) {
+          return NextResponse.json({ success: false, error: 'Only players in the room can sync game state' }, { headers: corsHeaders });
         }
 
         syncRoom.gameStatePayload = data.payload;

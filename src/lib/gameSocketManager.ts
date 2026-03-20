@@ -74,6 +74,10 @@ class GameSocketManager {
     this.vercelManager.onRoomJoined(callback);
   }
 
+  onRoomLeft(callback: (...args: any[]) => void) {
+    this.vercelManager.onRoomLeft(callback);
+  }
+
   onError(callback: (...args: any[]) => void) {
     this.vercelManager.onError(callback);
   }
