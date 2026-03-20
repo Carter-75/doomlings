@@ -72,7 +72,7 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
             if (res && res.room) setCurrentRoom(res.room);
             setIsConnecting(false);
         } catch (err) {
-            setError('Failed to create local room');
+            setError(err.message || 'Failed to create local room');
             setIsConnecting(false);
         }
     };

@@ -37,6 +37,12 @@ class VercelGameManager {
     }
   }
 
+  private emit(event: string, data: any) {
+    if (this.listeners[event]) {
+      this.listeners[event].forEach(callback => callback(data));
+    }
+  }
+
   private async apiCall(action: string, data: any = {}) {
     try {
       const response = await fetch(this.apiUrl, {

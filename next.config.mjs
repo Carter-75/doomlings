@@ -6,11 +6,11 @@ const createConfig = (phase) => {
   const isVercel = process.env.VERCEL === '1';
 
   return {
-    output: isVercel ? undefined : 'export',
+    output: (isVercel || isDev) ? undefined : 'export',
     trailingSlash: false,
 
     // When doing a static Capacitor export, ignore API route files (.ts)
-    pageExtensions: isVercel ? ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'] : ['tsx', 'jsx', 'js'],
+    pageExtensions: (isVercel || isDev) ? ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'] : ['tsx', 'jsx', 'js'],
 
     images: {
       unoptimized: true,
