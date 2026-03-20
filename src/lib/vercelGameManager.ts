@@ -112,15 +112,51 @@ class VercelGameManager {
   // Public methods matching the Socket.IO interface
   async connect(): Promise<any> {
     console.log('🎮 Connected to Vercel game API');
+    
+    // Auto-reconnect logic
+    if (typeof window !== 'undefined') {
+      const savedPlayerId = localStorage.getItem('doomlings_playerId');
+      const savedRoomId = localStorage.getItem('doomlings_roomId');
+      
+      if (savedPlayerId && !this.playerId) {
+        this.playerId = savedPlayerId;
+        this.playerName = localStorage.getItem('doomlings_playerName') || 'Player';
+        
+        if (savedRoomId) {
+          this.currentRoomId = savedRoomId;
+          this.startPolling();
+          
+          // Try to fetch initial state
+          this.apiCall('get-room-state', { roomId: savedRoomId, playerId: savedPlayerId })
+            .then(res => {
+              if (res.success && res.room) {
+                 this.lastRoomState = res.room;
+                 this.emit('room-joined', res.room); // let UI know we reconnected
+              } else {
+                 // Room might be dead
+                 this.leaveRoom();
+              }
+            }).catch(console.error);
+        }
+      }
+    }
+    
     return Promise.resolve(this);
   }
 
   async registerPlayer(playerName: string): Promise<string> {
-    const result = await this.apiCall('register-player', { playerName });
+    const existingPlayerId = typeof window !== 'undefined' ? localStorage.getItem('doomlings_playerId') : null;
+    const result = await this.apiCall('register-player', { playerName, playerId: existingPlayerId });
 
     if (result.success) {
       this.playerId = result.playerId;
       this.playerName = result.playerName;
+      
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('doomlings_playerId', result.playerId);
+        localStorage.setItem('doomlings_playerName', result.playerName);
+      }
+      
       this.startPolling();
       return result.playerId;
     }
@@ -138,6 +174,9 @@ class VercelGameManager {
     if (result.success) {
       this.currentRoomId = result.roomId;
       this.lastRoomState = result.room;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('doomlings_roomId', result.roomId);
+      }
       this.emit('room-joined', result.room);
       return result;
     }
@@ -156,6 +195,9 @@ class VercelGameManager {
     if (result.success) {
       this.currentRoomId = roomId;
       this.lastRoomState = result.room;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('doomlings_roomId', roomId);
+      }
       this.emit('room-joined', result.room);
       return result;
     }
@@ -346,6 +388,9 @@ class VercelGameManager {
     }
     this.currentRoomId = null;
     this.lastRoomState = null;
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('doomlings_roomId');
+    }
     this.stopPolling();
     this.emit('room-left', null);
   }

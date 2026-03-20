@@ -93,7 +93,10 @@ export async function POST(request: NextRequest) {
     switch (action) {
       case 'register-player': {
         const safePlayerName = sanitizeString(data.playerName, 30) || 'Player';
-        const playerId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+        let playerId = validateId(data.playerId);
+        if (!playerId) {
+            playerId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+        }
         const player = {
           id: playerId,
           name: safePlayerName,

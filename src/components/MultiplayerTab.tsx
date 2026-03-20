@@ -22,12 +22,23 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
     const hostName = playerNames[0] || 'Player 1';
 
     useEffect(() => {
-        loadLocalRooms();
+        // Ensure connection is established (restores session if exists)
+        socketManager.connect().then(() => {
+            loadLocalRooms();
+        });
 
         socketManager.onRoomJoined((room: any) => {
             setCurrentRoom(room);
             setIsConnecting(false);
             setError('');
+        });
+
+        socketManager.onRoomUpdated((room: any) => {
+            setCurrentRoom(room);
+        });
+
+        socketManager.onRoomLeft(() => {
+            setCurrentRoom(null);
         });
 
         socketManager.onError((errorMsg: string) => {
