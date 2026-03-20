@@ -250,7 +250,13 @@ export default function Home() {
   useEffect(() => {
     const handleSync = (payload: any) => {
       // Allow any payload to process as long as we were not the immediate sender
-      if (!payload || (payload.senderId && payload.senderId === socketManager.getPlayerId()) || (payload.hostId && payload.hostId === socketManager.getPlayerId())) return; 
+      // AND we are not the host. The host's local state is the source of truth for the room,
+      // so the host ignores incoming state syncs unless they explicitly want to accept them 
+      // (which typically they don't, unless someone else specifically sent a direct state mutation to the host, 
+      // but in this model, all devices broadcast their full state on change). 
+      // Wait, if a *client* device changes something (like a player checks a box), we DO want the host to update.
+      // So we shouldn't purely ignore if we are host, but we SHOULD ignore if we were the sender.
+      if (!payload || payload.senderId === socketManager.getPlayerId()) return;
 
       // Carefully apply incoming state, ignore local UI preferences
       // We wrap in batch updates by React 18 implicitly, but just to be safe:
