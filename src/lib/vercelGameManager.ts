@@ -1,4 +1,6 @@
 // Alternative game manager for Vercel deployment (no Socket.IO required)
+import { Capacitor } from '@capacitor/core';
+
 class VercelGameManager {
   private playerId: string | null = null;
   private playerName: string | null = null;
@@ -9,7 +11,20 @@ class VercelGameManager {
   private lastRoomState: any = null;
 
   constructor() {
-    this.apiUrl = typeof window !== 'undefined' ? `${window.location.origin}/api/game` : '/api/game';
+    // Android app connects to Vercel deployment, web uses current origin
+    if (typeof window !== 'undefined') {
+      if (Capacitor.isNativePlatform()) {
+        // Native Android/iOS always use Vercel deployment
+        this.apiUrl = 'https://doomlings.vercel.app/api/game';
+      } else {
+        // Web uses current origin (works for Vercel and localhost)
+        this.apiUrl = `${window.location.origin}/api/game`;
+      }
+    } else {
+      this.apiUrl = '/api/game';
+    }
+    
+    console.log(`🎮 Multiplayer API: ${this.apiUrl}`);
   }
 
   private emit(event: string, data: any) {

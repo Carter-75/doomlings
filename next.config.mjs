@@ -5,7 +5,8 @@ const createConfig = (phase) => {
   const isDev = phase === PHASE_DEVELOPMENT_SERVER;
 
   return {
-    ...(isDev ? {} : { output: 'export' }),
+    // Static export for Android, but Vercel will still run API routes dynamically when deployed
+    output: 'export',
     trailingSlash: true,
 
     images: {

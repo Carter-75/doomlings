@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Configure for static export
+// Mark as static for build, but Vercel will run it dynamically when deployed
 export const dynamic = 'force-static';
 
 // In-memory game state (Note: This will reset on serverless function restarts)
