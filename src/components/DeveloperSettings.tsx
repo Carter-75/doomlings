@@ -146,7 +146,9 @@ export default function DeveloperSettings({ onCancel }: DeveloperSettingsProps) 
             }
 
             const cards = JSON.parse(value);
-            const exportFileName = `generated_${Date.now()}.json`;
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const exportFileName = `new_cards_${timestamp}.json`;
+            const filePath = `public/data/generated_cards/${exportFileName}`;
 
             const githubPayload = {
                 message: `Add generated cards ${exportFileName}`,
@@ -154,20 +156,28 @@ export default function DeveloperSettings({ onCancel }: DeveloperSettingsProps) 
                 branch: 'main'
             };
 
-            const response = await fetch('/api/developer/export-cards', {
-                method: 'POST',
+            // Calling GitHub API directly here because /api routes don't work natively in Capacitor (mobile app bounds).
+            const response = await fetch(`https://api.github.com/repos/Carter-75/doomlings/contents/${filePath}`, {
+                method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Authorization': `Bearer ${githubToken.trim()}`,
+                    'Accept': 'application/vnd.github+json',
+                    'Content-Type': 'application/json',
+                    'X-GitHub-Api-Version': '2022-11-28'
                 },
-                body: JSON.stringify({
-                    cards,
-                    githubToken
-                })
+                body: JSON.stringify(githubPayload)
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'GitHub export failed.');
+                let errorData;
+                try {
+                    errorData = await response.json();
+                } catch(e) {
+                    const text = await response.text();
+                    console.error('Raw response:', text);
+                    throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+                }
+                throw new Error(errorData.message || errorData.error || 'GitHub export failed.');
             }
 
             await Preferences.remove({ key: 'developer_generated_cards' });

@@ -25,8 +25,10 @@ export async function POST(request: Request) {
       method: 'PUT',
       headers: {
           'Authorization': `Bearer ${githubToken}`,
-          'Accept': 'application/vnd.github.v3+json',
-          'Content-Type': 'application/json'
+          'Accept': 'application/vnd.github+json',
+          'Content-Type': 'application/json',
+          'User-Agent': 'Doomlings-App',
+          'X-GitHub-Api-Version': '2022-11-28'
       },
       body: JSON.stringify({
           message,
@@ -36,13 +38,19 @@ export async function POST(request: Request) {
     });
 
     if (!response.ok) {
-        const error = await response.json();
-        return NextResponse.json({ error: error.message || 'GitHub API error' }, { status: response.status });
+        const errorText = await response.text();
+        console.error('GitHub API Response Error:', errorText);
+        let errorMsg = 'GitHub API error';
+        try {
+            const errorJson = JSON.parse(errorText);
+            errorMsg = errorJson.message || errorMsg;
+        } catch(e) {}
+        return NextResponse.json({ error: errorMsg }, { status: response.status });
     }
 
     return NextResponse.json({ success: true, fileName });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Export Error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: error?.message || 'Internal server error' }, { status: 500 });
   }
 }
