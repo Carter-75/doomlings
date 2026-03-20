@@ -26,6 +26,14 @@ class GameSocketManager {
     return this.vercelManager.registerPlayer(playerName);
   }
 
+  async createRoom(data: any) {
+    return this.vercelManager.createRoom(data);
+  }
+
+  async joinRoom(roomId: string, password?: string) {
+    return this.vercelManager.joinRoom(roomId, password);
+  }
+
   async quickMatch(maxPlayers: number) {
     return this.vercelManager.quickMatch(maxPlayers);
   }
