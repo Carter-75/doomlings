@@ -1,6 +1,6 @@
 {
   "name": "doomlings-companion",
-  "version": "3.6.7",
+  "version": "3.6.9",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -29,6 +29,7 @@
     "@capacitor/core": "^6.1.2",
     "@capacitor/preferences": "^6.0.2",
     "@revenuecat/purchases-capacitor": "^12.2.0",
+    "@upstash/redis": "^1.37.0",
     "cheerio": "^1.2.0",
     "chromium": "^3.0.3",
     "next": "15.0.7",
@@ -36,6 +37,8 @@
     "react": "^18.3.1",
     "react-confetti": "^6.1.0",
     "react-dom": "^18.3.1",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
