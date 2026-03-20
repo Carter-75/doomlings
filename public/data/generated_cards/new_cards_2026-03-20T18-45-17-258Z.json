@@ -1,0 +1,13 @@
+[
+  {
+    "name": "Immutable",
+    "type": "dominant",
+    "tiers": {
+      "1": "Excluding dominants, if you have 6 or fewer traits in your trait pile, they cannot be swapped or stolen. Start of your turns: You may suppress 1 trait in your trait pile. +3pt.",
+      "2": "Excluding dominants, if you have 8 or fewer traits in your trait pile, they cannot be swapped or stolen. Start of your turns: You may suppress 1 trait in your trait pile. +5pt.",
+      "3": "Excluding dominants, if you have 10 or fewer traits in your trait pile, they cannot be swapped or stolen. Start of your turns: You may suppress 1 trait in your trait pile. +7pt.",
+      "4": "Excluding dominants, if you have 12 or fewer traits in your trait pile, they cannot be swapped or stolen. Start of your turns: You may suppress 1 trait in your trait pile. +9pt.",
+      "5": "Excluding dominants, if you have 15 or fewer traits in your trait pile, they cannot be swapped or stolen. Start of your turns: You may suppress 1 trait in your trait pile. +11pt."
+    }
+  }
+]
