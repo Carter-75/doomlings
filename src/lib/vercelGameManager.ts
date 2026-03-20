@@ -136,6 +136,8 @@ class VercelGameManager {
 
     if (result.success) {
       this.currentRoomId = result.roomId;
+      this.lastRoomState = result.room;
+      this.emit('room-joined', result.room);
       return result;
     }
 
@@ -241,6 +243,7 @@ class VercelGameManager {
     });
 
     if (result.success) {
+      if (result.room) this.lastRoomState = result.room;
       // Optimistically emit locally as well
       this.emit('sync-game-state', payload);
       return result;

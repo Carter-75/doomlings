@@ -255,27 +255,29 @@ export default function Home() {
       // Carefully apply incoming state, ignore local UI preferences
       // We wrap in batch updates by React 18 implicitly, but just to be safe:
       if (payload.playerCount !== undefined) setPlayerCount(payload.playerCount);
-      if (payload.playerNames) setPlayerNames(payload.playerNames);
+      if (payload.playerNames) setPlayerNames(prev => JSON.stringify(prev) !== JSON.stringify(payload.playerNames) ? payload.playerNames : prev);
       if (payload.catastropheMode !== undefined) setCatastropheMode(payload.catastropheMode);
       if (payload.manualCatastropheOverride !== undefined) setManualCatastropheOverride(payload.manualCatastropheOverride);
       if (payload.currentRule !== undefined) setCurrentRule(payload.currentRule);
       if (payload.challengePlayer !== undefined) setChallengePlayer(payload.challengePlayer);
-      if (payload.ageDeck) setAgeDeck(payload.ageDeck);
+      if (payload.ageDeck) setAgeDeck(prev => JSON.stringify(prev) !== JSON.stringify(payload.ageDeck) ? payload.ageDeck : prev);
       if (payload.currentAgeIndex !== undefined) setCurrentAgeIndex(payload.currentAgeIndex);
       if (payload.normalAgeCount !== undefined) setNormalAgeCount(payload.normalAgeCount);
       if (payload.merchantAgeCount !== undefined) setMerchantAgeCount(payload.merchantAgeCount);
       if (payload.catastropheAgeCount !== undefined) setCatastropheAgeCount(payload.catastropheAgeCount);
       if (payload.finalCatastropheMode !== undefined) setFinalCatastropheMode(payload.finalCatastropheMode);
-      if (payload.playerMeanings) setPlayerMeanings(payload.playerMeanings);
-      if (payload.selectedMeanings) setSelectedMeanings(payload.selectedMeanings);
-      if (payload.revealedMeanings) setRevealedMeanings(payload.revealedMeanings);
-      if (payload.dominantCardStates) setDominantCardStates(payload.dominantCardStates);
-      if (payload.trinketState) setTrinketState(payload.trinketState);
-      if (payload.pocketedTrinkets) setPocketedTrinkets(payload.pocketedTrinkets);
-      if (payload.trinketsPocketedThisTurn) setTrinketsPocketedThisTurn(payload.trinketsPocketedThisTurn);
-      if (payload.catastrophesInDeck) setCatastrophesInDeck(payload.catastrophesInDeck);
+      if (payload.playerMeanings) setPlayerMeanings(prev => JSON.stringify(prev) !== JSON.stringify(payload.playerMeanings) ? payload.playerMeanings : prev);
+      if (payload.selectedMeanings) setSelectedMeanings(prev => JSON.stringify(prev) !== JSON.stringify(payload.selectedMeanings) ? payload.selectedMeanings : prev);
+      if (payload.revealedMeanings) setRevealedMeanings(prev => JSON.stringify(prev) !== JSON.stringify(payload.revealedMeanings) ? payload.revealedMeanings : prev);
+      if (payload.dominantCardStates) setDominantCardStates(prev => JSON.stringify(prev) !== JSON.stringify(payload.dominantCardStates) ? payload.dominantCardStates : prev);
+      if (payload.trinketState) setTrinketState(prev => JSON.stringify(prev) !== JSON.stringify(payload.trinketState) ? payload.trinketState : prev);
+      if (payload.pocketedTrinkets) setPocketedTrinkets(prev => JSON.stringify(prev) !== JSON.stringify(payload.pocketedTrinkets) ? payload.pocketedTrinkets : prev);
+      if (payload.trinketsPocketedThisTurn) setTrinketsPocketedThisTurn(prev => JSON.stringify(prev) !== JSON.stringify(payload.trinketsPocketedThisTurn) ? payload.trinketsPocketedThisTurn : prev);
+      if (payload.catastrophesInDeck) setCatastrophesInDeck(prev => JSON.stringify(prev) !== JSON.stringify(payload.catastrophesInDeck) ? payload.catastrophesInDeck : prev);
       if (payload.showCatastropheList !== undefined) setShowCatastropheList(payload.showCatastropheList);
       if (payload.challengeRolledThisAge !== undefined) setChallengeRolledThisAge(payload.challengeRolledThisAge);
+      if (payload.ageMultiplierMode !== undefined) setAgeMultiplierMode(payload.ageMultiplierMode);
+      if (payload.manualAgeMultiplier !== undefined) setManualAgeMultiplier(payload.manualAgeMultiplier);
     };
 
     const handleRoomJoined = (room: any) => {
@@ -368,6 +370,8 @@ export default function Home() {
       catastrophesInDeck,
       showCatastropheList,
       challengeRolledThisAge,
+      ageMultiplierMode,
+      manualAgeMultiplier,
     };
 
     socketManager.syncGameState(currentRoom.id, syncPayload);
@@ -378,7 +382,7 @@ export default function Home() {
     merchantAgeCount, catastropheAgeCount, finalCatastropheMode, playerMeanings,
     selectedMeanings, revealedMeanings, dominantCardStates, trinketState,
     pocketedTrinkets, trinketsPocketedThisTurn, catastrophesInDeck,
-    showCatastropheList, challengeRolledThisAge
+    showCatastropheList, challengeRolledThisAge, ageMultiplierMode, manualAgeMultiplier
   ]);
 
   // GAME STATE PERSISTENCE

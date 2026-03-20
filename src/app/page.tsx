@@ -222,19 +222,43 @@ export default function HomePage() {
             >
               ×
             </button>
-            <div style={{ width: '100%', padding: '0 10px', transform: 'scale(0.95)', transformOrigin: 'top center' }}>
-              <PremiumSection />
-            </div>
-            <div style={{ textAlign: 'center', marginTop: '-15px', marginBottom: '10px' }}>
+            <div style={{ width: '100%', padding: '30px 20px 10px', textAlign: 'center' }}>
+              <h2 style={{ color: '#FFD700', fontSize: '24px', fontWeight: 'bold', marginBottom: '10px' }}>Upgrade to Premium</h2>
+              <p style={{ color: '#eee', fontSize: '16px', marginBottom: '25px' }}>Unlock all cards & remove ads for as low as <strong>.99/mo</strong>!</p>
+              
+              <button
+                onClick={() => {
+                  setShowPremiumPopup(false);
+                  router.push('/premium');
+                }}
+                style={{
+                  background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
+                  border: 'none',
+                  color: '#000',
+                  padding: '12px 30px',
+                  borderRadius: '30px',
+                  fontWeight: 'bold',
+                  fontSize: '16px',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 15px rgba(255, 215, 0, 0.3)',
+                  marginBottom: '15px',
+                  width: '100%'
+                }}
+              >
+                View Subscription Plans
+              </button>
+
               <button
                 onClick={() => setShowPremiumPopup(false)}
                 style={{
-                  background: 'transparent', border: '1px solid #444', color: '#aaa',
-                  padding: '8px 20px', borderRadius: '6px', cursor: 'pointer',
-                  fontSize: '14px', transition: 'all 0.2s'
+                  background: 'transparent', 
+                  border: 'none', 
+                  color: '#aaa',
+                  padding: '10px', 
+                  cursor: 'pointer',
+                  fontSize: '14px', 
+                  textDecoration: 'underline'
                 }}
-                onMouseOver={(e) => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#666'; }}
-                onMouseOut={(e) => { e.currentTarget.style.color = '#aaa'; e.currentTarget.style.borderColor = '#444'; }}
               >
                 Maybe Later
               </button>

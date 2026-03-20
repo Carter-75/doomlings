@@ -68,7 +68,9 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
             };
 
             await socketManager.registerPlayer(hostName);
-            await socketManager.createRoom(roomSettings);
+            const res = await socketManager.createRoom(roomSettings);
+            if (res && res.room) setCurrentRoom(res.room);
+            setIsConnecting(false);
         } catch (err) {
             setError('Failed to create local room');
             setIsConnecting(false);
@@ -112,7 +114,7 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
                             <span style={{ fontSize: '1.5rem', marginRight: '10px' }}>📡</span> Local Sync Active
                         </h2>
                         <AnimatedButton onClick={handleLeaveRoom} className="is-danger is-small">
-                            Disconnect
+                            {isHost ? 'Stop Hosting' : 'Disconnect'}
                         </AnimatedButton>
                     </div>
 
