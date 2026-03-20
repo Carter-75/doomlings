@@ -33,6 +33,18 @@ function generateInitialHand(playerId: string) {
 }
 
 // Utility to get all rooms
+function sanitizeString(str: any, maxLength: number): string {
+  if (typeof str !== 'string') return '';
+  return str.replace(/[<>'\"&;]/g, '').substring(0, maxLength).trim();
+}
+
+function validateId(id: any): string | null {
+  if (typeof id !== 'string') return null;
+  // strictly alphanumeric/hyphens/underscores for safe Redis keys
+  const sanitized = id.replace(/[^a-zA-Z0-9_\-]/g, '').substring(0, 50);
+  return sanitized.length > 0 ? sanitized : null;
+}
+
 async function getAllRooms() {
   const keys = await redis.keys('room:*');
   if (keys.length === 0) return [];
@@ -46,14 +58,23 @@ export async function OPTIONS() { return NextResponse.json({}, { headers: corsHe
 export async function POST(request: NextRequest) {
 
   try {
-    const { action, data } = await request.json();
+    const rawText = await request.text();
+    // Deny massive payloads to prevent DoS memory exhaustion
+    if (rawText.length > 50000) {
+      return NextResponse.json({ success: false, error: 'Payload too large' }, { status: 413, headers: corsHeaders });
+    }
+    
+    const body = JSON.parse(rawText || '{}');
+    const action = typeof body.action === 'string' ? body.action : '';
+    const data = body.data && typeof body.data === 'object' ? body.data : {};
 
     switch (action) {
       case 'register-player': {
+        const safePlayerName = sanitizeString(data.playerName, 30) || 'Player';
         const playerId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
         const player = {
           id: playerId,
-          name: data.playerName,
+          name: safePlayerName,
           lastSeen: Date.now()
         };
         // Auto expire players after 2 hours (7200 seconds)
@@ -62,23 +83,28 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           success: true,
           playerId,
-          playerName: data.playerName
-        });
+          playerName: safePlayerName
+        }, { headers: corsHeaders });
       }
 
       case 'create-room': {
-        let hostPlayerId = data.playerId;
+        const hostPlayerId = validateId(data.playerId);
+        if (!hostPlayerId) return NextResponse.json({ success: false, error: 'Invalid Player ID' }, { headers: corsHeaders });
+        
+        const safePlayerName = sanitizeString(data.playerName, 30) || 'Player';
         let player: any = await redis.get(`player:${hostPlayerId}`);
         if (!player) {
           player = {
             id: hostPlayerId,
-            name: data.playerName || 'Player',
+            name: safePlayerName,
             lastSeen: Date.now()
           };
           await redis.set(`player:${hostPlayerId}`, player, { ex: 7200 });
         }
 
-        const roomName = data.roomName || `${data.playerName || 'Player'}'s Room`;
+        const roomName = sanitizeString(data.roomName, 40) || `${safePlayerName}'s Room`;
+        const password = sanitizeString(data.password, 30) || null;
+        let maxPlayers = typeof data.maxPlayers === 'number' ? Math.max(2, Math.min(10, data.maxPlayers)) : 6;
         
         // Check if room name is already taken
         const allRooms = await getAllRooms();
@@ -87,7 +113,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({
               success: false,
               error: 'Room name is already taken'
-            });
+            }, { headers: corsHeaders });
           }
         }
 
@@ -96,12 +122,12 @@ export async function POST(request: NextRequest) {
         const room = {
           id: roomId,
           name: roomName,
-          password: data.password || null,
+          password: password,
           hostId: hostPlayerId,
           players: [
             {
               id: hostPlayerId,
-              name: data.playerName || 'Player',
+              name: safePlayerName,
               ready: false,
               hand: [],
               traitPile: [],
@@ -109,13 +135,13 @@ export async function POST(request: NextRequest) {
               score: 0
             }
           ],
-          maxPlayers: data.maxPlayers || 6,
-          isPrivate: data.isPrivate,
-          isLocal: data.isLocal || false,
+          maxPlayers: maxPlayers,
+          isPrivate: !!data.isPrivate,
+          isLocal: !!data.isLocal,
           wifiIp: data.isLocal ? clientIp : null,
           status: 'waiting',
           currentPlayerIndex: 0,
-          gameSettings: data.gameSettings,
+          gameSettings: typeof data.gameSettings === 'object' ? data.gameSettings : {},
           createdAt: Date.now(),
           lastUpdate: Date.now()
         };
@@ -127,40 +153,48 @@ export async function POST(request: NextRequest) {
           success: true,
           roomId,
           room
-        });
+        }, { headers: corsHeaders });
       }
 
       case 'join-room': {
-        const targetRoom: any = await redis.get(`room:${data.roomId}`);
+        const safeRoomId = validateId(data.roomId);
+        if (!safeRoomId) return NextResponse.json({ success: false, error: 'Invalid Room ID' }, { headers: corsHeaders });
+        
+        const targetRoom: any = await redis.get(`room:${safeRoomId}`);
         if (!targetRoom) {
-          return NextResponse.json({ success: false, error: 'Room not found' });
+          return NextResponse.json({ success: false, error: 'Room not found' }, { headers: corsHeaders });
         }
 
-        if (targetRoom.password && targetRoom.password !== data.password) {
-          return NextResponse.json({ success: false, error: 'Incorrect password' });
+        const providedPassword = sanitizeString(data.password, 30) || null;
+        if (targetRoom.password && targetRoom.password !== providedPassword) {
+          return NextResponse.json({ success: false, error: 'Incorrect password' }, { headers: corsHeaders });
         }
 
         if (targetRoom.players.length >= targetRoom.maxPlayers) {
-          return NextResponse.json({ success: false, error: 'Room is full' });
+          return NextResponse.json({ success: false, error: 'Room is full' }, { headers: corsHeaders });
         }
 
         if (targetRoom.status !== 'waiting') {
-          return NextResponse.json({ success: false, error: 'Game already started' });
+          return NextResponse.json({ success: false, error: 'Game already started' }, { headers: corsHeaders });
         }
 
-        let player: any = await redis.get(`player:${data.playerId}`);
+        const joinPlayerId = validateId(data.playerId);
+        if (!joinPlayerId) return NextResponse.json({ success: false, error: 'Invalid Player ID' }, { headers: corsHeaders });
+        
+        const safePlayerName = sanitizeString(data.playerName, 30) || 'Player';
+        let player: any = await redis.get(`player:${joinPlayerId}`);
         if (!player) {
           player = {
-            id: data.playerId,
-            name: data.playerName || 'Player',
+            id: joinPlayerId,
+            name: safePlayerName,
             lastSeen: Date.now()
           };
-          await redis.set(`player:${data.playerId}`, player, { ex: 7200 });
+          await redis.set(`player:${joinPlayerId}`, player, { ex: 7200 });
         }
 
-        if (!targetRoom.players.find((p: any) => p.id === data.playerId)) {
+        if (!targetRoom.players.find((p: any) => p.id === joinPlayerId)) {
           targetRoom.players.push({
-            id: data.playerId,
+            id: joinPlayerId,
             name: player.name,
             ready: false,
             hand: [],
@@ -169,39 +203,46 @@ export async function POST(request: NextRequest) {
             score: 0
           });
           targetRoom.lastUpdate = Date.now();
-          await redis.set(`room:${data.roomId}`, targetRoom, { ex: 7200 });
+          await redis.set(`room:${safeRoomId}`, targetRoom, { ex: 7200 });
         }
 
         return NextResponse.json({
           success: true,
           room: targetRoom
-        });
+        }, { headers: corsHeaders });
       }
 
       case 'get-room-state': {
-        const roomForState: any = await redis.get(`room:${data.roomId}`);
+        const safeRoomId = validateId(data.roomId);
+        if (!safeRoomId) return NextResponse.json({ success: false, error: 'Invalid Room ID' }, { headers: corsHeaders });
+        
+        const roomForState: any = await redis.get(`room:${safeRoomId}`);
         if (!roomForState) {
-          return NextResponse.json({ success: false, error: 'Room not found' });
+          return NextResponse.json({ success: false, error: 'Room not found' }, { headers: corsHeaders });
         }
 
         return NextResponse.json({
           success: true,
           room: roomForState
-        });
+        }, { headers: corsHeaders });
       }
 
       case 'set-player-ready': {
-        const readyRoom: any = await redis.get(`room:${data.roomId}`);
+        const safeRoomId = validateId(data.roomId);
+        const readyPlayerId = validateId(data.playerId);
+        if (!safeRoomId || !readyPlayerId) return NextResponse.json({ success: false, error: 'Invalid identifiers' }, { headers: corsHeaders });
+        
+        const readyRoom: any = await redis.get(`room:${safeRoomId}`);
         if (!readyRoom) {
-          return NextResponse.json({ success: false, error: 'Room not found' });
+          return NextResponse.json({ success: false, error: 'Room not found' }, { headers: corsHeaders });
         }
 
-        const playerInRoom = readyRoom.players.find((p: any) => p.id === data.playerId);
+        const playerInRoom = readyRoom.players.find((p: any) => p.id === readyPlayerId);
         if (!playerInRoom) {
-          return NextResponse.json({ success: false, error: 'Player not in room' });
+          return NextResponse.json({ success: false, error: 'Player not in room' }, { headers: corsHeaders });
         }
 
-        playerInRoom.ready = data.ready;
+        playerInRoom.ready = !!data.ready;
         readyRoom.lastUpdate = Date.now();
 
         const minPlayers = 1; 
@@ -217,32 +258,38 @@ export async function POST(request: NextRequest) {
           });
         }
 
-        await redis.set(`room:${data.roomId}`, readyRoom, { ex: 7200 });
+        await redis.set(`room:${safeRoomId}`, readyRoom, { ex: 7200 });
 
         return NextResponse.json({
           success: true,
           room: readyRoom
-        });
+        }, { headers: corsHeaders });
       }
 
       case 'play-card': {
-        const gameRoom: any = await redis.get(`room:${data.roomId}`);
+        const safeRoomId = validateId(data.roomId);
+        const playCardPlayerId = validateId(data.playerId);
+        const safeCardId = validateId(data.cardId);
+        
+        if (!safeRoomId || !playCardPlayerId || !safeCardId) return NextResponse.json({ success: false, error: 'Invalid identifiers' }, { headers: corsHeaders });
+        
+        const gameRoom: any = await redis.get(`room:${safeRoomId}`);
         if (!gameRoom) {
-          return NextResponse.json({ success: false, error: 'Room not found' });
+          return NextResponse.json({ success: false, error: 'Room not found' }, { headers: corsHeaders });
         }
 
         if (gameRoom.status !== 'playing') {
-          return NextResponse.json({ success: false, error: 'Game not started' });
+          return NextResponse.json({ success: false, error: 'Game not started' }, { headers: corsHeaders });
         }
 
         const currentPlayer = gameRoom.players[gameRoom.currentPlayerIndex];
-        if (currentPlayer.id !== data.playerId) {
-          return NextResponse.json({ success: false, error: 'Not your turn' });
+        if (currentPlayer.id !== playCardPlayerId) {
+          return NextResponse.json({ success: false, error: 'Not your turn' }, { headers: corsHeaders });
         }
 
-        const cardIndex = currentPlayer.hand.findIndex((card: any) => card.id === data.cardId);
+        const cardIndex = currentPlayer.hand.findIndex((card: any) => card.id === safeCardId);
         if (cardIndex === -1) {
-          return NextResponse.json({ success: false, error: 'Card not found in hand' });
+          return NextResponse.json({ success: false, error: 'Card not found in hand' }, { headers: corsHeaders });
         }
 
         const playedCard = currentPlayer.hand.splice(cardIndex, 1)[0];
@@ -252,13 +299,13 @@ export async function POST(request: NextRequest) {
         gameRoom.currentPlayerIndex = (gameRoom.currentPlayerIndex + 1) % gameRoom.players.length;
         gameRoom.lastUpdate = Date.now();
 
-        await redis.set(`room:${data.roomId}`, gameRoom, { ex: 7200 });
+        await redis.set(`room:${safeRoomId}`, gameRoom, { ex: 7200 });
 
         return NextResponse.json({
           success: true,
           room: gameRoom,
           playedCard
-        });
+        }, { headers: corsHeaders });
       }
 
       case 'get-public-rooms': {
@@ -276,7 +323,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           success: true,
           rooms: publicRooms
-        });
+        }, { headers: corsHeaders });
       }
 
       case 'get-local-rooms': {
@@ -296,59 +343,67 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           success: true,
           rooms: localRooms
-        });
+        }, { headers: corsHeaders });
       }
 
       case 'sync-game-state': {
-        const syncRoom: any = await redis.get(`room:${data.roomId}`);
+        const safeRoomId = validateId(data.roomId);
+        const syncPlayerId = validateId(data.playerId);
+        if (!safeRoomId || !syncPlayerId) return NextResponse.json({ success: false, error: 'Invalid identifiers' }, { headers: corsHeaders });
+
+        const syncRoom: any = await redis.get(`room:${safeRoomId}`);
         if (!syncRoom) {
-          return NextResponse.json({ success: false, error: 'Room not found' });
+          return NextResponse.json({ success: false, error: 'Room not found' }, { headers: corsHeaders });
         }
 
         // Ensure only the host can forcefully push full game state syncs
-        if (syncRoom.hostId !== data.playerId) {
-          return NextResponse.json({ success: false, error: 'Only the host can sync game state' });
+        if (syncRoom.hostId !== syncPlayerId) {
+          return NextResponse.json({ success: false, error: 'Only the host can sync game state' }, { headers: corsHeaders });
         }
 
         syncRoom.gameStatePayload = data.payload;
         syncRoom.lastUpdate = Date.now();
 
-        await redis.set(`room:${data.roomId}`, syncRoom, { ex: 7200 });
+        await redis.set(`room:${safeRoomId}`, syncRoom, { ex: 7200 });
 
         return NextResponse.json({
           success: true,
           room: syncRoom
-        });
+        }, { headers: corsHeaders });
       }
 
       case 'leave-room': {
-        const leavingRoom: any = await redis.get(`room:${data.roomId}`);
+        const safeRoomId = validateId(data.roomId);
+        const leavePlayerId = validateId(data.playerId);
+        if (!safeRoomId || !leavePlayerId) return NextResponse.json({ success: false, error: 'Invalid identifiers' }, { headers: corsHeaders });
+        
+        const leavingRoom: any = await redis.get(`room:${safeRoomId}`);
         if (!leavingRoom) {
-          return NextResponse.json({ success: false, error: 'Room not found' });
+          return NextResponse.json({ success: false, error: 'Room not found' }, { headers: corsHeaders });
         }
 
-        leavingRoom.players = leavingRoom.players.filter((p: any) => p.id !== data.playerId);
+        leavingRoom.players = leavingRoom.players.filter((p: any) => p.id !== leavePlayerId);
 
         if (leavingRoom.players.length === 0) {
-          await redis.del(`room:${data.roomId}`);
-        } else if (leavingRoom.hostId === data.playerId) {
+          await redis.del(`room:${safeRoomId}`);
+        } else if (leavingRoom.hostId === leavePlayerId) {
           // Re-assign host if host leaves
           leavingRoom.hostId = leavingRoom.players[0].id;
-          await redis.set(`room:${data.roomId}`, leavingRoom, { ex: 7200 });
+          await redis.set(`room:${safeRoomId}`, leavingRoom, { ex: 7200 });
         } else {
-          await redis.set(`room:${data.roomId}`, leavingRoom, { ex: 7200 });
+          await redis.set(`room:${safeRoomId}`, leavingRoom, { ex: 7200 });
         }
 
-        return NextResponse.json({ success: true });
+        return NextResponse.json({ success: true }, { headers: corsHeaders });
       }
 
       default:
-        return NextResponse.json({ success: false, error: 'Unknown action' });
+        return NextResponse.json({ success: false, error: 'Unknown action' }, { headers: corsHeaders });
     }
 
   } catch (error) {
     console.error('API Error:', error);
-    return NextResponse.json({ success: false, error: 'Server error' });
+    return NextResponse.json({ success: false, error: 'Server error' }, { headers: corsHeaders });
   }
 }
 
