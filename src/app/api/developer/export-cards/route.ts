@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     const repoOwner = 'Carter-75';
     const repoName = 'doomlings';
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const fileName = `data/scans/new_cards_${timestamp}.json`;
+    const fileName = `public/data/generated_cards/new_cards_${timestamp}.json`;
     const message = `Add new scanned cards from developer tool - ${timestamp}`;
     
     // Prepare bitstream of the JSON
@@ -24,13 +24,14 @@ export async function POST(request: Request) {
     const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${fileName}`, {
       method: 'PUT',
       headers: {
-          'Authorization': `token ${githubToken}`,
+          'Authorization': `Bearer ${githubToken}`,
           'Accept': 'application/vnd.github.v3+json',
           'Content-Type': 'application/json'
       },
       body: JSON.stringify({
           message,
-          content
+          content,
+          branch: 'main'
       })
     });
 
