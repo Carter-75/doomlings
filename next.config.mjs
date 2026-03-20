@@ -3,10 +3,10 @@ import { PHASE_DEVELOPMENT_SERVER } from 'next/constants.js';
 
 const createConfig = (phase) => {
   const isDev = phase === PHASE_DEVELOPMENT_SERVER;
+  const isVercel = process.env.VERCEL === '1';
 
   return {
-    // Static export for Android, but Vercel will still run API routes dynamically when deployed
-    output: 'export',
+    output: isVercel ? undefined : 'export',
     trailingSlash: false,
 
     images: {
