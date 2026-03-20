@@ -93,16 +93,12 @@ export default function HomePage() {
 
                 <div className="grid grid-auto gap-6">
                   {/* Companion App Link */}
-                  <a
-                    href="#"
-                    onClick={(e) => { e.preventDefault(); router.push('/game'); }}
-                    className="card w-full"
-                  >
+                  <Link href="/game" className="card w-full">
                     <h3 className="text-center mb-2">📱 Companion App</h3>
                     <p className="text-center text-gray-400 text-sm mt-2">
                       Track physical card game scores, ages, and rules. Optionally sync your stats across local WiFi.
                     </p>
-                  </a>
+                  </Link>
 
                   {/* Full Game (Coming Soon) */}
                   <div className="card w-full relative overflow-hidden group/disabled cursor-not-allowed opacity-60 pointer-events-none">
