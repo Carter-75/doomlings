@@ -6,6 +6,7 @@ import { BackHandler } from "@/components/back-handler";
 import { AdProvider } from "@/lib/ad-context";
 import { ThemeProvider } from "@/lib/theme-context";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
 
 const dmSans = DM_Sans({ subsets: ["latin"] });
 
@@ -65,6 +66,7 @@ export default function RootLayout({
             </AdProvider>
           </IframeProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
