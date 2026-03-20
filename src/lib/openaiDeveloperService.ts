@@ -25,51 +25,74 @@ export class OpenAIDeveloperService {
 
   async generateCardFromImage(base64Image: string): Promise<GeneratedCard> {
     const prompt = `
-You are an expert Doomlings card designer. Your task is to identify the card in the provided image and extract its properties into a JSON format.
+You are an expert Doomlings card designer. Your task is to identify the card in the provided image and extract its properties into a very strictly defined JSON format.
 
 ### CARD TYPES AND SCHEMAS:
 
-1. **Trait Card**:
-   - color: 'red', 'green', 'blue', 'purple', or 'colorless'
-   - faceValue: number (the large number in the circle)
-   - effect: the main ability text (exclude keyword 'Action:')
-   - action: if it has an "Action:", extract it here
-   - points: the star value at the bottom
-
-2. **Dominant Card**:
-   - name: The card name
-   - tiers: An object with keys "1", "2", "3", "4", "5".
-     - Tier 1 MUST be the exact text found on the card.
-     - Tiers 2-5 must be extrapolated by you. They should follow the scaling pattern of existing Dominants (e.g., Slumbering, Titanic). They should make sense within the game balance.
-     - Format: "• Tier X: [Ability Text] +[Points]pt."
-
-3. **Age Card**:
-   - name: The card name
-   - description: The effect text of the age.
-
-4. **Catastrophe**:
-   - name: The card name
-   - description: The immediate effect text.
-   - worldsEnd: The "World's End" effect text at the bottom.
-
-5. **Trinket**:
-   - name: The card name
-   - power: The passive power text.
-   - objective: The pocketing objective text.
-   - points: The point value.
-
-### INSTRUCTIONS:
-- Return ONLY valid JSON.
-- If the card is a Dominant, create all 5 tiers based on the text of the first tier and common game patterns.
-- Ensure the JSON fields match the schema exactly.
-- If the card does not fit any existing type or seems to be a custom card with unknown mechanics, do your best to map it to 'trait' or 'treasure'.
-
-### RESPONSE FORMAT:
+1. **Dominants Guide & Format**:
+For Dominant cards, generate exactly 5 'tiers'. Tiers represent escalating power. As the tier goes from 1 to 5, the effect must get mathematically stronger, broader, or offer significantly more points, while maintaining the same core mechanical theme. Tier 1 MUST be the exact text found on the card. Use exactly this JSON format:
 {
   "name": "Card Name",
-  "type": "trait | dominant | age | catastrophe | trinket | treasure",
-  ... (type specific fields)
+  "type": "dominant",
+  "tiers": {
+    "1": "Tier 1 text (weakest version, lowest points)",
+    "2": "Tier 2 text (slightly stronger)",
+    "3": "Tier 3 text (moderate strength)",
+    "4": "Tier 4 text (very strong)",
+    "5": "Tier 5 text (maximum power, highest points)"
+  }
 }
+
+2. **Standard Traits (Including Tech/Swarm/Mythic)**:
+For standard Traits, determine the color, face value (usually 1-4, or negative), and points. Sort abilities into 'effect' (passives/end of game) or 'action' (tap effects). Use exactly this JSON format:
+{
+    "name": "Card Name",
+    "type": "trait",
+    "color": "red | blue | green | purple | colorless",
+    "faceValue": 1,
+    "points": 1,
+    "effect": "Passive or End-of-game effect text (Leave empty if none)",
+    "action": "Active tap-effect text (Leave empty if none)"
+}
+
+3. **Ages**:
+For Ages, determine the table-wide rule that applies to all players for this round. Use exactly this JSON format:
+{
+    "name": "Age Name",
+    "type": "age",
+    "description": "Rules or modifiers that apply to players during this round."
+}
+
+4. **Catastrophes**:
+For Catastrophes, determine the devastating effect applied at World's End (end of the game). Use exactly this JSON format:
+{
+    "name": "Catastrophe Name",
+    "type": "catastrophe",
+    "description": "Optional theme or flavor text",
+    "worldsEnd": "The negative effect penalty or scoring reduction applied at the end of the game."
+}
+
+5. **Meaning of Life**:
+For Meaning of Life cards, define the specific endgame bonus scoring logic. Use exactly this JSON format:
+{
+    "name": "MOL Name",
+    "type": "meaningOfLife",
+    "description": "The specific condition required to gain bonus points at the end of the game."
+}
+
+6. **Trinkets (Magical Merchants)**:
+For Trinkets, delineate the passive power and the objective required. Use exactly this JSON format:
+{
+    "name": "Trinket Name",
+    "type": "trinket",
+    "power": "The ongoing passive bonus this trinket provides.",
+    "objective": "The condition needed to play it or trigger it.",
+    "points": 3
+}
+
+### INSTRUCTIONS:
+- Return ONLY valid JSON block matching the exact structure for the type of card you identify in the image. No markdown blocks, just the parseable JSON string.
+- Ensure the JSON fields match the schema exactly.
 `;
 
     try {
