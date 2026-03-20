@@ -40,7 +40,11 @@ async function getAllRooms() {
   return rooms.filter(Boolean) as any[];
 }
 
+const corsHeaders = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Authorization, playerId' };
+export async function OPTIONS() { return NextResponse.json({}, { headers: corsHeaders }); }
+
 export async function POST(request: NextRequest) {
+
   try {
     const { action, data } = await request.json();
 
