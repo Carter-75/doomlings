@@ -245,18 +245,44 @@ export default function Home() {
   const [socketManager] = useState(() => GameSocketManager.getInstance());
   const [isHost, setIsHost] = useState(false);
   const [currentRoom, setCurrentRoom] = useState<any>(null);
+  const lastSyncedStateHash = useRef<string>('');
 
   // SYNC LISTENER (Incoming State)
   useEffect(() => {
     const handleSync = (payload: any) => {
       // Allow any payload to process as long as we were not the immediate sender
-      // AND we are not the host. The host's local state is the source of truth for the room,
-      // so the host ignores incoming state syncs unless they explicitly want to accept them 
-      // (which typically they don't, unless someone else specifically sent a direct state mutation to the host, 
-      // but in this model, all devices broadcast their full state on change). 
-      // Wait, if a *client* device changes something (like a player checks a box), we DO want the host to update.
-      // So we shouldn't purely ignore if we are host, but we SHOULD ignore if we were the sender.
       if (!payload || payload.senderId === socketManager.getPlayerId()) return;
+
+      // Track exactly what we received so we don't simply bounce it back out 
+      // We explicitly construct the object with the same keys so stringify order is identical to the push effect
+      const expectedNewState = {
+        playerCount: payload.playerCount !== undefined ? payload.playerCount : playerCount,
+        playerNames: payload.playerNames || playerNames,
+        catastropheMode: payload.catastropheMode !== undefined ? payload.catastropheMode : catastropheMode,
+        manualCatastropheOverride: payload.manualCatastropheOverride !== undefined ? payload.manualCatastropheOverride : manualCatastropheOverride,
+        currentRule: payload.currentRule !== undefined ? payload.currentRule : currentRule,
+        challengePlayer: payload.challengePlayer !== undefined ? payload.challengePlayer : challengePlayer,
+        ageDeck: payload.ageDeck || ageDeck,
+        currentAgeIndex: payload.currentAgeIndex !== undefined ? payload.currentAgeIndex : currentAgeIndex,
+        normalAgeCount: payload.normalAgeCount !== undefined ? payload.normalAgeCount : normalAgeCount,
+        merchantAgeCount: payload.merchantAgeCount !== undefined ? payload.merchantAgeCount : merchantAgeCount,
+        catastropheAgeCount: payload.catastropheAgeCount !== undefined ? payload.catastropheAgeCount : catastropheAgeCount,
+        finalCatastropheMode: payload.finalCatastropheMode !== undefined ? payload.finalCatastropheMode : finalCatastropheMode,
+        playerMeanings: payload.playerMeanings || playerMeanings,
+        selectedMeanings: payload.selectedMeanings || selectedMeanings,
+        revealedMeanings: payload.revealedMeanings || revealedMeanings,
+        dominantCardStates: payload.dominantCardStates || dominantCardStates,
+        trinketState: payload.trinketState || trinketState,
+        pocketedTrinkets: payload.pocketedTrinkets || pocketedTrinkets,
+        trinketsPocketedThisTurn: payload.trinketsPocketedThisTurn || trinketsPocketedThisTurn,
+        catastrophesInDeck: payload.catastrophesInDeck || catastrophesInDeck,
+        showCatastropheList: payload.showCatastropheList !== undefined ? payload.showCatastropheList : showCatastropheList,
+        challengeRolledThisAge: payload.challengeRolledThisAge !== undefined ? payload.challengeRolledThisAge : challengeRolledThisAge,
+        ageMultiplierMode: payload.ageMultiplierMode !== undefined ? payload.ageMultiplierMode : ageMultiplierMode,
+        manualAgeMultiplier: payload.manualAgeMultiplier !== undefined ? payload.manualAgeMultiplier : manualAgeMultiplier,
+      };
+      
+      lastSyncedStateHash.current = JSON.stringify(expectedNewState);
 
       // Carefully apply incoming state, ignore local UI preferences
       // We wrap in batch updates by React 18 implicitly, but just to be safe:
@@ -353,7 +379,6 @@ export default function Home() {
     if (!isInitialLoadComplete || !isMounted.current) return;
 
     const syncPayload = {
-      senderId: socketManager.getPlayerId(),
       playerCount,
       playerNames,
       catastropheMode,
@@ -380,7 +405,17 @@ export default function Home() {
       manualAgeMultiplier,
     };
 
-    socketManager.syncGameState(currentRoom.id, syncPayload);
+    const currentHash = JSON.stringify(syncPayload);
+    if (currentHash === lastSyncedStateHash.current) {
+      return; // No real data change, or we are just rendering the exact state we just received
+    }
+
+    lastSyncedStateHash.current = currentHash; // Update our tracker
+
+    socketManager.syncGameState(currentRoom.id, { 
+      senderId: socketManager.getPlayerId(), 
+      ...syncPayload 
+    });
   }, [
     isHost, currentRoom, socketManager, isInitialLoadComplete, // Dependencies for when/who
     playerCount, playerNames, catastropheMode, manualCatastropheOverride,
@@ -405,6 +440,8 @@ export default function Home() {
 
     const saveGameState = () => {
       const gameState = {
+        isHosting: !!currentRoom && isHost,
+        roomId: currentRoom?.id || null,
         playerCount,
         playerNames,
         catastropheMode,
