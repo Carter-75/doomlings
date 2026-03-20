@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Redis } from '@upstash/redis';
 
-export const dynamic = 'force-static';
-
 // Initialize Redis 
 const redis = Redis.fromEnv();
 
