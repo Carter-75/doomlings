@@ -49,7 +49,30 @@ async function getAllRooms() {
   const keys = await redis.keys('room:*');
   if (keys.length === 0) return [];
   const rooms = await redis.mget(...keys);
-  return rooms.filter(Boolean) as any[];
+  
+  const now = Date.now();
+  const validRooms: any[] = [];
+  const staleKeys: string[] = [];
+  
+  const fetchedRooms = rooms.filter(Boolean) as any[];
+  for (let i = 0; i < fetchedRooms.length; i++) {
+    const room = fetchedRooms[i];
+    const lastUp = room.lastUpdate || room.createdAt || 0;
+    // If a room has gone 35 seconds without a host heartbeat, it's a ghost
+    if (now - lastUp > 35000) {
+      staleKeys.push(
+oom:);
+    } else {
+      validRooms.push(room);
+    }
+  }
+  
+  // Cleanup ghost rooms silently
+  if (staleKeys.length > 0) {
+    redis.del(...staleKeys).catch(err => console.error('Failed to clear ghost rooms', err));
+  }
+  
+  return validRooms;
 }
 
 const corsHeaders = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Authorization, playerId' };
@@ -108,8 +131,17 @@ export async function POST(request: NextRequest) {
         
         // Check if room name is already taken
         const allRooms = await getAllRooms();
+        const clientIpRequest = (request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '127.0.0.1').split(',')[0];
+        const nowRequest = Date.now();
         for (const existingRoom of allRooms) {
           if (existingRoom.name === roomName) {
+            const lastUp = existingRoom.lastUpdate || existingRoom.createdAt || 0;
+            // Ghost room detection: either it's been dead 30+ seconds OR it's from the exact same wifi IP
+            if (nowRequest - lastUp > 30000 || existingRoom.wifiIp === clientIpRequest) {
+              await redis.del(
+oom:);
+              continue; // Safe to replace the dead/old room
+            }
             return NextResponse.json({
               success: false,
               error: 'Room name is already taken'

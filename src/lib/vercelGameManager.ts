@@ -20,16 +20,20 @@ class VercelGameManager {
         // Web uses current origin (works for Vercel and localhost)
         this.apiUrl = `${window.location.origin}/api/game`;
       }
-    } else {
-      this.apiUrl = '/api/game';
-    }
-    
-    console.log(`🎮 Multiplayer API: ${this.apiUrl}`);
-  }
 
-  private emit(event: string, data: any) {
-    if (this.listeners[event]) {
-      this.listeners[event].forEach(callback => callback(data));
+      // Immediately release room resources when the app/site is closed
+      const handleCleanup = () => {
+        if (this.currentRoomId && this.playerId) {
+          const payload = JSON.stringify({
+            action: 'leave-room',
+            data: { roomId: this.currentRoomId, playerId: this.playerId }
+          });
+          navigator.sendBeacon(this.apiUrl, new Blob([payload], { type: 'text/plain' }));
+        }
+      };
+
+      window.addEventListener('beforeunload', handleCleanup);
+      window.addEventListener('pagehide', handleCleanup);
     }
   }
 
