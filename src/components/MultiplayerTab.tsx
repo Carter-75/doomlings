@@ -71,7 +71,7 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
             const res = await socketManager.createRoom(roomSettings);
             if (res && res.room) setCurrentRoom(res.room);
             setIsConnecting(false);
-        } catch (err) {
+        } catch (err: any) {
             setError(err.message || 'Failed to create local room');
             setIsConnecting(false);
         }

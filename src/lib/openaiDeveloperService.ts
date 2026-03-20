@@ -103,6 +103,12 @@ You are an expert Doomlings card designer. Your task is to identify the card in 
 }
 
 function handleOpenAIRequest(prompt: string, base64Image: string) {
+  // If the image string already includes the data URI scheme, use it as is.
+  // Otherwise, prepend the default jpeg prefix.
+  const imageUrl = base64Image.startsWith('data:image/') 
+    ? base64Image 
+    : `data:image/jpeg;base64,${base64Image}`;
+
   return JSON.stringify({
     model: "gpt-4o",
     messages: [
@@ -113,7 +119,7 @@ function handleOpenAIRequest(prompt: string, base64Image: string) {
           {
             type: "image_url",
             image_url: {
-              url: `data:image/jpeg;base64,${base64Image}`
+              url: imageUrl
             }
           }
         ]

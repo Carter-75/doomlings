@@ -4,8 +4,9 @@ import { Capacitor } from '@capacitor/core';
 class VercelGameManager {
   private playerId: string | null = null;
   private playerName: string | null = null;
-  private apiUrl: string;
+  private apiUrl: string = 'https://doomlings.vercel.app/api/game'; // Default fallback
   private pollInterval: NodeJS.Timeout | null = null;
+  private isPolling: boolean = false;
   private listeners: { [key: string]: Function[] } = {};
   private currentRoomId: string | null = null;
   private lastRoomState: any = null;
@@ -21,19 +22,10 @@ class VercelGameManager {
         this.apiUrl = `${window.location.origin}/api/game`;
       }
 
-      // Immediately release room resources when the app/site is closed
-      const handleCleanup = () => {
-        if (this.currentRoomId && this.playerId) {
-          const payload = JSON.stringify({
-            action: 'leave-room',
-            data: { roomId: this.currentRoomId, playerId: this.playerId }
-          });
-          navigator.sendBeacon(this.apiUrl, new Blob([payload], { type: 'text/plain' }));
-        }
-      };
-
-      window.addEventListener('beforeunload', handleCleanup);
-      window.addEventListener('pagehide', handleCleanup);
+      // We intentionally do NOT use beforeunload or pagehide to leave the room.
+      // In a mobile environment or a long board game, users often background the app
+      // or briefly refresh, and we want them to remain in the room if they do.
+      // They can manually leave the room via the UI.
     }
   }
 
@@ -65,7 +57,8 @@ class VercelGameManager {
     if (this.pollInterval) return;
 
     this.pollInterval = setInterval(async () => {
-      if (this.currentRoomId) {
+      if (this.currentRoomId && !this.isPolling) {
+        this.isPolling = true;
         try {
           const result = await this.apiCall('get-room-state', {
             roomId: this.currentRoomId,
@@ -102,6 +95,8 @@ class VercelGameManager {
         } catch (error) {
           console.error('Polling error:', error);
           // Don't stop polling on network errors, just log them
+        } finally {
+          this.isPolling = false;
         }
       }
     }, 2000); // Poll every 2 seconds

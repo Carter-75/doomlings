@@ -254,18 +254,18 @@ export default function Home() {
 
       // Carefully apply incoming state, ignore local UI preferences
       // We wrap in batch updates by React 18 implicitly, but just to be safe:
-      if (payload.playerCount !== undefined) setPlayerCount(payload.playerCount);
+      if (payload.playerCount !== undefined) setPlayerCount(prev => prev !== payload.playerCount ? payload.playerCount : prev);
       if (payload.playerNames) setPlayerNames(prev => JSON.stringify(prev) !== JSON.stringify(payload.playerNames) ? payload.playerNames : prev);
-      if (payload.catastropheMode !== undefined) setCatastropheMode(payload.catastropheMode);
-      if (payload.manualCatastropheOverride !== undefined) setManualCatastropheOverride(payload.manualCatastropheOverride);
-      if (payload.currentRule !== undefined) setCurrentRule(payload.currentRule);
-      if (payload.challengePlayer !== undefined) setChallengePlayer(payload.challengePlayer);
+      if (payload.catastropheMode !== undefined) setCatastropheMode(prev => prev !== payload.catastropheMode ? payload.catastropheMode : prev);
+      if (payload.manualCatastropheOverride !== undefined) setManualCatastropheOverride(prev => prev !== payload.manualCatastropheOverride ? payload.manualCatastropheOverride : prev);
+      if (payload.currentRule !== undefined) setCurrentRule(prev => JSON.stringify(prev) !== JSON.stringify(payload.currentRule) ? payload.currentRule : prev);
+      if (payload.challengePlayer !== undefined) setChallengePlayer(prev => prev !== payload.challengePlayer ? payload.challengePlayer : prev);
       if (payload.ageDeck) setAgeDeck(prev => JSON.stringify(prev) !== JSON.stringify(payload.ageDeck) ? payload.ageDeck : prev);
-      if (payload.currentAgeIndex !== undefined) setCurrentAgeIndex(payload.currentAgeIndex);
-      if (payload.normalAgeCount !== undefined) setNormalAgeCount(payload.normalAgeCount);
-      if (payload.merchantAgeCount !== undefined) setMerchantAgeCount(payload.merchantAgeCount);
-      if (payload.catastropheAgeCount !== undefined) setCatastropheAgeCount(payload.catastropheAgeCount);
-      if (payload.finalCatastropheMode !== undefined) setFinalCatastropheMode(payload.finalCatastropheMode);
+      if (payload.currentAgeIndex !== undefined) setCurrentAgeIndex(prev => prev !== payload.currentAgeIndex ? payload.currentAgeIndex : prev);
+      if (payload.normalAgeCount !== undefined) setNormalAgeCount(prev => prev !== payload.normalAgeCount ? payload.normalAgeCount : prev);
+      if (payload.merchantAgeCount !== undefined) setMerchantAgeCount(prev => prev !== payload.merchantAgeCount ? payload.merchantAgeCount : prev);
+      if (payload.catastropheAgeCount !== undefined) setCatastropheAgeCount(prev => prev !== payload.catastropheAgeCount ? payload.catastropheAgeCount : prev);
+      if (payload.finalCatastropheMode !== undefined) setFinalCatastropheMode(prev => prev !== payload.finalCatastropheMode ? payload.finalCatastropheMode : prev);
       if (payload.playerMeanings) setPlayerMeanings(prev => JSON.stringify(prev) !== JSON.stringify(payload.playerMeanings) ? payload.playerMeanings : prev);
       if (payload.selectedMeanings) setSelectedMeanings(prev => JSON.stringify(prev) !== JSON.stringify(payload.selectedMeanings) ? payload.selectedMeanings : prev);
       if (payload.revealedMeanings) setRevealedMeanings(prev => JSON.stringify(prev) !== JSON.stringify(payload.revealedMeanings) ? payload.revealedMeanings : prev);
@@ -274,10 +274,10 @@ export default function Home() {
       if (payload.pocketedTrinkets) setPocketedTrinkets(prev => JSON.stringify(prev) !== JSON.stringify(payload.pocketedTrinkets) ? payload.pocketedTrinkets : prev);
       if (payload.trinketsPocketedThisTurn) setTrinketsPocketedThisTurn(prev => JSON.stringify(prev) !== JSON.stringify(payload.trinketsPocketedThisTurn) ? payload.trinketsPocketedThisTurn : prev);
       if (payload.catastrophesInDeck) setCatastrophesInDeck(prev => JSON.stringify(prev) !== JSON.stringify(payload.catastrophesInDeck) ? payload.catastrophesInDeck : prev);
-      if (payload.showCatastropheList !== undefined) setShowCatastropheList(payload.showCatastropheList);
-      if (payload.challengeRolledThisAge !== undefined) setChallengeRolledThisAge(payload.challengeRolledThisAge);
-      if (payload.ageMultiplierMode !== undefined) setAgeMultiplierMode(payload.ageMultiplierMode);
-      if (payload.manualAgeMultiplier !== undefined) setManualAgeMultiplier(payload.manualAgeMultiplier);
+      if (payload.showCatastropheList !== undefined) setShowCatastropheList(prev => prev !== payload.showCatastropheList ? payload.showCatastropheList : prev);
+      if (payload.challengeRolledThisAge !== undefined) setChallengeRolledThisAge(prev => prev !== payload.challengeRolledThisAge ? payload.challengeRolledThisAge : prev);
+      if (payload.ageMultiplierMode !== undefined) setAgeMultiplierMode(prev => prev !== payload.ageMultiplierMode ? payload.ageMultiplierMode : prev);
+      if (payload.manualAgeMultiplier !== undefined) setManualAgeMultiplier(prev => prev !== payload.manualAgeMultiplier ? payload.manualAgeMultiplier : prev);
     };
 
     const handleRoomJoined = (room: any) => {

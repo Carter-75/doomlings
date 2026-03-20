@@ -58,8 +58,8 @@ async function getAllRooms() {
   for (let i = 0; i < fetchedRooms.length; i++) {
     const room = fetchedRooms[i];
     const lastUp = room.lastUpdate || room.createdAt || 0;
-    // If a room has gone 35 seconds without a host heartbeat, it's a ghost
-    if (now - lastUp > 35000) {
+      // Rooms that haven't been updated in 12 hours are considered ghosts
+      if (now - lastUp > 12 * 60 * 60 * 1000) {
       staleKeys.push(`room:${room.id}`);
     } else {
       validRooms.push(room);
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
   try {
     const rawText = await request.text();
     // Deny massive payloads to prevent DoS memory exhaustion
-    if (rawText.length > 50000) {
+    if (rawText.length > 500000) {
       return NextResponse.json({ success: false, error: 'Payload too large' }, { status: 413, headers: corsHeaders });
     }
     
@@ -135,8 +135,8 @@ export async function POST(request: NextRequest) {
         for (const existingRoom of allRooms) {
           if (existingRoom.name === roomName) {
             const lastUp = existingRoom.lastUpdate || existingRoom.createdAt || 0;
-            // Ghost room detection: either it's been dead 30+ seconds OR it's from the exact same wifi IP
-            if (nowRequest - lastUp > 30000 || existingRoom.wifiIp === clientIpRequest) {
+            // Ghost room detection: if it's been dead 1 hour OR it's from the exact same wifi IP and older than 5 minutes
+            if (nowRequest - lastUp > 60 * 60 * 1000 || (existingRoom.wifiIp === clientIpRequest && nowRequest - lastUp > 5 * 60 * 1000)) {
               await redis.del(`room:${existingRoom.id}`);
               continue; // Safe to replace the dead/old room
             }
