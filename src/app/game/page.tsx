@@ -254,12 +254,16 @@ export default function Home() {
     return room ? room.hostId === socketManager.getPlayerId() : false;
   });
   const lastSyncedStateHash = useRef<string>('');
+  const lastRoomPlayerCount = useRef<number>(0);
+  const hasReceivedFirstSync = useRef<boolean>(false);
 
   // SYNC LISTENER (Incoming State)
   useEffect(() => {
     const handleSync = (payload: any) => {
       // Allow any payload to process as long as we were not the immediate sender
       if (!payload || payload.senderId === socketManager.getPlayerId()) return;
+      hasReceivedFirstSync.current = true;
+
 
       // Track exactly what we received so we don't simply bounce it back out 
       // We explicitly construct the object with the same keys so stringify order is identical to the push effect
@@ -387,8 +391,17 @@ export default function Home() {
   // SYNC PUSH (Outgoing State)
   useEffect(() => {
     // Anyone in the room can sync state changes!
-    if (!currentRoom) return;
+    if (!currentRoom) {
+      hasReceivedFirstSync.current = false;
+      lastSyncedStateHash.current = '';
+      lastRoomPlayerCount.current = 0;
+      return;
+    }
     if (!isInitialLoadComplete || !isMounted.current) return;
+
+    const currentRoomPlayerCount = currentRoom.players?.length || 0;
+    const someoneJoined = currentRoomPlayerCount > lastRoomPlayerCount.current;
+    lastRoomPlayerCount.current = currentRoomPlayerCount;
 
     const syncPayload = {
       playerCount,
@@ -418,15 +431,25 @@ export default function Home() {
     };
 
     const currentHash = JSON.stringify(syncPayload);
-    if (currentHash === lastSyncedStateHash.current) {
+
+    // Stop guests from pushing their empty local state when they first join
+    // wait until they receive a sync OR make an actual state change
+    if (!isHost && !hasReceivedFirstSync.current && lastSyncedStateHash.current === '') {
+      lastSyncedStateHash.current = currentHash;
+      return; 
+    }
+
+    // Force the host to push state when a new player joins
+    // otherwise, push if state changes
+    if (currentHash === lastSyncedStateHash.current && (!isHost || !someoneJoined)) {
       return; // No real data change, or we are just rendering the exact state we just received
     }
 
     lastSyncedStateHash.current = currentHash; // Update our tracker
 
-    socketManager.syncGameState(currentRoom.id, { 
-      senderId: socketManager.getPlayerId(), 
-      ...syncPayload 
+    socketManager.syncGameState(currentRoom.id, {
+      senderId: socketManager.getPlayerId(),
+      ...syncPayload
     });
   }, [
     isHost, currentRoom, socketManager, isInitialLoadComplete, // Dependencies for when/who
