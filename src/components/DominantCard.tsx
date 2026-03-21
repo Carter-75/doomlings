@@ -147,8 +147,8 @@ const DominantCard: React.FC<DominantCardProps> = ({
               onError={() => setImgError(true)}
               style={{
                 width: '60px',
-                borderRadius: '4px',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                borderRadius: 'var(--border-radius-small)',
+                boxShadow: 'var(--shadow-primary)',
                 objectFit: 'contain'
               }}
             />
@@ -156,15 +156,15 @@ const DominantCard: React.FC<DominantCardProps> = ({
             <div style={{
               width: '60px',
               height: '84px',
-              borderRadius: '4px',
-              background: 'linear-gradient(135deg, #d35400, #f39c12)',
+              borderRadius: 'var(--border-radius-small)',
+              background: 'linear-gradient(135deg, var(--light-bg), var(--primary-orange))',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: 'white',
+              color: 'var(--text-primary)',
               fontSize: '18px',
               fontWeight: 'bold',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.5)'
+              boxShadow: 'var(--shadow-primary)'
             }}>
               ?
             </div>

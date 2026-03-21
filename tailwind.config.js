@@ -8,12 +8,15 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'game-primary': '#1e1b4b',
-        'game-secondary': '#581c87',
-        'game-accent': '#be185d',
+        'game-primary': 'var(--primary-red)',
+        'game-secondary': 'var(--primary-orange)',
+        'game-accent': 'var(--accent-orange)',
+        'dark-bg': 'var(--dark-bg)',
+        'darker-bg': 'var(--darker-bg)',
+        'light-bg': 'var(--light-bg)',
       },
       fontFamily: {
-        'game': ['Inter', 'system-ui', 'sans-serif'],
+        'game': ['var(--font-outfit)', 'system-ui', 'sans-serif'],
       },
       animation: {
         'bounce-slow': 'bounce 3s infinite',

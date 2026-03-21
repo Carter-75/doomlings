@@ -23,9 +23,9 @@ const TrinketCard: React.FC<TrinketCardProps> = ({ trinket, onAdd, onRemove, onP
   const [imgError, setImgError] = React.useState(false);
 
   return (
-    <div className={`trinket-card card ${isFogged ? 'trinket-fogged' : ''}`}>
+    <div className={`card ${isFogged ? 'opacity-50' : ''}`} style={{ padding: 'var(--space-4)', margin: 'var(--space-2)' }}>
       <div className="card-content">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-3)' }}>
           {cardArtUrl && !imgError ? (
             <img
               src={cardArtUrl}
@@ -35,8 +35,8 @@ const TrinketCard: React.FC<TrinketCardProps> = ({ trinket, onAdd, onRemove, onP
               style={{
                 width: '45px',
                 height: '63px',
-                borderRadius: '4px',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                borderRadius: 'var(--border-radius-small)',
+                boxShadow: 'var(--shadow-secondary)',
                 objectFit: 'contain'
               }}
             />
@@ -44,33 +44,33 @@ const TrinketCard: React.FC<TrinketCardProps> = ({ trinket, onAdd, onRemove, onP
             <div style={{
               width: '45px',
               height: '63px',
-              borderRadius: '4px',
-              background: 'linear-gradient(135deg, #2c3e50, #3498db)',
+              borderRadius: 'var(--border-radius-small)',
+              background: 'linear-gradient(135deg, var(--light-bg), var(--info))',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: 'white',
-              fontSize: '10px',
+              color: 'var(--text-primary)',
+              fontSize: '12px',
               fontWeight: 'bold',
               textAlign: 'center',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.5)',
+              boxShadow: 'var(--shadow-secondary)',
               padding: '2px'
             }}>
               ?
             </div>
           )}
-          <h4 className="title is-5" style={{ margin: 0 }}>{trinket.name}</h4>
+          <h4 style={{ margin: 0, color: 'var(--primary-orange)', fontWeight: 'bold' }}>{trinket.name}</h4>
         </div>
-        <p className="subtitle is-6"><strong>Power:</strong> {trinket.power}</p>
-        <div className="content">
-          <p><strong>Objective:</strong> {trinket.objective}</p>
-          <p><strong>Points:</strong> {trinket.points}</p>
+        <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-2)' }}><strong style={{color: 'var(--text-primary)'}}>Power:</strong> {trinket.power}</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+          <p><strong style={{color: 'var(--text-primary)'}}>Objective:</strong> {trinket.objective}</p>
+          <p><strong style={{color: 'var(--text-primary)'}}>Points:</strong> {trinket.points}</p>
         </div>
       </div>
-      <footer className="card-footer">
-        <button className="card-footer-item button add-btn" onClick={onAdd}>Add</button>
-        <button className="card-footer-item button remove-btn" onClick={onRemove}>Remove</button>
-        <button className="card-footer-item button pocket-btn" onClick={onPocket} disabled={isPocketDisabled}>Pocket</button>
+      <footer style={{ display: 'flex', gap: 'var(--space-2)', marginTop: 'var(--space-4)' }}>
+        <button className="button button-outline" onClick={onAdd}>Add</button>
+        <button className="button button-outline" onClick={onRemove} style={{ color: 'var(--error)', borderColor: 'var(--error)' }}>Remove</button>
+        <button className="button button-primary" onClick={onPocket} disabled={isPocketDisabled}>Pocket</button>
       </footer>
     </div>
   );

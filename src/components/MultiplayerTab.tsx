@@ -127,9 +127,9 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
 
         return (
             <div className="section">
-                <div className="box" style={{ border: '2px solid #581c87', boxShadow: '0 4px 15px rgba(88, 28, 135, 0.3)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '1rem' }}>
-                        <h2 className="title is-4" style={{ margin: 0, display: 'flex', alignItems: 'center' }}>
+                <div className="box" style={{ border: '2px solid var(--info)', boxShadow: 'var(--shadow-primary)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem' }}>
+                        <h2 className="title is-4" style={{ margin: 0, display: 'flex', alignItems: 'center', color: 'var(--info)' }}>
                             <span style={{ fontSize: '1.5rem', marginRight: '10px' }}>📡</span> Local Sync Active
                         </h2>
                         <AnimatedButton onClick={handleLeaveRoom} className="is-danger is-small">
@@ -138,21 +138,21 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
                     </div>
 
                     <div className="content">
-                        <div className="box mb-3" style={{ background: 'rgba(0,0,0,0.02)' }}>
-                            <p className="heading">Room Host</p>
-                            <p className="title is-5 mb-1">{isHost ? '👑 You' : currentRoom.name}</p>
+                        <div className="box mb-3" style={{ background: 'var(--light-bg)' }}>
+                            <p className="heading" style={{ color: 'var(--text-secondary)' }}>Room Host</p>
+                            <p className="title is-5 mb-1" style={{ color: 'var(--text-primary)' }}>{isHost ? '👑 You' : currentRoom.name}</p>
                             {currentRoom.password && (
                                 <p className="help is-danger">🔒 Password Protected</p>
                             )}
                         </div>
 
-                        <div className="box mb-3" style={{ background: 'rgba(0,0,0,0.02)' }}>
-                            <p className="heading">Connected Devices ({currentRoom.players.length})</p>
-                            <ul>
+                        <div className="box mb-3" style={{ background: 'var(--light-bg)' }}>
+                            <p className="heading" style={{ color: 'var(--text-secondary)' }}>Connected Devices ({currentRoom.players.length})</p>
+                            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                                 {currentRoom.players.map((p: any) => (
-                                    <li key={p.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
-                                        <span>
-                                            <span style={{ color: '#581c87', fontWeight: 'bold' }}>•</span> {p.name} {p.id === socketManager.getPlayerId() && '(You)'}
+                                    <li key={p.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                        <span style={{ color: 'var(--text-primary)' }}>
+                                            <span style={{ color: 'var(--info)', fontWeight: 'bold', marginRight: '8px' }}>•</span> {p.name} {p.id === socketManager.getPlayerId() && '(You)'}
                                         </span>
                                         {p.id === currentRoom.hostId && (
                                             <span className="tag is-primary is-light">Host</span>

@@ -72,24 +72,27 @@ export const PremiumSection = () => {
 
             <style jsx>{`
                 .premium-section {
-                    background: linear-gradient(135deg, rgba(255, 193, 7, 0.08), rgba(255, 87, 34, 0.08));
-                    border: 1px solid rgba(255, 193, 7, 0.4);
-                    border-radius: 12px;
-                    padding: 24px;
-                    margin-bottom: 30px;
+                    background: var(--light-bg);
+                    border: 1px solid rgba(255, 193, 7, 0.2);
+                    border-radius: var(--border-radius);
+                    box-shadow: var(--shadow-card);
+                    backdrop-filter: blur(24px);
+                    padding: var(--space-6);
+                    margin-bottom: var(--space-6);
                     text-align: center;
                 }
                 .premium-section h2 {
-                    color: #ffc107;
-                    margin-bottom: 6px;
+                    color: var(--warning);
+                    margin-bottom: var(--space-2);
+                    font-size: clamp(1.25rem, 3vw, 1.5rem);
                 }
                 .premium-section p {
-                    color: #ccc;
-                    margin-bottom: 18px;
+                    color: var(--text-secondary);
+                    margin-bottom: var(--space-4);
                     font-size: 0.95em;
                 }
                 .premium-header {
-                    margin: 15px 0 25px 0;
+                    margin: var(--space-4) 0 var(--space-6) 0;
                     display: flex;
                     justify-content: center;
                     align-items: center;
@@ -99,36 +102,36 @@ export const PremiumSection = () => {
                     display: inline-flex;
                     align-items: center;
                     gap: 10px;
-                    padding: 8px 24px;
+                    padding: var(--space-2) var(--space-6);
                     border-radius: 30px;
                     font-weight: bold;
                     font-size: 0.95em;
                     letter-spacing: 0.5px;
-                    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                    box-shadow: var(--shadow-primary);
                     transition: all 0.3s ease;
                 }
                 .status-badge.active {
-                    background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 200, 100, 0.2));
-                    border: 1px solid rgba(0, 255, 136, 0.5);
-                    color: #00ff88;
-                    box-shadow: 0 0 20px rgba(0, 255, 136, 0.15);
+                    background: rgba(0, 255, 136, 0.1);
+                    border: 1px solid rgba(0, 255, 136, 0.3);
+                    color: var(--success);
+                    box-shadow: var(--shadow-secondary);
                 }
                 .status-badge.free {
-                    background: linear-gradient(135deg, rgba(255, 193, 7, 0.15), rgba(255, 152, 0, 0.15));
-                    border: 1px solid rgba(255, 193, 7, 0.5);
-                    color: #ffc107;
+                    background: rgba(255, 193, 7, 0.1);
+                    border: 1px solid rgba(255, 193, 7, 0.3);
+                    color: var(--warning);
                 }
                 .status-badge.loading {
-                    background: rgba(255, 255, 255, 0.1);
-                    border: 1px solid rgba(255, 255, 255, 0.2);
-                    color: #aaa;
+                    background: rgba(255, 255, 255, 0.05);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    color: var(--text-muted);
                 }
                 .pulse-dot {
                     width: 8px;
                     height: 8px;
-                    background-color: #ffc107;
+                    background-color: var(--warning);
                     border-radius: 50%;
-                    box-shadow: 0 0 8px #ffc107;
+                    box-shadow: 0 0 8px var(--warning);
                     animation: pulse 2s infinite;
                 }
                 @keyframes pulse {
@@ -137,78 +140,85 @@ export const PremiumSection = () => {
                     100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
                 }
                 .features-container {
-                    background: rgba(0,0,0,0.2);
-                    border-radius: 12px;
-                    padding: 15px 25px;
+                    background: rgba(255, 255, 255, 0.02);
+                    border-radius: var(--border-radius);
+                    padding: var(--space-4) var(--space-6);
                     display: inline-block;
-                    margin-bottom: 25px;
+                    margin-bottom: var(--space-6);
                     border: 1px solid rgba(255,255,255,0.05);
                 }
                 .packages-grid {
                     display: grid;
                     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                    gap: 15px;
-                    margin: 20px 0;
+                    gap: var(--space-4);
+                    margin: var(--space-5) 0;
                 }
                 .package-card {
-                    background: rgba(0, 0, 0, 0.4);
-                    border: 1px solid rgba(255, 193, 7, 0.3);
-                    border-radius: 8px;
-                    padding: 15px;
+                    background: rgba(255, 255, 255, 0.02);
+                    border: 1px solid rgba(255, 193, 7, 0.2);
+                    border-radius: var(--border-radius-small);
+                    padding: var(--space-4);
                     display: flex;
                     flex-direction: column;
-                    gap: 10px;
+                    gap: var(--space-2);
+                    transition: transform 0.2s, box-shadow 0.2s;
+                }
+                .package-card:hover {
+                    transform: translateY(-2px);
+                    box-shadow: var(--shadow-secondary);
+                    border-color: rgba(255, 193, 7, 0.4);
                 }
                 .package-card h3 {
-                    color: #ffc107;
+                    color: var(--warning);
                     margin: 0;
                     font-size: 1.1em;
                 }
                 .package-card p {
-                    color: #ccc;
+                    color: var(--text-secondary);
                     margin: 0;
                     font-size: 0.9em;
                 }
                 .package-price {
                     font-size: 1.25em;
                     font-weight: bold;
-                    color: #fff;
-                    margin: 5px 0;
+                    color: var(--text-primary);
+                    margin: var(--space-1) 0;
                 }
                 .premium-btn-row {
                     display: flex;
-                    gap: 12px;
+                    gap: var(--space-3);
                     justify-content: center;
                     flex-wrap: wrap;
                 }
                 .subscribe-btn {
-                    background: linear-gradient(135deg, #ffc107, #ff5722);
+                    background: linear-gradient(135deg, var(--warning), var(--accent-orange));
                     color: #000;
-                    padding: 12px 28px;
+                    padding: var(--space-3) var(--space-6);
                     border: none;
-                    border-radius: 8px;
+                    border-radius: var(--border-radius-small);
                     cursor: pointer;
                     font-size: 15px;
                     font-weight: bold;
-                    transition: transform 0.2s, box-shadow 0.2s;
+                    transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
                 }
                 .subscribe-btn:hover {
                     transform: translateY(-2px);
-                    box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+                    box-shadow: var(--glow-primary);
+                    filter: brightness(1.1);
                 }
                 .restore-btn {
                     background: transparent;
-                    color: #ccc;
-                    padding: 12px 20px;
+                    color: var(--text-secondary);
+                    padding: var(--space-3) var(--space-5);
                     border: 1px solid rgba(255,255,255,0.2);
-                    border-radius: 8px;
+                    border-radius: var(--border-radius-small);
                     cursor: pointer;
                     font-size: 14px;
                     transition: border-color 0.2s, color 0.2s;
                 }
                 .restore-btn:hover {
                     border-color: rgba(255,255,255,0.5);
-                    color: #fff;
+                    color: var(--text-primary);
                 }
                 .premium-feature-list {
                     list-style: none;
@@ -220,15 +230,15 @@ export const PremiumSection = () => {
                     gap: 10px;
                 }
                 .premium-feature-list li {
-                    color: #e0e0e0;
+                    color: var(--text-secondary);
                     font-size: 0.95em;
                     display: flex;
                     align-items: center;
                 }
                 .web-only-note {
-                    color: #888;
+                    color: var(--text-muted);
                     font-size: 0.8em;
-                    margin-top: 12px;
+                    margin-top: var(--space-3);
                 }
             `}</style>
         </div>

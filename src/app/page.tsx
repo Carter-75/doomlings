@@ -76,9 +76,9 @@ export default function HomePage() {
 
             {!adsRemoved && (
               <div className="mt-4">
-                <Link href="/premium" className="card" style={{ borderColor: 'rgba(255, 193, 7, 0.4)', background: 'linear-gradient(135deg, rgba(255, 193, 7, 0.08), rgba(255, 87, 34, 0.08))' }}>
-                  <h3 className="text-center mb-2" style={{ color: '#ffc107' }}>✨ Remove Ads</h3>
-                  <p className="text-center" style={{ color: '#ccc' }}>
+                <Link href="/premium" className="card" style={{ border: '1px solid var(--warning)' }}>
+                  <h3 className="text-center mb-2" style={{ color: 'var(--warning)' }}>✨ Remove Ads</h3>
+                  <p className="text-center" style={{ color: 'var(--text-secondary)' }}>
                     Upgrade to Premium for an uninterrupted, ad-free experience.
                   </p>
                 </Link>
@@ -88,28 +88,28 @@ export default function HomePage() {
             {/* Inline Mode Selection */}
             {showModeModal && (
               <div className="mt-8 mb-6 animate-in fade-in duration-200">
-                <h2 className="text-3xl font-bold text-center text-primary-orange mb-2">Choose Game Mode</h2>
-                <p className="text-gray-400 text-center mb-6">How would you like to play today?</p>
+                <h2 className="text-center mb-2" style={{ color: 'var(--primary-orange)', fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', fontWeight: 700 }}>Choose Game Mode</h2>
+                <p className="text-center mb-6" style={{ color: 'var(--text-secondary)' }}>How would you like to play today?</p>
 
-                <div className="grid grid-auto gap-6">
+                <div className="grid grid-auto">
                   {/* Companion App Link */}
-                  <Link href="/game" className="card w-full">
+                  <Link href="/game" className="card">
                     <h3 className="text-center mb-2">📱 Companion App</h3>
-                    <p className="text-center text-gray-400 text-sm mt-2">
+                    <p className="text-center mt-2" style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
                       Track physical card game scores, ages, and rules. Optionally sync your stats across local WiFi.
                     </p>
                   </Link>
 
                   {/* Full Game (Coming Soon) */}
-                  <div className="card w-full relative overflow-hidden group/disabled cursor-not-allowed opacity-60 pointer-events-none">
-                    <div className="absolute inset-0 bg-black/60 z-10 flex items-center justify-center backdrop-blur-[2px]">
-                      <span className="bg-primary-orange text-white font-bold py-2 px-6 rounded-full transform rotate-[-12deg] shadow-lg text-lg border-2 border-white/20">
+                  <div className="card relative overflow-hidden group/disabled cursor-not-allowed opacity-60 pointer-events-none">
+                    <div className="absolute inset-0 z-10 flex items-center justify-center backdrop-blur-[2px]" style={{ background: 'var(--dark-bg)', opacity: 0.8 }}>
+                      <span className="font-bold py-2 px-6 rounded-full transform rotate-[-12deg] shadow-lg text-lg" style={{ background: 'var(--primary-orange)', color: 'var(--darker-bg)', border: '2px solid rgba(255,255,255,0.2)' }}>
                         Coming Soon!
                       </span>
                     </div>
-                    <div className="opacity-40 filter grayscale">
+                    <div className="filter grayscale" style={{ opacity: 0.4 }}>
                       <h3 className="text-center mb-2">🎮 Full Digital Game</h3>
-                      <p className="text-center text-gray-400 text-sm mt-2">
+                      <p className="text-center mt-2" style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
                         Play the cards entirely on your device with rules enforcement and matchmaking.
                       </p>
                     </div>
@@ -120,8 +120,8 @@ export default function HomePage() {
 
             <button
               onClick={() => setShowAdvanced(!showAdvanced)}
-              className="btn btn-secondary mt-4 w-full"
-              style={{ maxWidth: '300px', margin: '1rem auto', display: 'block' }}
+              className="button button-ghost mt-4"
+              style={{ maxWidth: '300px', margin: '1.5rem auto', display: 'flex' }}
             >
               {showAdvanced ? 'Hide Advanced Options ▲' : 'Show Advanced Options ▼'}
             </button>

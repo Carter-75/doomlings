@@ -56,8 +56,8 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
                 style={{
                   width: '45px',
                   height: '63px',
-                  borderRadius: '4px',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                  borderRadius: 'var(--border-radius-small)',
+                  boxShadow: 'var(--shadow-secondary)',
                   objectFit: 'contain'
                 }}
               />
@@ -65,15 +65,15 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
               <div style={{
                 width: '45px',
                 height: '63px',
-                borderRadius: '4px',
-                background: 'linear-gradient(135deg, #4b1b63, #9b59b6)',
+                borderRadius: 'var(--border-radius-small)',
+                background: 'linear-gradient(135deg, var(--light-bg), var(--success))',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: 'white',
+                color: 'var(--text-primary)',
                 fontSize: '14px',
                 fontWeight: 'bold',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.5)'
+                boxShadow: 'var(--shadow-secondary)'
               }}>
                 ?
               </div>
@@ -124,16 +124,17 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
 
       <style jsx>{`
         .meaning-card {
-          background: linear-gradient(135deg, var(--light-bg), var(--lighter-bg));
-          border: 2px solid rgba(155, 89, 182, 0.3);
+          background: var(--light-bg);
+          border: 1px solid rgba(155, 89, 182, 0.3);
           border-radius: var(--border-radius);
-          padding: 1.5rem;
+          padding: var(--space-4);
           cursor: pointer;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           position: relative;
           min-height: 180px;
           display: flex;
           flex-direction: column;
+          box-shadow: var(--shadow-card);
         }
 
         .meaning-card.selectable:hover {
@@ -144,13 +145,10 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
         }
 
         .meaning-card.selected-card {
-          border-color: var(--primary-red);
-          border-width: 3px;
-          background: linear-gradient(135deg, 
-            rgba(214, 52, 71, 0.15), 
-            rgba(255, 107, 53, 0.15));
-          box-shadow: 0 0 25px rgba(214, 52, 71, 0.5),
-                      inset 0 0 0 2px rgba(214, 52, 71, 0.3);
+          border-color: var(--warning);
+          border-width: 2px;
+          background: rgba(255, 193, 7, 0.05);
+          box-shadow: 0 0 25px rgba(255, 193, 7, 0.2), inset 0 0 0 1px rgba(255, 193, 7, 0.2);
           transform: translateY(-2px);
         }
 
@@ -160,64 +158,58 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
         }
 
         .meaning-card.revealed {
-          border-color: var(--info);
-          background: linear-gradient(135deg, 
-            rgba(33, 150, 243, 0.1), 
-            rgba(63, 81, 181, 0.1));
+          border-color: var(--success);
+          background: rgba(0, 255, 136, 0.05);
         }
 
         .meaning-card-header {
-          margin-bottom: 1rem;
+          margin-bottom: var(--space-3);
         }
 
         .meaning-card-name {
           font-size: 1.2rem;
           font-weight: 700;
-          color: #9b59b6;
-          margin-bottom: 0.5rem;
+          color: #e0e0e0;
+          margin-bottom: var(--space-2);
           display: flex;
           align-items: center;
           justify-content: space-between;
           flex-wrap: wrap;
-          gap: 0.5rem;
+          gap: var(--space-2);
         }
 
         .selected-card .meaning-card-name {
-          color: var(--primary-red);
+          color: var(--warning);
         }
 
         .revealed .meaning-card-name {
-          color: var(--info);
+          color: var(--success);
         }
 
         .selection-badge {
-          background: var(--primary-red);
-          color: white;
+          background: var(--warning);
+          color: #000;
           padding: 0.2rem 0.6rem;
           border-radius: 12px;
           font-size: 0.7rem;
           font-weight: 600;
           letter-spacing: 0.5px;
-          animation: pulse-red 2s infinite;
+          animation: pulse-warn 2s infinite;
         }
 
-        @keyframes pulse-red {
-          0%, 100% { 
-            box-shadow: 0 0 0 0 rgba(214, 52, 71, 0.7);
-          }
-          70% { 
-            box-shadow: 0 0 0 8px rgba(214, 52, 71, 0);
-          }
+        @keyframes pulse-warn {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); }
+          70% { box-shadow: 0 0 0 8px rgba(255, 193, 7, 0); }
         }
 
         .selection-indicator {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
-          background: rgba(214, 52, 71, 0.1);
-          padding: 0.5rem;
-          border-radius: 8px;
-          margin-top: 0.5rem;
+          gap: var(--space-2);
+          background: rgba(255, 193, 7, 0.1);
+          padding: var(--space-2);
+          border-radius: var(--border-radius-small);
+          margin-top: var(--space-2);
         }
 
         .selection-icon {
@@ -225,7 +217,7 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
         }
 
         .selection-text {
-          color: var(--primary-red);
+          color: var(--warning);
           font-weight: 600;
           font-size: 0.9rem;
         }
@@ -235,9 +227,9 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
           display: flex;
           align-items: center;
           justify-content: center;
-          background: rgba(0, 0, 0, 0.1);
-          border-radius: 8px;
-          padding: 1rem;
+          background: rgba(0, 0, 0, 0.2);
+          border-radius: var(--border-radius-small);
+          padding: var(--space-3);
           margin-top: auto;
         }
 
@@ -246,12 +238,12 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
         }
 
         .selected-indicator {
-          color: var(--primary-red);
+          color: var(--warning);
         }
 
         .selected-icon {
           font-size: 2.5rem;
-          margin-bottom: 0.5rem;
+          margin-bottom: var(--space-2);
           animation: bounce 2s infinite;
         }
 
@@ -264,8 +256,8 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
         .selected-text {
           font-weight: 700;
           font-size: 0.9rem;
-          color: var(--primary-red);
-          margin-bottom: 0.3rem;
+          color: var(--warning);
+          margin-bottom: var(--space-1);
           letter-spacing: 1px;
         }
 
@@ -281,7 +273,7 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
 
         .prompt-icon {
           font-size: 2rem;
-          margin-bottom: 0.5rem;
+          margin-bottom: var(--space-2);
           animation: point 1.5s infinite;
         }
 
@@ -301,7 +293,7 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
 
         .not-selected-icon {
           font-size: 2rem;
-          margin-bottom: 0.5rem;
+          margin-bottom: var(--space-2);
           opacity: 0.5;
         }
 
@@ -311,19 +303,19 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
         }
 
         .meaning-description {
-          background: rgba(0, 0, 0, 0.2);
-          border-radius: 8px;
-          padding: 1rem;
+          background: rgba(0, 0, 0, 0.3);
+          border-radius: var(--border-radius-small);
+          padding: var(--space-3);
           margin-top: auto;
-          border-left: 4px solid #9b59b6;
+          border-left: 2px solid #9b59b6;
         }
 
         .selected-card .meaning-description {
-          border-left-color: var(--primary-red);
+          border-left-color: var(--warning);
         }
 
         .revealed .meaning-description {
-          border-left-color: var(--info);
+          border-left-color: var(--success);
         }
 
         .meaning-description p {
@@ -336,7 +328,7 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
         @media (max-width: 768px) {
           .meaning-card {
             min-height: 160px;
-            padding: 1rem;
+            padding: var(--space-3);
           }
 
           .meaning-card-name {

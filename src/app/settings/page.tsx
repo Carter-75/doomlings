@@ -318,11 +318,10 @@ const SettingsPage = () => {
                  .settings-container {
             max-width: 800px;
             width: 90%;
-            margin: 40px auto;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 157, 255, 0.3);
+            margin: var(--space-8) auto;
+            padding: 0;
+            background: transparent;
+            box-shadow: none;
             box-sizing: border-box;
             overflow-x: hidden;
         }
@@ -330,16 +329,19 @@ const SettingsPage = () => {
         @media screen and (max-width: 600px) {
             .settings-container {
                 width: 95%;
-                padding: 15px;
-                margin: 20px auto;
+                margin: var(--space-4) auto;
             }
         }
 
         .settings-section {
-            margin-bottom: 30px;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 8px;
+            margin-bottom: var(--space-6);
+            padding: var(--space-6);
+            background: var(--light-bg);
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: var(--shadow-card);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
             box-sizing: border-box;
             overflow-x: hidden;
             overflow-wrap: break-word;
@@ -347,8 +349,10 @@ const SettingsPage = () => {
         }
 
         .settings-section h2 {
-            color: #fff;
-            margin-bottom: 20px;
+            color: var(--primary-orange);
+            margin-bottom: var(--space-4);
+            font-size: clamp(1.25rem, 3vw, 1.5rem);
+            font-weight: 700;
         }
         
         .scale-control {
@@ -437,23 +441,30 @@ const SettingsPage = () => {
         }
 
         .action-btn {
-            background: linear-gradient(45deg, #007bff, #00ff88);
-            color: white;
-            padding: 8px 16px;
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-orange));
+            color: var(--text-primary);
+            padding: var(--space-2) var(--space-4);
             border: none;
-            border-radius: 5px;
+            border-radius: var(--border-radius-small);
             cursor: pointer;
-            font-size: 14px;
-            transition: transform 0.2s, box-shadow 0.2s;
+            font-size: clamp(0.75rem, 1.8vw, 0.875rem);
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+            box-shadow: var(--shadow-primary);
         }
 
         .action-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 157, 255, 0.4);
+            box-shadow: var(--shadow-primary), var(--glow-primary);
+            filter: brightness(1.1);
         }
 
         .delete-btn {
-            background: linear-gradient(45deg, #ff4444, #ff0000);
+            background: linear-gradient(135deg, var(--error), #dc2f02);
+            box-shadow: 0 4px 15px rgba(230, 57, 70, 0.25);
+        }
+        .delete-btn:hover {
+            box-shadow: 0 4px 15px rgba(230, 57, 70, 0.4), 0 0 20px rgba(230, 57, 70, 0.3);
         }
         
         .confirm-dialog {
@@ -581,22 +592,23 @@ const SettingsPage = () => {
         }
 
         .info-card {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(60, 130, 247, 0.2);
-            border-radius: 8px;
-            padding: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--border-radius-small);
+            padding: var(--space-5);
             text-align: center;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
         }
 
         .info-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(60, 130, 247, 0.2);
+            box-shadow: var(--shadow-secondary);
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .info-card h3 {
-            color: #3c82f7;
-            margin-bottom: 10px;
+            color: var(--primary-orange);
+            margin-bottom: var(--space-2);
             font-size: 1.1em;
         }
 
@@ -618,21 +630,26 @@ const SettingsPage = () => {
         }
 
         .setting-item {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(60, 130, 247, 0.2);
-            border-radius: 8px;
-            padding: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--border-radius-small);
+            padding: var(--space-5);
             max-width: 100%;
             box-sizing: border-box;
             overflow: hidden;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+        .setting-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .setting-item label {
             display: flex;
             align-items: center;
             gap: 12px;
-            color: #fff;
-            font-weight: bold;
+            color: var(--text-primary);
+            font-weight: 600;
             cursor: pointer;
             max-width: 100%;
             flex-wrap: wrap;
@@ -641,7 +658,8 @@ const SettingsPage = () => {
         .setting-item input[type="checkbox"] {
             width: 18px;
             height: 18px;
-            accent-color: #3c82f7;
+            accent-color: var(--primary-orange);
+            cursor: pointer;
         }
 
         .setting-item small {
@@ -654,16 +672,18 @@ const SettingsPage = () => {
         }
             /* ── Remove Ads Premium Section ── */
         .premium-section {
-            background: linear-gradient(135deg, rgba(255, 193, 7, 0.08), rgba(255, 87, 34, 0.08));
-            border: 1px solid rgba(255, 193, 7, 0.4);
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 30px;
+            background: var(--light-bg);
+            border: 1px solid rgba(255, 193, 7, 0.2);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-card);
+            backdrop-filter: blur(24px);
+            padding: var(--space-6);
+            margin-bottom: var(--space-6);
             text-align: center;
         }
         .premium-section h2 {
-            color: #ffc107;
-            margin-bottom: 6px;
+            color: var(--warning);
+            margin-bottom: var(--space-2);
         }
         .premium-section p {
             color: #ccc;
@@ -802,7 +822,7 @@ const SettingsPage = () => {
             {/* Main Content */}
             <div className="container">
                 <div className="settings-container">
-                    <h1 style={{ color: '#fff', textAlign: 'center' }}>Settings</h1>
+                    <h1 style={{ color: 'var(--text-primary)', textAlign: 'center', fontWeight: '800', marginBottom: '2rem' }}>Settings</h1>
 
                     {/* ── Remove Ads Premium Section ── */}
                     <div className="premium-section">
@@ -898,8 +918,8 @@ const SettingsPage = () => {
                                         cursor: 'pointer',
                                         padding: '10px',
                                         borderRadius: '8px',
-                                        border: `2px solid ${theme === t.id ? '#00ff88' : 'rgba(255,255,255,0.1)'}`,
-                                        background: 'rgba(0,0,0,0.3)',
+                                        border: `2px solid ${theme === t.id ? 'var(--primary-orange)' : 'rgba(255,255,255,0.05)'}`,
+                                        background: theme === t.id ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.2)',
                                         textAlign: 'center',
                                         transition: 'all 0.2s',
                                         transform: theme === t.id ? 'scale(1.05)' : 'scale(1)'
@@ -910,9 +930,10 @@ const SettingsPage = () => {
                                         height: '40px',
                                         borderRadius: '4px',
                                         background: `linear-gradient(135deg, ${t.colors[0]}, ${t.colors[1]})`,
-                                        marginBottom: '8px'
+                                        marginBottom: '8px',
+                                        boxShadow: theme === t.id ? 'var(--glow-primary)' : 'none'
                                     }}></div>
-                                    <span style={{ color: theme === t.id ? '#00ff88' : '#fff', fontSize: '0.9em', fontWeight: 'bold' }}>{t.name}</span>
+                                    <span style={{ color: theme === t.id ? 'var(--primary-orange)' : 'var(--text-secondary)', fontSize: '0.9em', fontWeight: 'bold' }}>{t.name}</span>
                                 </div>
                             ))}
                         </div>

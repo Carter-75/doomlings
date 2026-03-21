@@ -35,31 +35,31 @@ const GameCard: React.FC<GameCardProps> = ({
   const [imgError, setImgError] = useState(false);
 
   const getCardColorStyles = (color?: string) => {
-    const baseGradient = 'bg-gradient-to-br';
-    const selectedRing = isSelected ? 'ring-4 ring-yellow-400 ring-opacity-75 shadow-2xl shadow-yellow-400/50' : '';
+    const baseGradient = 'bg-[var(--light-bg)] border backdrop-blur-md transition-all duration-300';
+    const selectedRing = isSelected ? 'ring-2 ring-[var(--primary-orange)] shadow-[var(--glow-primary)]' : '';
 
     switch (color) {
       case 'red':
-        return `${baseGradient} from-red-600 via-red-500 to-red-700 border-red-400 text-white shadow-red-500/50 ${selectedRing}`;
+        return `${baseGradient} border-[var(--primary-red)] text-white shadow-[var(--shadow-primary)] ${selectedRing}`;
       case 'green':
-        return `${baseGradient} from-green-600 via-green-500 to-green-700 border-green-400 text-white shadow-green-500/50 ${selectedRing}`;
+        return `${baseGradient} border-[var(--success)] text-white shadow-[var(--shadow-primary)] ${selectedRing}`;
       case 'blue':
-        return `${baseGradient} from-blue-600 via-blue-500 to-blue-700 border-blue-400 text-white shadow-blue-500/50 ${selectedRing}`;
+        return `${baseGradient} border-[var(--info)] text-white shadow-[var(--shadow-primary)] ${selectedRing}`;
       case 'purple':
-        return `${baseGradient} from-purple-600 via-purple-500 to-purple-700 border-purple-400 text-white shadow-purple-500/50 ${selectedRing}`;
+        return `${baseGradient} border-[var(--primary-red)] text-white shadow-[var(--shadow-primary)] ${selectedRing}`; // Map purple to theme primary
       case 'colorless':
-        return `${baseGradient} from-gray-600 via-gray-500 to-gray-700 border-gray-400 text-white shadow-gray-500/50 ${selectedRing}`;
+        return `${baseGradient} border-gray-500 text-white shadow-md ${selectedRing}`;
       default:
         if (card.type === 'age') {
-          return `${baseGradient} from-yellow-600 via-yellow-500 to-yellow-700 border-yellow-400 text-black shadow-yellow-500/50 ${selectedRing}`;
+          return `${baseGradient} border-[var(--warning)] text-white shadow-[var(--glow-primary)] ${selectedRing}`;
         } else if (card.type === 'catastrophe') {
-          return `${baseGradient} from-red-900 via-red-800 to-black border-red-600 text-red-100 shadow-red-600/50 ${selectedRing}`;
+          return `${baseGradient} border-[var(--error)] text-white shadow-[var(--shadow-primary)] ${selectedRing}`;
         } else if (card.type === 'treasure') {
-          return `${baseGradient} from-amber-600 via-yellow-500 to-orange-600 border-amber-400 text-black shadow-amber-500/50 ${selectedRing}`;
+          return `${baseGradient} border-[var(--accent-orange)] text-white shadow-[var(--glow-primary)] ${selectedRing}`;
         } else if (card.type === 'birth_of_life') {
-          return `${baseGradient} from-emerald-600 via-green-400 to-teal-600 border-emerald-400 text-white shadow-emerald-500/50 ${selectedRing}`;
+          return `${baseGradient} border-[var(--success)] text-white shadow-md ${selectedRing}`;
         }
-        return `${baseGradient} from-gray-600 via-gray-500 to-gray-700 border-gray-400 text-white shadow-gray-500/50 ${selectedRing}`;
+        return `${baseGradient} border-gray-500 text-[var(--text-primary)] shadow-md ${selectedRing}`;
     }
   };
 
@@ -96,12 +96,12 @@ const GameCard: React.FC<GameCardProps> = ({
 
   const getRarityBorder = () => {
     switch (card.rarity) {
-      case 'legendary': return 'border-4 border-orange-400 shadow-orange-400/75';
-      case 'epic': return 'border-4 border-purple-400 shadow-purple-400/75';
-      case 'rare': return 'border-3 border-blue-400 shadow-blue-400/50';
-      case 'holo': return 'border-4 border-pink-400 shadow-pink-400/75 bg-gradient-to-br from-pink-200 via-blue-200 to-purple-200';
-      case 'promo': return 'border-4 border-yellow-400 shadow-yellow-400/75';
-      default: return 'border-2';
+      case 'legendary': return 'border-2 border-[var(--warning)] shadow-[var(--glow-primary)]';
+      case 'epic': return 'border-2 border-[var(--primary-red)] shadow-[var(--shadow-primary)]';
+      case 'rare': return 'border-2 border-[var(--info)] shadow-md';
+      case 'holo': return 'border-2 border-[var(--accent-red)] shadow-[var(--shadow-primary)] bg-[var(--lighter-bg)]';
+      case 'promo': return 'border-2 border-[var(--primary-orange)] shadow-[var(--glow-primary)]';
+      default: return 'border border-opacity-50';
     }
   };
 
@@ -152,7 +152,7 @@ const GameCard: React.FC<GameCardProps> = ({
 
         {/* Selection Indicator */}
         {isSelected && (
-          <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg animate-bounce">
+          <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center shadow-[var(--glow-primary)] animate-pulse" style={{ background: 'var(--primary-orange)' }}>
             <span className="text-black text-sm font-bold">✓</span>
           </div>
         )}

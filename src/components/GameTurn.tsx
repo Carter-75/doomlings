@@ -92,8 +92,8 @@ const GameTurn: React.FC<GameTurnProps> = ({
                       style={{
                         width: '100%',
                         maxWidth: '200px',
-                        borderRadius: '8px',
-                        boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+                        borderRadius: 'var(--border-radius)',
+                        boxShadow: 'var(--shadow-primary)',
                         objectFit: 'contain'
                       }}
                     />
@@ -103,15 +103,15 @@ const GameTurn: React.FC<GameTurnProps> = ({
                     <div style={{
                       width: '200px',
                       height: '280px',
-                      borderRadius: '8px',
-                      background: 'linear-gradient(135deg, #d35400, #f39c12)',
+                      borderRadius: 'var(--border-radius)',
+                      background: 'linear-gradient(135deg, var(--light-bg), var(--primary-orange))',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      color: 'white',
+                      color: 'var(--text-primary)',
                       fontSize: '48px',
                       fontWeight: 'bold',
-                      boxShadow: '0 4px 8px rgba(0,0,0,0.3)'
+                      boxShadow: 'var(--shadow-primary)'
                     }}>
                       ?
                     </div>

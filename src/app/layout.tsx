@@ -1,5 +1,5 @@
 import "./globals.css";
-import { DM_Sans } from "next/font/google";
+import { Outfit } from "next/font/google";
 import { IframeProvider } from "@/lib/iframe-context";
 import { IframeWrapper } from "@/components/iframe-wrapper";
 import { BackHandler } from "@/components/back-handler";
@@ -8,7 +8,7 @@ import { ThemeProvider } from "@/lib/theme-context";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 
-const dmSans = DM_Sans({ subsets: ["latin"] });
+const outfitFont = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata = {
   title: "Doomlings Companion",
@@ -54,7 +54,7 @@ export default function RootLayout({
           />
         )}
       </head>
-      <body className={dmSans.className}>
+      <body className={`${outfitFont.className} ${outfitFont.variable}`}>
         <ThemeProvider>
           <IframeProvider>
             <AdProvider>

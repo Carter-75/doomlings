@@ -51,10 +51,10 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({ children, onClick, clas
             lavaParticle.style.left = `${x}px`;
             lavaParticle.style.top = `${y}px`;
             
-            const colors = ['#ff4500', '#ff7800', '#ff9a00', '#ffbf00', '#ff3300'];
+            const colors = ['var(--primary-orange)', 'var(--accent-orange)', 'var(--primary-red)', 'var(--text-primary)', 'var(--accent-red)'];
             const color = colors[Math.floor(Math.random() * colors.length)];
             lavaParticle.style.backgroundColor = color;
-            lavaParticle.style.boxShadow = `0 0 ${6 + Math.random() * 10}px 2px ${color}`;
+            lavaParticle.style.boxShadow = `0 0 ${6 + Math.random() * 10}px 2px var(--primary-orange)`;
             
             button.appendChild(lavaParticle);
             
@@ -94,9 +94,8 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({ children, onClick, clas
             ember.style.width = `${length}px`;
             ember.style.transform = `rotate(${angle}rad)`;
             
-            const hue = 20 + Math.random() * 40;
-            ember.style.background = `linear-gradient(90deg, rgba(255,${Math.floor(80 + Math.random() * 100)},0,1), rgba(255,50,0,0))`;
-            ember.style.boxShadow = `0 0 8px 2px hsla(${hue}, 100%, 65%, 0.7)`;
+            ember.style.background = `linear-gradient(90deg, var(--primary-orange), transparent)`;
+            ember.style.boxShadow = `0 0 8px 2px var(--glow-primary)`;
             
             button.appendChild(ember);
             
@@ -126,14 +125,8 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({ children, onClick, clas
             feather.style.left = rect.width / 2 + 'px';
             feather.style.top = rect.height / 2 + 'px';
             
-            const hue = Math.random() > 0.7 ? 
-                        35 + Math.floor(Math.random() * 15) :
-                        5 + Math.floor(Math.random() * 25);
-            const saturation = 90 + Math.floor(Math.random() * 10);
-            const lightness = 45 + Math.floor(Math.random() * 15);
-            
-            feather.style.backgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-            feather.style.boxShadow = `0 0 8px 3px hsla(${hue}, 100%, ${lightness + 10}%, 0.7)`;
+            feather.style.backgroundColor = Math.random() > 0.5 ? 'var(--primary-orange)' : 'var(--accent-orange)';
+            feather.style.boxShadow = `0 0 8px 1px var(--glow-primary)`;
             
             const size = 4 + Math.random() * 6;
             feather.style.width = size + 'px';

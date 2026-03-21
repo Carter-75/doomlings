@@ -146,13 +146,14 @@ const DoomlingGameInterface: React.FC<GameProps> = ({
   };
 
   const getCardColorClass = (color?: string) => {
+    const base = 'border backdrop-blur-md';
     switch (color) {
-      case 'red': return 'border-red-400 bg-gradient-to-br from-red-600/80 to-red-800/90 shadow-red-500/60';
-      case 'green': return 'border-green-400 bg-gradient-to-br from-green-600/80 to-green-800/90 shadow-green-500/60';
-      case 'blue': return 'border-blue-400 bg-gradient-to-br from-blue-600/80 to-blue-800/90 shadow-blue-500/60';
-      case 'purple': return 'border-purple-400 bg-gradient-to-br from-purple-600/80 to-purple-800/90 shadow-purple-500/60';
-      case 'colorless': return 'border-gray-300 bg-gradient-to-br from-gray-600/80 to-gray-800/90 shadow-gray-400/60';
-      default: return 'border-yellow-400 bg-gradient-to-br from-yellow-600/80 to-yellow-800/90 shadow-yellow-500/60';
+      case 'red': return `${base} border-[var(--primary-red)] bg-[var(--light-bg)] shadow-[var(--shadow-primary)]`;
+      case 'green': return `${base} border-[var(--success)] bg-[var(--light-bg)] shadow-md`;
+      case 'blue': return `${base} border-[var(--info)] bg-[var(--light-bg)] shadow-md`;
+      case 'purple': return `${base} border-[var(--primary-red)] bg-[var(--light-bg)] shadow-[var(--shadow-primary)]`;
+      case 'colorless': return `${base} border-gray-500 bg-[var(--light-bg)] shadow-sm`;
+      default: return `${base} border-[var(--warning)] bg-[var(--light-bg)] shadow-[var(--glow-primary)]`;
     }
   };
 
@@ -287,19 +288,19 @@ const DoomlingGameInterface: React.FC<GameProps> = ({
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden" style={{ background: 'var(--darker-bg)' }}>
       
-      {/* Game Table Background */}
+      {/* Sleek Game Table Background */}
       <div 
-        className="absolute inset-0 opacity-20"
+        className="absolute inset-0 opacity-10"
         style={{
-          backgroundImage: 'radial-gradient(ellipse at center, rgba(139, 69, 19, 0.3) 0%, transparent 70%), url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%239C92AC" fill-opacity="0.1"%3E%3Cpath d="m36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
-          backgroundSize: '60px 60px'
+          backgroundImage: 'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)',
+          backgroundSize: '40px 40px'
         }}
       />
 
-      {/* Table Felt Effect */}
-      <div className="absolute inset-0 bg-gradient-radial from-green-800/20 via-green-900/30 to-slate-900/50 opacity-70" />
+      {/* Subtle Glow Effect */}
+      <div className="absolute inset-0 opacity-40" style={{ background: 'radial-gradient(circle at 50% 50%, var(--primary-red) 0%, transparent 60%)', filter: 'blur(100px)' }} />
 
       {/* Top Header */}
       <div className="relative z-10 bg-gradient-to-r from-black/60 via-purple-900/40 to-black/60 backdrop-blur-xl border-b border-white/20">
@@ -368,20 +369,11 @@ const DoomlingGameInterface: React.FC<GameProps> = ({
         {/* Main Game Table - Top Down View */}
         <div className="relative max-w-7xl mx-auto">
           
-          {/* Game Table Surface */}
-          <div className="relative bg-gradient-to-br from-green-800/40 to-green-900/60 rounded-[3rem] border-8 border-amber-900/60 shadow-2xl backdrop-blur-md overflow-hidden">
+          {/* Sleek Dark Table Surface */}
+          <div className="relative rounded-[2rem] border border-[rgba(255,255,255,0.05)] shadow-[var(--shadow-card)] backdrop-blur-xl overflow-hidden" style={{ background: 'var(--light-bg)' }}>
             
-            {/* Table Texture */}
-            <div className="absolute inset-0 opacity-30">
-              <div className="w-full h-full bg-gradient-radial from-green-700/30 via-green-800/20 to-green-900/40" />
-              <div 
-                className="absolute inset-0 opacity-20"
-                style={{
-                  backgroundImage: 'url("data:image/svg+xml,%3Csvg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%23000" fill-opacity="0.1" fill-rule="evenodd"%3E%3Cpath d="M0 0h20v20H0V0zm10 0h20v20H10V0z"/%3E%3C/g%3E%3C/svg%3E")',
-                  backgroundSize: '40px 40px'
-                }}
-              />
-            </div>
+            {/* Subtle Inner Glow */}
+            <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ background: 'radial-gradient(circle at 50% 50%, var(--primary-orange) 0%, transparent 70%)' }} />
 
             <div className="relative z-10 p-8 min-h-[600px]">
               
