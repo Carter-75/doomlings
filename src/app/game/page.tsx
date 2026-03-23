@@ -46,6 +46,19 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   { title: '🎉 You\'re all set!', message: 'That\'s the whole app! Use the ? Tutorial button in the nav any time you need a refresher. Have fun playing DOOMlings!', highlightId: null },
 ];
 
+type GuidedSetupStep = 'none' | 'ageDeck' | 'mol' | 'trinkets' | 'complete';
+
+type GameModalState = {
+  isOpen: boolean;
+  title: string;
+  message: string;
+  type?: 'info' | 'warning' | 'error' | 'success';
+  onConfirm?: () => void;
+  onCancel?: () => void;
+  confirmText?: string;
+  cancelText?: string;
+};
+
 export default function GamePage() {
   const router = useRouter();
   const { setAdsSuppressed } = useAds();
@@ -54,7 +67,8 @@ export default function GamePage() {
   const [activeSection, setActiveSection] = useState('setup');
   const [viewingPlayer, setViewingPlayer] = useState<string | null>(null);
   const [tutorialStep, setTutorialStep] = useState<number | null>(null);
-  const [modal, setModal] = useState<{ isOpen: boolean; title: string; message: string; type?: 'info' | 'warning' | 'error' | 'success'; onConfirm?: () => void } | null>(null);
+  const [modal, setModal] = useState<GameModalState | null>(null);
+  const [guidedSetupStep, setGuidedSetupStep] = useState<GuidedSetupStep>('none');
   const [normalAgeCount, setNormalAgeCount] = useState(9);
   const [merchantAgeCount, setMerchantAgeCount] = useState(0);
   const [catastropheAgeCount, setCatastropheAgeCount] = useState(3);
@@ -123,9 +137,75 @@ export default function GamePage() {
   }, []);
 
   // Handlers
-  const handleStartGame = () => {
+  const startGuidedSetupFlow = () => {
     updateState({ isGameStarted: true });
+    setGuidedSetupStep('ageDeck');
     setActiveSection('ageSetup');
+  };
+
+  const createSyncRoomForNewGame = async () => {
+    const hostName = state.playerNames[0]?.trim() || 'Player 1';
+
+    try {
+      await socketManager.connect();
+
+      if (!socketManager.getPlayerId()) {
+        await socketManager.registerPlayer(hostName);
+      }
+
+      await socketManager.createRoom({
+        roomName: `${hostName}'s Room`,
+        maxPlayers: Math.max(2, state.playerCount),
+        isPrivate: false,
+        gameSettings: {
+          normalAges: normalAgeCount,
+          merchantAges: merchantAgeCount,
+          catastropheAges: catastropheAgeCount,
+          includeFinalCatastrophe: finalCatastropheMode,
+        }
+      });
+    } catch (error) {
+      console.error('Failed to create sync room on start', error);
+      setModal({
+        isOpen: true,
+        title: 'Room Not Created',
+        message: 'Could not create a sync room right now. You can still continue setup and open Sync later.',
+        type: 'warning'
+      });
+    }
+  };
+
+  const handleStartGame = () => {
+    const existingRoom = socketManager.getCurrentRoom();
+    const hasStoredRoomId = typeof window !== 'undefined' && Boolean(localStorage.getItem('doomlings_roomId'));
+    const alreadySynced = Boolean(existingRoom?.id || existingRoom?.roomId || hasStoredRoomId);
+
+    if (alreadySynced) {
+      startGuidedSetupFlow();
+      return;
+    }
+
+    if (state.playerCount < 2) {
+      startGuidedSetupFlow();
+      return;
+    }
+
+    setModal({
+      isOpen: true,
+      title: 'Create Sync Room?',
+      message: 'You have 2+ players selected. Create a multiplayer sync room now so everyone can stay in sync?',
+      type: 'info',
+      confirmText: 'Yes, Create Room',
+      cancelText: 'No, Continue',
+      onCancel: () => {
+        startGuidedSetupFlow();
+      },
+      onConfirm: async () => {
+        setModal(null);
+        await createSyncRoomForNewGame();
+        startGuidedSetupFlow();
+      }
+    });
   };
 
   const handleGenerateDeck = (options: { includeBirth: boolean; merchantAges: number; includeFinalCatastrophe: boolean }) => {
@@ -170,6 +250,11 @@ export default function GamePage() {
 
     updateState({ ageDeck: deck, currentAgeIndex: deck.length > 0 ? 0 : -1 });
     setModal(null);
+
+    if (guidedSetupStep === 'ageDeck') {
+      setGuidedSetupStep('mol');
+      setActiveSection('meaningOfLife');
+    }
   };
 
   const handleRollChallenge = () => {
@@ -389,14 +474,20 @@ export default function GamePage() {
           <div className="game-nav-row main-row">
             <AnimatedButton id="nav-setup" onClick={() => setActiveSection('setup')} className={activeSection === 'setup' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Setup</AnimatedButton>
             <AnimatedButton id="nav-game-turn" onClick={() => setActiveSection('gameDashboard')} className={activeSection === 'gameDashboard' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Dashboard</AnimatedButton>
+          </div>
+
+          <div className="game-nav-row challenges-row">
             <AnimatedButton id="nav-challenges" onClick={() => setActiveSection('challenges')} className={activeSection === 'challenges' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Challenges</AnimatedButton>
+            <AnimatedButton id="nav-dominants" onClick={() => setActiveSection('dominants')} className={activeSection === 'dominants' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Dominants</AnimatedButton>
+          </div>
+
+          <div className="game-nav-row setup-flow-row">
             <AnimatedButton id="nav-age-setup" onClick={() => setActiveSection('ageSetup')} className={activeSection === 'ageSetup' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Age Deck</AnimatedButton>
             <AnimatedButton id="nav-mol" onClick={() => setActiveSection('meaningOfLife')} className={activeSection === 'meaningOfLife' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>MoL</AnimatedButton>
+            <AnimatedButton id="nav-trinkets" onClick={() => setActiveSection('trinkets')} className={activeSection === 'trinkets' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Trinkets</AnimatedButton>
           </div>
 
           <div className="game-nav-row secondary-row">
-            <AnimatedButton id="nav-trinkets" onClick={() => setActiveSection('trinkets')} className={activeSection === 'trinkets' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Trinkets</AnimatedButton>
-            <AnimatedButton id="nav-dominants" onClick={() => setActiveSection('dominants')} className={activeSection === 'dominants' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Dominants</AnimatedButton>
             <AnimatedButton id="nav-multiplayer" onClick={() => setActiveSection('multiplayer')} className={activeSection === 'multiplayer' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Sync</AnimatedButton>
             <AnimatedButton onClick={() => setTutorialStep(0)} className="is-info nav-help-btn">Tutorial ?</AnimatedButton>
           </div>
@@ -404,6 +495,10 @@ export default function GamePage() {
       </nav>
 
       <style jsx>{`
+        .game-page-container {
+          padding-top: calc(env(safe-area-inset-top, 0px) + 10px);
+        }
+
         .game-nav {
           padding: 16px;
           border: 1px solid rgba(var(--secondary-rgb), 0.24);
@@ -428,6 +523,16 @@ export default function GamePage() {
         }
 
         .main-row {
+          padding-bottom: 2px;
+          border-bottom: 1px solid rgba(var(--secondary-rgb), 0.16);
+        }
+
+        .challenges-row {
+          padding-top: 8px;
+          padding-bottom: 2px;
+        }
+
+        .setup-flow-row {
           padding-bottom: 2px;
         }
 
@@ -472,6 +577,10 @@ export default function GamePage() {
         }
 
         @media (max-width: 768px) {
+          .game-page-container {
+            padding-top: calc(env(safe-area-inset-top, 0px) + 6px);
+          }
+
           .game-nav {
             padding: 10px;
           }
@@ -627,7 +736,22 @@ export default function GamePage() {
 
                 updateState({ revealedMeanings: revealed });
             }}
-            onChooseMeaning={(p, m) => updateState(prev => ({ selectedMeanings: { ...prev.selectedMeanings, [p]: m } }))}
+            onChooseMeaning={(p, m) => {
+              const activePlayers = state.playerNames
+                .slice(0, state.playerCount)
+                .map((name, index) => name.trim() || `Player ${index + 1}`);
+              const nextSelected = { ...state.selectedMeanings, [p]: m };
+
+              updateState({ selectedMeanings: nextSelected });
+
+              if (guidedSetupStep === 'mol') {
+                const everyoneSelected = activePlayers.length > 0 && activePlayers.every((playerKey) => Boolean(nextSelected[playerKey]));
+                if (everyoneSelected) {
+                  setGuidedSetupStep('trinkets');
+                  setActiveSection('trinkets');
+                }
+              }
+            }}
             onToggleViewPlayer={p => setViewingPlayer(viewingPlayer === p ? null : p)}
             viewingPlayer={viewingPlayer}
           />
@@ -652,6 +776,11 @@ export default function GamePage() {
                 pocketedTrinkets: {},
                 trinketsPocketedThisTurn: {}
               });
+
+              if (guidedSetupStep === 'trinkets') {
+                setGuidedSetupStep('complete');
+                setActiveSection('gameDashboard');
+              }
             }}
             onTrinketPocket={handleTrinketPocket}
             onTrinketAdd={(p, _t) => handleTrinketAdd(p)}
@@ -687,14 +816,27 @@ export default function GamePage() {
       {modal && (
         <Modal
           isOpen={modal.isOpen}
-          onClose={() => setModal(null)}
+          onClose={() => {
+            const cancelHandler = modal.onCancel;
+            setModal(null);
+            cancelHandler?.();
+          }}
           title={modal.title}
           type={modal.type}
           actions={
             modal.onConfirm ? (
               <>
-                <AnimatedButton onClick={() => setModal(null)} className="is-light">Cancel</AnimatedButton>
-                <AnimatedButton onClick={modal.onConfirm} className={`is-${modal.type || 'primary'}`}>Confirm</AnimatedButton>
+                <AnimatedButton
+                  onClick={() => {
+                    const cancelHandler = modal.onCancel;
+                    setModal(null);
+                    cancelHandler?.();
+                  }}
+                  className="is-light"
+                >
+                  {modal.cancelText || 'Cancel'}
+                </AnimatedButton>
+                <AnimatedButton onClick={modal.onConfirm} className={`is-${modal.type || 'primary'}`}>{modal.confirmText || 'Confirm'}</AnimatedButton>
               </>
             ) : null
           }

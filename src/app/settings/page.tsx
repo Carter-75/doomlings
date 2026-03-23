@@ -83,7 +83,7 @@ const SettingsPage = () => {
             isOpen: true,
             title: 'Scale Applied',
             message: `UI scale set to ${scale}%`,
-            type: 'success'
+            type: 'info'
         });
     };
 

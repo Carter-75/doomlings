@@ -14,6 +14,11 @@ const outfitFont = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 export const metadata = {
   title: "Doomlings Companion",
   description: "A companion app for the Doomlings board game",
+  icons: {
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
 };
 
 export const viewport = {

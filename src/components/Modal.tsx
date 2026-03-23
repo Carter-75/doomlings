@@ -61,7 +61,7 @@ const Modal: React.FC<ModalProps> = ({
         </div>
         <div className="modal-footer">
           {actions || (
-            <AnimatedButton onClick={onClose} className="is-info">
+            <AnimatedButton onClick={onClose} className="is-primary">
               Close
             </AnimatedButton>
           )}
@@ -75,7 +75,7 @@ const Modal: React.FC<ModalProps> = ({
           left: 0;
           right: 0;
           bottom: 0;
-          background: rgba(0, 0, 0, 0.8);
+          background: radial-gradient(circle at 50% 15%, rgba(var(--primary-rgb), 0.12), rgba(0, 0, 0, 0.78));
           backdrop-filter: blur(4px);
           display: flex;
           align-items: center;
@@ -85,18 +85,20 @@ const Modal: React.FC<ModalProps> = ({
         }
 
         .modal-content {
-          background: linear-gradient(135deg, var(--darker-bg), var(--dark-bg));
+          background: linear-gradient(145deg, rgba(var(--primary-rgb), 0.12), var(--darker-bg) 38%, var(--dark-bg));
+          border: 1px solid rgba(var(--secondary-rgb), 0.28);
           border-radius: var(--border-radius);
           width: 100%;
           max-width: 500px;
-          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 0, 0, 0.3);
+          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(var(--primary-rgb), 0.18), 0 0 24px rgba(var(--primary-rgb), 0.18);
           overflow: hidden;
           position: relative;
         }
 
         .modal-header {
           padding: 20px 24px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          border-bottom: 1px solid rgba(var(--secondary-rgb), 0.2);
+          background: linear-gradient(180deg, rgba(var(--primary-rgb), 0.1), rgba(255, 255, 255, 0.01));
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -111,7 +113,7 @@ const Modal: React.FC<ModalProps> = ({
         .modal-close-btn {
           background: transparent;
           border: none;
-          color: var(--text-muted);
+          color: var(--text-secondary);
           font-size: 1.5rem;
           cursor: pointer;
           transition: color 0.2s;
@@ -132,11 +134,11 @@ const Modal: React.FC<ModalProps> = ({
 
         .modal-footer {
           padding: 16px 24px;
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          border-top: 1px solid rgba(var(--secondary-rgb), 0.2);
           display: flex;
           justify-content: flex-end;
           gap: 12px;
-          background: rgba(0, 0, 0, 0.2);
+          background: linear-gradient(180deg, rgba(0, 0, 0, 0.12), rgba(var(--primary-rgb), 0.08));
         }
 
         .animate-pop-in {
