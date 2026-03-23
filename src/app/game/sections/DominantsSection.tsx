@@ -9,8 +9,11 @@ interface DominantsSectionProps {
   playerCount: number;
   dominants: any[];
   dominantState: { [key: string]: { assignedTo: string; selectedTier: string | null } };
+  dominantSearchTerm: string;
+  dominantResetTrigger: number;
   onDominantChange: (name: string, updates: { assignedTo?: string; selectedTier?: string | null }) => void;
   onResetDominants: () => void;
+  onSearchChange: (term: string) => void;
 }
 
 export default function DominantsSection({
@@ -18,15 +21,17 @@ export default function DominantsSection({
   playerCount,
   dominants,
   dominantState,
+  dominantSearchTerm,
+  dominantResetTrigger,
   onDominantChange,
-  onResetDominants
+  onResetDominants,
+  onSearchChange,
 }: DominantsSectionProps) {
-  const [searchTerm, setSearchTerm] = React.useState('');
-  const players = playerNames.slice(0, playerCount).filter(n => n.trim());
-
-  const filteredDominants = dominants.filter(d => 
-    d.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const players = playerNames
+    .slice(0, playerCount)
+    .map((name, index) => name.trim() || `Player ${index + 1}`);
+  // dominants are already pre-filtered by parent
+  const filteredDominants = dominants;
 
   return (
     <div className="dominants-section animate-fade-in">
@@ -40,8 +45,8 @@ export default function DominantsSection({
               className="input premium-input"
               type="text"
               placeholder="Start typing a card name..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              value={dominantSearchTerm}
+              onChange={(e) => onSearchChange(e.target.value)}
             />
             <span className="icon is-left opacity-30">🔍</span>
           </div>
@@ -61,7 +66,8 @@ export default function DominantsSection({
                   assignedTo={state.assignedTo}
                   selectedTier={state.selectedTier}
                   onChange={(updates) => onDominantChange(dominant.name, updates)}
-                  searchTerm={searchTerm}
+                  searchTerm={dominantSearchTerm}
+                  resetTrigger={dominantResetTrigger}
                 />
               </div>
             </div>
@@ -71,7 +77,7 @@ export default function DominantsSection({
 
       {filteredDominants.length === 0 && (
         <div className="has-text-centered py-12 box glass mt-4">
-          <p className="text-muted is-size-5">No dominants found matching "{searchTerm}"</p>
+          <p className="text-muted is-size-5">No dominants found matching "{dominantSearchTerm}"</p>
         </div>
       )}
 

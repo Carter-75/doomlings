@@ -54,6 +54,7 @@ export function useSync(
       revealedMeanings: state.revealedMeanings,
       trinketState: state.trinketState,
       pocketedTrinkets: state.pocketedTrinkets,
+      trinketsPocketedThisTurn: state.trinketsPocketedThisTurn,
       dominantState: state.dominantState,
     };
 

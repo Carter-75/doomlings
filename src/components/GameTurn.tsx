@@ -3,6 +3,8 @@ import AnimatedButton from './AnimatedButton';
 import TrinketCard from './TrinketCard';
 import { Rule, Age, Trinket, TrinketState } from '../lib/types';
 import { useCardImage } from '../hooks/useCardImage';
+import { isPocketDisabledForAge } from '@/lib/trinketRules';
+import { useTheme } from '@/lib/theme-context';
 
 interface GameTurnProps {
   playerCount: number;
@@ -10,6 +12,10 @@ interface GameTurnProps {
   currentRule: any | null;
   challengePlayer: string | null;
   currentAge: any | null;
+  currentAgeNumber: number;
+  totalAges: number;
+  nextCatastropheAgeNumber: number | null;
+  agesUntilNextCatastrophe: number | null;
   isCatastrophe: boolean;
   isLastAge: boolean;
   trinketState: { deck: any[], playerTrinkets: { [key: string]: any[] } };
@@ -28,6 +34,10 @@ const GameTurn: React.FC<GameTurnProps> = ({
   currentRule,
   challengePlayer,
   currentAge,
+  currentAgeNumber,
+  totalAges,
+  nextCatastropheAgeNumber,
+  agesUntilNextCatastrophe,
   isCatastrophe,
   isLastAge,
   trinketState,
@@ -39,9 +49,32 @@ const GameTurn: React.FC<GameTurnProps> = ({
   onTrinketPocket,
   onResetAll
 }) => {
+  const { cardArtPreference } = useTheme();
   const { getCardImage } = useCardImage();
   const cardArtUrl = currentAge ? getCardImage(currentAge.name) : null;
   const [imgError, setImgError] = React.useState(false);
+  const [showPocketed, setShowPocketed] = React.useState(false);
+  const parsedChallenge = React.useMemo(() => {
+    if (!currentRule) {
+      return null;
+    }
+
+    if (typeof currentRule === 'string') {
+      const [rawTitle, ...rest] = currentRule.split(':');
+      const cleanedTitle = (rawTitle || '').replace(/^\s*\d+\.\s*/, '').trim();
+      const description = rest.join(':').trim();
+
+      return {
+        title: cleanedTitle || currentRule,
+        description: description || currentRule,
+      };
+    }
+
+    return {
+      title: currentRule.title || currentRule.name || currentRule.challenge || 'Challenge',
+      description: currentRule.description || currentRule.rule || currentRule.text || '',
+    };
+  }, [currentRule]);
 
   React.useEffect(() => {
     setImgError(false);
@@ -70,13 +103,17 @@ const GameTurn: React.FC<GameTurnProps> = ({
                    border: isCatastrophe ? '2px solid var(--error)' : '2px dashed rgba(255, 255, 255, 0.1)',
                    background: isCatastrophe ? 'rgba(230, 57, 70, 0.05)' : 'rgba(255, 255, 255, 0.02)'
                  }}>
-              {currentRule ? (
+              {parsedChallenge ? (
                 <div className="animate-fade-in">
                   {challengePlayer && (
                     <div className="tag is-warning is-medium mb-4 px-4 font-bold shadow-sm">FOR: {challengePlayer}</div>
                   )}
-                  <h4 className="title is-4 mb-3" style={{ color: isCatastrophe ? 'var(--error)' : 'var(--primary-orange)', fontWeight: 800 }}>{currentRule.title}</h4>
-                  <p className="is-size-6 text-muted font-italic">{currentRule.description}</p>
+                  <h4 className="title is-4 mb-3" style={{ color: isCatastrophe ? 'var(--error)' : 'var(--primary-orange)', fontWeight: 800 }}>
+                    {parsedChallenge.title}
+                  </h4>
+                  {parsedChallenge.description && (
+                    <p className="is-size-6 text-muted font-italic">{parsedChallenge.description}</p>
+                  )}
                 </div>
               ) : (
                 <div className="py-8 opacity-50">
@@ -90,47 +127,79 @@ const GameTurn: React.FC<GameTurnProps> = ({
 
         <div className="column">
           <div className={`age-display-container box glass h-full p-6 border-1 border-white/5 shadow-xl ${isCatastrophe ? 'catastrophe-age' : ''}`}>
-            <h2 className="title is-4 has-text-centered text-secondary mb-6 pl-2 border-b border-white/10 pb-3">📅 Current Age</h2>
+            <h2 className="title is-4 has-text-centered text-secondary mb-3 pl-2 border-b border-white/10 pb-3">
+              📅 Current Age ({currentAgeNumber}/{totalAges})
+            </h2>
+            {!isCatastrophe && nextCatastropheAgeNumber !== null && agesUntilNextCatastrophe !== null && (
+              <div className="has-text-centered mb-4">
+                <span className="tag is-warning is-light is-rounded px-4" style={{ border: '1px solid rgba(252, 163, 17, 0.35)' }}>
+                  ⚠️ Catastrophe at Age {nextCatastropheAgeNumber} {agesUntilNextCatastrophe > 0 ? `(in ${agesUntilNextCatastrophe} age${agesUntilNextCatastrophe === 1 ? '' : 's'})` : ''}
+                </span>
+              </div>
+            )}
             {currentAge ? (
               <div className="animate-fade-in has-text-centered">
+                {isCatastrophe && (
+                  <div className="tag is-danger is-medium mb-3 px-6 font-black uppercase ring-2 ring-danger">
+                    🐱 Catastrophe Is Active Now
+                  </div>
+                )}
                 {isLastAge && (
                   <div className="tag is-danger is-medium mb-4 px-6 font-black uppercase ring-2 ring-danger animate-pulse">
                     {isCatastrophe ? 'Final Catastrophe!' : 'The Last Age!'}
                   </div>
                 )}
                 
-                <div className="card-art-container mb-6 is-flex is-justify-content-center">
-                  {cardArtUrl && !imgError ? (
-                    <div className="card-premium shadow-2xl hover-scale transition-all">
-                      <img
-                        src={cardArtUrl}
-                        alt={currentAge.name}
-                        onError={() => setImgError(true)}
-                        className="rounded-lg"
-                        style={{
-                          width: '100%',
-                          maxWidth: '220px',
-                          display: 'block'
-                        }}
-                      />
-                    </div>
-                  ) : (
-                    <div className="placeholder-card glass-light shadow-2xl hover-scale transition-all" 
-                         style={{ 
-                           width: '200px', 
-                           height: '280px', 
-                           borderRadius: '12px',
-                           border: '2px solid' + (isCatastrophe ? ' var(--error)' : ' var(--primary-orange)'),
-                           background: isCatastrophe ? 'rgba(230, 57, 70, 0.2)' : 'rgba(252, 163, 17, 0.1)',
-                           display: 'flex',
-                           alignItems: 'center',
-                           justifyContent: 'center',
-                           fontSize: '64px'
-                         }}>
-                      {isCatastrophe ? '🔥' : '🌱'}
-                    </div>
-                  )}
-                </div>
+                {cardArtPreference !== 'none' && (
+                  <div className="card-art-container mb-6 is-flex is-justify-content-center">
+                    {cardArtPreference === 'official' ? (
+                      cardArtUrl && !imgError ? (
+                        <div className="card-premium shadow-2xl hover-scale transition-all">
+                          <img
+                            src={cardArtUrl}
+                            alt={currentAge.name}
+                            onError={() => setImgError(true)}
+                            className="rounded-lg"
+                            style={{
+                              width: '100%',
+                              maxWidth: '220px',
+                              display: 'block'
+                            }}
+                          />
+                        </div>
+                      ) : (
+                        <div className="placeholder-card glass-light shadow-2xl transition-all"
+                             style={{
+                               width: '200px',
+                               height: '280px',
+                               borderRadius: '12px',
+                               border: '2px solid' + (isCatastrophe ? ' var(--error)' : ' var(--primary-orange)'),
+                               display: 'flex',
+                               alignItems: 'center',
+                               justifyContent: 'center',
+                               fontSize: '0.85rem',
+                               color: 'rgba(255,255,255,0.65)'
+                             }}>
+                          No game art found
+                        </div>
+                      )
+                    ) : (
+                      <div className="card-premium shadow-2xl hover-scale transition-all">
+                        <img
+                          src={isCatastrophe ? '/assets/placeholders/catastrophe.png' : '/assets/placeholders/age.png'}
+                          alt={isCatastrophe ? 'AI catastrophe age art' : 'AI age art'}
+                          className="rounded-lg"
+                          style={{
+                            width: '100%',
+                            maxWidth: '220px',
+                            display: 'block',
+                            objectFit: 'cover'
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <h4 className="title is-4 mb-2" style={{ color: isCatastrophe ? 'var(--error)' : 'var(--primary-orange)', fontWeight: 800 }}>{currentAge.name}</h4>
                 <p className="is-size-6 text-muted italic px-4">{currentAge.description}</p>
@@ -146,10 +215,28 @@ const GameTurn: React.FC<GameTurnProps> = ({
       </div>
 
       <div id="trinkets-section" className="player-trinkets-main-container mt-12 animate-fade-in">
-        <h2 className="section-title">Player Trinkets</h2>
+        <div className="is-flex is-align-items-center is-justify-content-space-between is-flex-wrap-wrap gap-3 mb-4">
+          <h2 className="section-title m-0">Player Trinkets</h2>
+          <button
+            onClick={() => setShowPocketed((prev) => !prev)}
+            style={{
+              background: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: 10,
+              color: 'rgba(255,255,255,0.6)',
+              padding: '6px 14px',
+              cursor: 'pointer',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              transition: 'all 0.2s',
+            }}
+          >
+            {showPocketed ? '🙈 Hide Pocketed' : '💎 Show Pocketed'}
+          </button>
+        </div>
         <div className="columns is-multiline mt-4">
-          {playerNames.slice(0, playerCount).filter(name => name.trim() !== '').map((playerName, index) => {
-            const pName = playerName.trim();
+          {playerNames.slice(0, playerCount).map((playerName, index) => {
+            const pName = playerName.trim() || `Player ${index + 1}`;
             const currentTrinkets = trinketState.playerTrinkets[pName] || [];
             const pocketed = pocketedTrinkets[pName] || [];
             const totalPoints = pocketed.reduce((sum, t) => sum + t.points, 0);
@@ -174,8 +261,7 @@ const GameTurn: React.FC<GameTurnProps> = ({
                         onAdd={() => onTrinketAdd(pName, trinket)}
                         onRemove={() => onTrinketRemove(pName, trinket)}
                         onPocket={() => onTrinketPocket(pName, trinket)}
-                        isPocketDisabled={currentTrinkets.length !== 1 || trinketsPocketedThisTurn[pName]}
-                        isFogged={trinketsPocketedThisTurn[pName]}
+                        isPocketDisabled={isPocketDisabledForAge(currentTrinkets.length, Boolean(trinketsPocketedThisTurn[pName]))}
                       />
                     ))}
                     {currentTrinkets.length === 0 && (
@@ -185,7 +271,7 @@ const GameTurn: React.FC<GameTurnProps> = ({
                     )}
                   </div>
 
-                  {pocketed.length > 0 && (
+                  {showPocketed && pocketed.length > 0 && (
                     <div className="mt-4 pt-4 border-t border-white/5">
                       <div className="is-flex is-flex-wrap-wrap gap-1">
                         {pocketed.map((t, idx) => (
@@ -201,14 +287,6 @@ const GameTurn: React.FC<GameTurnProps> = ({
             )
           })}
         </div>
-      </div>
-
-      <div className="reset-control-container box glass mt-12 p-8 has-text-centered border-dashed border-2 border-error/20">
-        <p className="text-muted mb-4 is-size-7 uppercase letter-spacing-2">Danger Zone</p>
-        <AnimatedButton id="reset-all-btn" className="is-danger is-outlined py-4 px-12" onClick={onResetAll}>
-          ⚠️ Reset All App Data
-        </AnimatedButton>
-        <p className="mt-4 text-error is-size-7 italic opacity-70">This will clear all game state and local names.</p>
       </div>
 
       <style jsx>{`

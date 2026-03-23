@@ -38,7 +38,7 @@ export default function GameSetupSection({
           />
         </div>
         
-        <div className="player-count-badges is-flex is-justify-content-center gap-4 py-2">
+        <div className="player-count-badges mb-2" style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', justifyContent: 'center', gap: '10px' }}>
           {[1, 2, 3, 4, 5, 6].map(num => (
             <button 
               key={num} 
@@ -84,18 +84,21 @@ export default function GameSetupSection({
 
       <style jsx>{`
         .player-count-badge {
-          width: 44px;
-          height: 44px;
+          width: 42px;
+          height: 42px;
+          min-width: 42px;
           border-radius: 12px;
           background: rgba(255, 255, 255, 0.05);
           border: 1px solid rgba(255, 255, 255, 0.1);
           color: var(--text-muted);
           font-weight: 700;
+          font-size: 1rem;
           cursor: pointer;
           transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
           display: flex;
           align-items: center;
           justify-content: center;
+          flex-shrink: 0;
         }
 
         .player-count-badge:hover:not(:disabled) {

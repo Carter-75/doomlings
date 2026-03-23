@@ -1,5 +1,4 @@
 'use client';
-
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -56,6 +55,17 @@ export default function GamePage() {
   const [viewingPlayer, setViewingPlayer] = useState<string | null>(null);
   const [tutorialStep, setTutorialStep] = useState<number | null>(null);
   const [modal, setModal] = useState<{ isOpen: boolean; title: string; message: string; type?: 'info' | 'warning' | 'error' | 'success'; onConfirm?: () => void } | null>(null);
+  const [normalAgeCount, setNormalAgeCount] = useState(9);
+  const [merchantAgeCount, setMerchantAgeCount] = useState(0);
+  const [catastropheAgeCount, setCatastropheAgeCount] = useState(3);
+  const [finalCatastropheMode, setFinalCatastropheMode] = useState(true);
+  const [ageMultiplierMode, setAgeMultiplierMode] = useState<'auto' | 'manual'>('auto');
+  const [manualAgeMultiplier, setManualAgeMultiplier] = useState(1);
+  const [showCatastropheList, setShowCatastropheList] = useState(false);
+  const [catastropheMode, setCatastropheMode] = useState(false);
+  const [manualCatastropheOverride, setManualCatastropheOverride] = useState(false);
+  const [dominantSearchTerm, setDominantSearchTerm] = useState('');
+  const [dominantResetTrigger, setDominantResetTrigger] = useState(0);
 
   const socketManager = GameSocketManager.getInstance();
   const room = socketManager.getCurrentRoom();
@@ -133,38 +143,58 @@ export default function GamePage() {
   };
 
   const executeGenerateDeck = (options: { includeBirth: boolean; merchantAges: number; includeFinalCatastrophe: boolean }) => {
-    const deck: any[] = [];
-    if (options.includeBirth) {
-      const birth = allData.normalAges.find(a => a.name === 'The Birth of Life');
-      if (birth) deck.push(birth);
-    }
-
-    // Add Normal Ages (usually 3 for each catastrophy period)
     const shuffledNormal = [...allData.normalAges.filter(a => a.name !== 'The Birth of Life')].sort(() => Math.random() - 0.5);
     const shuffledCatastrophe = [...allData.catastropheAges].sort(() => Math.random() - 0.5);
     const shuffledMerchant = [...allData.merchantAges].sort(() => Math.random() - 0.5);
 
-    // Simplified logic for audit: 3 ages, 1 catastrophe, repeat 3 times
-    for (let i = 0; i < 3; i++) {
-        deck.push(...shuffledNormal.splice(0, 3));
-        if (shuffledCatastrophe.length > 0) deck.push(shuffledCatastrophe.shift());
-    }
+    const birth = options.includeBirth
+      ? allData.normalAges.find(a => a.name === 'The Birth of Life')
+      : null;
 
-    // Mix in merchants
-    if (options.merchantAges > 0) {
-        for (let i = 0; i < options.merchantAges; i++) {
-            const idx = Math.floor(Math.random() * (deck.length - 1)) + 1;
-            deck.splice(idx, 0, shuffledMerchant.shift());
-        }
-    }
+    const normalBodyCount = Math.max(0, normalAgeCount - (birth ? 1 : 0));
+    const catastropheBodyCount = Math.max(0, catastropheAgeCount - (options.includeFinalCatastrophe ? 1 : 0));
+    const pickedNormal = shuffledNormal.splice(0, normalBodyCount);
+    const pickedMerchant = shuffledMerchant.splice(0, options.merchantAges);
+    const pickedCatastrophe = shuffledCatastrophe
+      .splice(0, catastropheBodyCount)
+      .map((age: any) => ({ ...age, isCatastrophe: true }));
+    const finalCatastropheRaw = options.includeFinalCatastrophe ? shuffledCatastrophe.shift() : null;
+    const finalCatastrophe = finalCatastropheRaw ? { ...finalCatastropheRaw, isCatastrophe: true } : null;
 
-    updateState({ ageDeck: deck, currentAgeIndex: 0 });
+    const body = [...pickedNormal, ...pickedMerchant, ...pickedCatastrophe].sort(() => Math.random() - 0.5);
+    const deck: any[] = [
+      ...(birth ? [birth] : []),
+      ...body,
+      ...(finalCatastrophe ? [finalCatastrophe] : []),
+    ];
+
+    updateState({ ageDeck: deck, currentAgeIndex: deck.length > 0 ? 0 : -1 });
     setModal(null);
   };
 
   const handleRollChallenge = () => {
-    const nextIdx = Math.floor(Math.random() * allData.rules.length);
-    updateState({ currentChallengeIndex: nextIdx, assignedChallenges: {} });
+    const challengePool = state.rules.length > 0 ? state.rules : allData.rules;
+    if (challengePool.length === 0) {
+      return;
+    }
+
+    const nextIdx = Math.floor(Math.random() * challengePool.length);
+    const nextRule = challengePool[nextIdx];
+    const challengeKey = typeof nextRule === 'string'
+      ? nextRule
+      : (nextRule?.title || nextRule?.name || nextRule?.challenge || nextRule?.rule || '');
+    const activePlayers = state.playerNames
+      .slice(0, state.playerCount)
+      .map((name, index) => name.trim() || `Player ${index + 1}`)
+      .filter(Boolean);
+    const assignedPlayer = activePlayers.length > 0
+      ? activePlayers[Math.floor(Math.random() * activePlayers.length)]
+      : null;
+
+    updateState({
+      currentChallengeIndex: nextIdx,
+      assignedChallenges: challengeKey && assignedPlayer ? { [challengeKey]: assignedPlayer } : {}
+    });
   };
 
   const handleAssignChallenge = (player: string, challenge: string) => {
@@ -173,16 +203,169 @@ export default function GamePage() {
     }));
   };
 
+  const handleTrinketAdd = (playerName: string) => {
+    updateState(prev => {
+      const deck = prev.trinketState.deck || [];
+      if (deck.length === 0) {
+        return {};
+      }
+
+      const [nextTrinket, ...remainingDeck] = deck;
+      const current = prev.trinketState.playerTrinkets[playerName] || [];
+
+      return {
+        trinketState: {
+          deck: remainingDeck,
+          playerTrinkets: {
+            ...prev.trinketState.playerTrinkets,
+            [playerName]: [...current, nextTrinket]
+          }
+        }
+      };
+    });
+  };
+
+  const handleTrinketRemove = (playerName: string, trinket: any) => {
+    updateState(prev => {
+      const current = prev.trinketState.playerTrinkets[playerName] || [];
+      const removeIndex = current.findIndex((item: any) => item?.name === trinket?.name);
+
+      if (removeIndex < 0) {
+        return {};
+      }
+
+      const updatedCurrent = [
+        ...current.slice(0, removeIndex),
+        ...current.slice(removeIndex + 1),
+      ];
+
+      return {
+        trinketState: {
+          deck: [...prev.trinketState.deck, current[removeIndex]],
+          playerTrinkets: {
+            ...prev.trinketState.playerTrinkets,
+            [playerName]: updatedCurrent
+          }
+        }
+      };
+    });
+  };
+
+  const advancePocketedTrinketsToNextAge = (prev: any) => {
+    const deck = [...(prev.trinketState.deck || [])];
+    const updatedPlayerTrinkets = { ...prev.trinketState.playerTrinkets };
+
+    Object.entries(prev.trinketsPocketedThisTurn || {}).forEach(([playerName, didPocket]) => {
+      if (!didPocket) {
+        return;
+      }
+
+      const current = updatedPlayerTrinkets[playerName] || [];
+      if (current.length !== 1) {
+        return;
+      }
+
+      if (deck.length > 0) {
+        const nextTrinket = deck.shift();
+        updatedPlayerTrinkets[playerName] = nextTrinket ? [nextTrinket] : current;
+      }
+    });
+
+    return {
+      trinketState: {
+        ...prev.trinketState,
+        deck,
+        playerTrinkets: updatedPlayerTrinkets,
+      },
+      trinketsPocketedThisTurn: {},
+    };
+  };
+
+  const handleTrinketPocket = (playerName: string, trinket: any) => {
+    updateState(prev => {
+      if (prev.trinketsPocketedThisTurn[playerName]) {
+        return {};
+      }
+
+      const current = prev.trinketState.playerTrinkets[playerName] || [];
+      const pocketed = prev.pocketedTrinkets[playerName] || [];
+      const hasTrinket = current.some((item: any) => item?.name === trinket?.name);
+      if (!hasTrinket) {
+        return {};
+      }
+
+      return {
+        pocketedTrinkets: {
+          ...prev.pocketedTrinkets,
+          [playerName]: [...pocketed, trinket]
+        },
+        trinketsPocketedThisTurn: {
+          ...prev.trinketsPocketedThisTurn,
+          [playerName]: true
+        }
+      };
+    });
+  };
+
   const handleNextTurn = () => {
     // Check for unpocketed trinkets warning if needed
     if (state.currentAgeIndex < state.ageDeck.length - 1) {
+        const challengePool = state.rules.length > 0 ? state.rules : allData.rules;
+        if (challengePool.length === 0) {
+          updateState(prev => ({
+            currentAgeIndex: prev.currentAgeIndex + 1,
+            ...advancePocketedTrinketsToNextAge(prev)
+          }));
+          setManualCatastropheOverride(false);
+          return;
+        }
+
+        const nextChallengeIndex = Math.floor(Math.random() * challengePool.length);
+        const nextRule = challengePool[nextChallengeIndex];
+        const challengeKey = typeof nextRule === 'string'
+          ? nextRule
+          : (nextRule?.title || nextRule?.name || nextRule?.challenge || nextRule?.rule || '');
+        const activePlayers = state.playerNames
+          .slice(0, state.playerCount)
+          .map((name, index) => name.trim() || `Player ${index + 1}`)
+          .filter(Boolean);
+        const assignedPlayer = activePlayers.length > 0
+          ? activePlayers[Math.floor(Math.random() * activePlayers.length)]
+          : null;
+
         updateState(prev => ({
             currentAgeIndex: prev.currentAgeIndex + 1,
-            currentChallengeIndex: Math.floor(Math.random() * allData.rules.length),
-            assignedChallenges: {}
+            currentChallengeIndex: nextChallengeIndex,
+            assignedChallenges: challengeKey && assignedPlayer ? { [challengeKey]: assignedPlayer } : {},
+          ...advancePocketedTrinketsToNextAge(prev)
         }));
+        setManualCatastropheOverride(false);
     }
   };
+
+  const currentAge = state.ageDeck[state.currentAgeIndex] || null;
+  const isCatastropheFromAge = Boolean(currentAge?.isCatastrophe);
+  const effectiveCatastropheMode = manualCatastropheOverride ? catastropheMode : isCatastropheFromAge;
+  const rulesSource = state.rules.length > 0 ? state.rules : allData.rules;
+  const currentRule = rulesSource[state.currentChallengeIndex] || null;
+  const currentChallengeKey = typeof currentRule === 'string'
+    ? currentRule
+    : (currentRule?.title || currentRule?.name || currentRule?.challenge || currentRule?.rule || '');
+  const challengePlayer = currentChallengeKey ? state.assignedChallenges[currentChallengeKey] || null : null;
+  const normalAgesMax = allData.normalAges.length;
+  const merchantAgesMax = allData.merchantAges.length;
+  const catastropheAgesMax = allData.catastropheAges.length;
+  const catastrophesInDeck = state.ageDeck.filter((age: any) => Boolean(age?.isCatastrophe || age?.worldsEnd));
+  const calculateScalingMultiplier = () => {
+    if (ageMultiplierMode === 'manual') return manualAgeMultiplier;
+    const totalAges = normalAgeCount + merchantAgeCount + catastropheAgeCount;
+    return Math.max(1, totalAges / 20);
+  };
+  const filteredDominants = allData.dominants.filter((d: any) =>
+    dominantSearchTerm.trim()
+      ? (d?.name || '').toLowerCase().includes(dominantSearchTerm.toLowerCase())
+      : true
+  );
 
   const handleResetAll = () => {
     setModal({
@@ -202,18 +385,110 @@ export default function GamePage() {
   return (
     <div className="game-page-container">
       <nav className="game-nav box">
-        <div className="is-flex is-flex-wrap-wrap is-justify-content-center gap-2">
-          <AnimatedButton id="nav-setup" onClick={() => setActiveSection('setup')} className={activeSection === 'setup' ? 'is-primary' : 'is-light'}>Setup</AnimatedButton>
-          <AnimatedButton id="nav-game-turn" onClick={() => setActiveSection('gameDashboard')} className={activeSection === 'gameDashboard' ? 'is-primary' : 'is-light'}>Dashboard</AnimatedButton>
-          <AnimatedButton id="nav-challenges" onClick={() => setActiveSection('challenges')} className={activeSection === 'challenges' ? 'is-primary' : 'is-light'}>Challenges</AnimatedButton>
-          <AnimatedButton id="nav-age-setup" onClick={() => setActiveSection('ageSetup')} className={activeSection === 'ageSetup' ? 'is-primary' : 'is-light'}>Age Deck</AnimatedButton>
-          <AnimatedButton id="nav-mol" onClick={() => setActiveSection('meaningOfLife')} className={activeSection === 'meaningOfLife' ? 'is-primary' : 'is-light'}>MoL</AnimatedButton>
-          <AnimatedButton id="nav-trinkets" onClick={() => setActiveSection('trinkets')} className={activeSection === 'trinkets' ? 'is-primary' : 'is-light'}>Trinkets</AnimatedButton>
-          <AnimatedButton id="nav-dominants" onClick={() => setActiveSection('dominants')} className={activeSection === 'dominants' ? 'is-primary' : 'is-light'}>Dominants</AnimatedButton>
-          <AnimatedButton id="nav-multiplayer" onClick={() => setActiveSection('multiplayer')} className={activeSection === 'multiplayer' ? 'is-primary' : 'is-light'}>Sync</AnimatedButton>
-          <AnimatedButton onClick={() => setTutorialStep(0)} className="is-info">?</AnimatedButton>
+        <div className="game-nav-wrap">
+          <div className="game-nav-row main-row">
+            <AnimatedButton id="nav-setup" onClick={() => setActiveSection('setup')} className={activeSection === 'setup' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Setup</AnimatedButton>
+            <AnimatedButton id="nav-game-turn" onClick={() => setActiveSection('gameDashboard')} className={activeSection === 'gameDashboard' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Dashboard</AnimatedButton>
+            <AnimatedButton id="nav-challenges" onClick={() => setActiveSection('challenges')} className={activeSection === 'challenges' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Challenges</AnimatedButton>
+            <AnimatedButton id="nav-age-setup" onClick={() => setActiveSection('ageSetup')} className={activeSection === 'ageSetup' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Age Deck</AnimatedButton>
+            <AnimatedButton id="nav-mol" onClick={() => setActiveSection('meaningOfLife')} className={activeSection === 'meaningOfLife' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>MoL</AnimatedButton>
+          </div>
+
+          <div className="game-nav-row secondary-row">
+            <AnimatedButton id="nav-trinkets" onClick={() => setActiveSection('trinkets')} className={activeSection === 'trinkets' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Trinkets</AnimatedButton>
+            <AnimatedButton id="nav-dominants" onClick={() => setActiveSection('dominants')} className={activeSection === 'dominants' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Dominants</AnimatedButton>
+            <AnimatedButton id="nav-multiplayer" onClick={() => setActiveSection('multiplayer')} className={activeSection === 'multiplayer' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Sync</AnimatedButton>
+            <AnimatedButton onClick={() => setTutorialStep(0)} className="is-info nav-help-btn">Tutorial ?</AnimatedButton>
+          </div>
         </div>
       </nav>
+
+      <style jsx>{`
+        .game-nav {
+          padding: 16px;
+          border: 1px solid rgba(var(--secondary-rgb), 0.24);
+          border-radius: 18px;
+          background: linear-gradient(180deg, rgba(0, 0, 0, 0.26), rgba(255, 255, 255, 0.03));
+        }
+
+        .game-nav-wrap {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+
+        .game-nav-row {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 12px;
+          padding: 2px;
+          border-radius: 12px;
+          background: transparent;
+        }
+
+        .main-row {
+          padding-bottom: 2px;
+        }
+
+        .secondary-row {
+          padding-top: 12px;
+          border-top: 1px solid rgba(var(--secondary-rgb), 0.2);
+        }
+
+        .nav-btn,
+        .nav-btn-active,
+        .nav-help-btn {
+          min-width: 126px;
+          min-height: 42px;
+        }
+
+        .nav-help-btn {
+          font-weight: 700;
+          letter-spacing: 0.02em;
+        }
+
+        @media (max-width: 1024px) {
+          .nav-btn,
+          .nav-btn-active,
+          .nav-help-btn {
+            min-width: 118px;
+          }
+        }
+
+        .footer-link-v2 {
+          color: rgba(255, 255, 255, 0.5);
+          font-size: 0.85rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          transition: all 0.2s ease;
+        }
+
+        .footer-link-v2:hover {
+          color: white;
+          text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+          transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+          .game-nav {
+            padding: 10px;
+          }
+
+          .game-nav-row {
+            justify-content: center;
+          }
+
+          .nav-btn,
+          .nav-btn-active,
+          .nav-help-btn {
+            flex: 0 1 168px;
+            min-width: 132px;
+            min-height: 40px;
+          }
+        }
+      `}</style>
 
       <main className="section pt-4">
         {activeSection === 'setup' && (
@@ -235,48 +510,88 @@ export default function GamePage() {
           <GameDashboard
             ageDeck={state.ageDeck}
             currentAgeIndex={state.currentAgeIndex}
-            rules={allData.rules}
-            currentRuleIndex={state.currentRuleIndex}
-            challenges={allData.rules}
+            rules={rulesSource}
+            currentRuleIndex={state.currentChallengeIndex}
+            challenges={rulesSource}
             currentChallengeIndex={state.currentChallengeIndex}
+            challengePlayer={challengePlayer}
             playerNames={state.playerNames}
             playerCount={state.playerCount}
             pocketedTrinkets={state.pocketedTrinkets}
             trinketState={state.trinketState}
+            trinketsPocketedThisTurn={state.trinketsPocketedThisTurn}
             onNextTurn={handleNextTurn}
-            onNextAge={() => updateState(p => ({ currentAgeIndex: Math.min(p.ageDeck.length - 1, p.currentAgeIndex + 1) }))}
+            onNextAge={() => updateState(p => {
+              const nextIndex = Math.min(p.ageDeck.length - 1, p.currentAgeIndex + 1);
+              return {
+                currentAgeIndex: nextIndex,
+                ...(nextIndex !== p.currentAgeIndex
+                  ? advancePocketedTrinketsToNextAge(p)
+                  : { trinketsPocketedThisTurn: p.trinketsPocketedThisTurn })
+              };
+            })}
             onPrevAge={() => updateState(p => ({ currentAgeIndex: Math.max(0, p.currentAgeIndex - 1) }))}
             isCatastrophe={state.ageDeck[state.currentAgeIndex]?.isCatastrophe || false}
-            onTrinketPocket={(p, t) => {
-                const current = state.trinketState.playerTrinkets[p] || [];
-                const pocketed = state.pocketedTrinkets[p] || [];
-                updateState({
-                    trinketState: { ...state.trinketState, playerTrinkets: { ...state.trinketState.playerTrinkets, [p]: current.filter(x => x.name !== t.name) } },
-                    pocketedTrinkets: { ...state.pocketedTrinkets, [p]: [...pocketed, t] }
-                });
-            }}
-            onTrinketAdd={(p, t) => {}} // Implemented as needed
-            onTrinketRemove={(p, t) => {}}
+            onTrinketPocket={handleTrinketPocket}
+            onTrinketAdd={(p, _t) => handleTrinketAdd(p)}
+            onTrinketRemove={handleTrinketRemove}
             onResetAll={handleResetAll}
           />
         )}
 
         {activeSection === 'challenges' && (
           <ChallengesSection
-            challenges={allData.rules}
+            challenges={rulesSource}
             currentChallengeIndex={state.currentChallengeIndex}
             assignedChallenges={state.assignedChallenges}
             playerNames={state.playerNames}
             playerCount={state.playerCount}
+            catastropheMode={effectiveCatastropheMode}
+            currentRule={currentRule}
+            challengePlayer={challengePlayer}
             onRollChallenge={handleRollChallenge}
             onAssignChallenge={handleAssignChallenge}
+            onCatastropheToggle={(checked) => {
+              setCatastropheMode(checked);
+              setManualCatastropheOverride(true);
+            }}
+            manualCatastropheOverride={manualCatastropheOverride}
+            isCatastrophe={isCatastropheFromAge}
+            currentAge={currentAge}
           />
         )}
 
         {activeSection === 'ageSetup' && (
           <AgeSetupSection 
-            onGenerateDeck={handleGenerateDeck}
-            ageDeckLength={state.ageDeck.length}
+            normalAgeCount={normalAgeCount}
+            merchantAgeCount={merchantAgeCount}
+            catastropheAgeCount={catastropheAgeCount}
+            finalCatastropheMode={finalCatastropheMode}
+            ageMultiplierMode={ageMultiplierMode}
+            manualAgeMultiplier={manualAgeMultiplier}
+            normalAgesMax={normalAgesMax}
+            merchantAgesMax={merchantAgesMax}
+            catastropheAgesMax={catastropheAgesMax}
+            ageDeck={state.ageDeck}
+            currentAgeIndex={state.currentAgeIndex}
+            catastrophesInDeck={catastrophesInDeck}
+            showCatastropheList={showCatastropheList}
+            isCatastrophe={isCatastropheFromAge}
+            onNormalAgeCountChange={setNormalAgeCount}
+            onMerchantAgeCountChange={setMerchantAgeCount}
+            onCatastropheAgeCountChange={setCatastropheAgeCount}
+            onFinalCatastropheModeChange={setFinalCatastropheMode}
+            onAgeMultiplierModeChange={setAgeMultiplierMode}
+            onManualAgeMultiplierChange={setManualAgeMultiplier}
+            onGenerateDeck={() => handleGenerateDeck({
+              includeBirth: normalAgeCount > 0,
+              merchantAges: merchantAgeCount,
+              includeFinalCatastrophe: finalCatastropheMode,
+            })}
+            onPrevAge={() => updateState(p => ({ currentAgeIndex: Math.max(0, p.currentAgeIndex - 1) }))}
+            onNextAge={() => updateState(p => ({ currentAgeIndex: Math.min(p.ageDeck.length - 1, p.currentAgeIndex + 1) }))}
+            onToggleCatastropheList={() => setShowCatastropheList(v => !v)}
+            calculateScalingMultiplier={calculateScalingMultiplier}
           />
         )}
 
@@ -290,14 +605,26 @@ export default function GamePage() {
             onAssignMeanings={() => {
                 const meanings = [...allData.meaningOfLife].sort(() => Math.random() - 0.5);
                 const assigned: any = {};
-                state.playerNames.slice(0, state.playerCount).forEach(name => {
-                    assigned[name.trim() || 'Player'] = meanings.splice(0, 2);
+            state.playerNames.slice(0, state.playerCount).forEach((name, index) => {
+              const playerKey = name.trim() || `Player ${index + 1}`;
+              assigned[playerKey] = meanings.splice(0, 2);
                 });
-                updateState({ playerMeanings: assigned, revealedMeanings: {} });
+            updateState({ playerMeanings: assigned, selectedMeanings: {}, revealedMeanings: {} });
+            setViewingPlayer(null);
             }}
             onRevealAll={() => {
+                const assignedPlayers = Object.keys(state.playerMeanings).filter(
+                  (k) => (state.playerMeanings[k] || []).length > 0
+                );
+                const allCurrentlyRevealed = assignedPlayers.length > 0 && assignedPlayers.every(
+                  (k) => Boolean(state.revealedMeanings[k])
+                );
+
                 const revealed: any = {};
-                Object.keys(state.playerMeanings).forEach(k => revealed[k] = true);
+                assignedPlayers.forEach((k) => {
+                  revealed[k] = !allCurrentlyRevealed;
+                });
+
                 updateState({ revealedMeanings: revealed });
             }}
             onChooseMeaning={(p, m) => updateState(prev => ({ selectedMeanings: { ...prev.selectedMeanings, [p]: m } }))}
@@ -312,17 +639,23 @@ export default function GamePage() {
             playerCount={state.playerCount}
             trinketState={state.trinketState}
             pocketedTrinkets={state.pocketedTrinkets}
+            trinketsPocketedThisTurn={state.trinketsPocketedThisTurn}
             onAssignTrinkets={() => {
                 const deck = [...allData.trinkets].sort(() => Math.random() - 0.5);
                 const assigned: any = {};
-                state.playerNames.slice(0, state.playerCount).forEach(name => {
-                    assigned[name.trim()] = deck.splice(0, 2);
+              state.playerNames.slice(0, state.playerCount).forEach((name, index) => {
+                const playerKey = name.trim() || `Player ${index + 1}`;
+                assigned[playerKey] = deck.splice(0, 2);
                 });
-                updateState({ trinketState: { deck, playerTrinkets: assigned }, pocketedTrinkets: {} });
+              updateState({
+                trinketState: { deck, playerTrinkets: assigned },
+                pocketedTrinkets: {},
+                trinketsPocketedThisTurn: {}
+              });
             }}
-            onTrinketPocket={(p, t) => {}} // Reuse dashboard logic
-            onTrinketAdd={(p, t) => {}}
-            onTrinketRemove={(p, t) => {}}
+            onTrinketPocket={handleTrinketPocket}
+            onTrinketAdd={(p, _t) => handleTrinketAdd(p)}
+            onTrinketRemove={handleTrinketRemove}
           />
         )}
 
@@ -330,12 +663,18 @@ export default function GamePage() {
           <DominantsSection
             playerNames={state.playerNames}
             playerCount={state.playerCount}
-            dominants={allData.dominants}
+            dominants={filteredDominants}
             dominantState={state.dominantState}
+            dominantSearchTerm={dominantSearchTerm}
+            dominantResetTrigger={dominantResetTrigger}
             onDominantChange={(name, updates) => updateState(prev => ({
                 dominantState: { ...prev.dominantState, [name]: { ...(prev.dominantState[name] || { assignedTo: 'Assign', selectedTier: null }), ...updates } }
             }))}
-            onResetDominants={() => updateState({ dominantState: {} })}
+            onResetDominants={() => {
+              updateState({ dominantState: {} });
+              setDominantResetTrigger(v => v + 1);
+            }}
+            onSearchChange={setDominantSearchTerm}
           />
         )}
 
@@ -396,22 +735,6 @@ export default function GamePage() {
             </div>
           </div>
         </div>
-
-        <style jsx>{`
-          .footer-link-v2 {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.85rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.2s ease;
-          }
-          .footer-link-v2:hover {
-            color: white;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-            transform: translateY(-1px);
-          }
-        `}</style>
       </footer>
     </div>
   );

@@ -204,10 +204,10 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
         }
 
         .meaning-card.revealed {
-          border-color: var(--success);
-          background: rgba(0, 255, 136, 0.05);
+          border-color: var(--primary-orange);
+          background: rgba(var(--primary-rgb, 252,163,17), 0.05);
+          box-shadow: 0 0 20px rgba(var(--primary-rgb, 252,163,17), 0.1);
         }
-
         .meaning-card-header {
           margin-bottom: var(--space-3);
         }
@@ -215,7 +215,7 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
         .meaning-card-name {
           font-size: 1.2rem;
           font-weight: 700;
-          color: #e0e0e0;
+          color: rgba(255, 255, 255, 0.9);
           margin-bottom: var(--space-2);
           display: flex;
           align-items: center;
@@ -225,34 +225,34 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
         }
 
         .selected-card .meaning-card-name {
-          color: var(--warning);
+          color: var(--primary-orange);
         }
 
         .revealed .meaning-card-name {
-          color: var(--success);
+          color: var(--primary-orange);
         }
 
         .selection-badge {
-          background: var(--warning);
+          background: var(--primary-orange);
           color: #000;
           padding: 0.2rem 0.6rem;
           border-radius: 12px;
           font-size: 0.7rem;
-          font-weight: 600;
+          font-weight: 700;
           letter-spacing: 0.5px;
           animation: pulse-warn 2s infinite;
         }
 
         @keyframes pulse-warn {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); }
-          70% { box-shadow: 0 0 0 8px rgba(255, 193, 7, 0); }
+          0%, 100% { box-shadow: 0 0 0 0 rgba(252, 163, 17, 0.7); }
+          70% { box-shadow: 0 0 0 8px rgba(252, 163, 17, 0); }
         }
 
         .selection-indicator {
           display: flex;
           align-items: center;
           gap: var(--space-2);
-          background: rgba(255, 193, 7, 0.1);
+          background: rgba(252, 163, 17, 0.1);
           padding: var(--space-2);
           border-radius: var(--border-radius-small);
           margin-top: var(--space-2);
@@ -263,7 +263,7 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
         }
 
         .selection-text {
-          color: var(--warning);
+          color: var(--primary-orange);
           font-weight: 600;
           font-size: 0.9rem;
         }
@@ -284,7 +284,7 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
         }
 
         .selected-indicator {
-          color: var(--warning);
+          color: var(--primary-orange);
         }
 
         .selected-icon {
@@ -302,19 +302,19 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
         .selected-text {
           font-weight: 700;
           font-size: 0.9rem;
-          color: var(--warning);
+          color: var(--primary-orange);
           margin-bottom: var(--space-1);
           letter-spacing: 1px;
         }
 
         .selected-hint {
           font-size: 0.8rem;
-          color: var(--text-secondary);
+          color: rgba(255, 255, 255, 0.4);
           font-style: italic;
         }
 
         .selection-prompt {
-          color: #9b59b6;
+          color: rgba(252, 163, 17, 0.7);
         }
 
         .prompt-icon {
@@ -331,44 +331,46 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
         .prompt-text {
           font-weight: 600;
           font-size: 0.9rem;
+          color: rgba(255, 255, 255, 0.5);
         }
 
         .not-selected {
-          color: var(--text-muted);
+          color: rgba(255, 255, 255, 0.3);
         }
 
         .not-selected-icon {
           font-size: 2rem;
           margin-bottom: var(--space-2);
-          opacity: 0.5;
+          opacity: 0.4;
         }
 
         .not-selected-text {
           font-size: 0.9rem;
-          opacity: 0.7;
+          opacity: 0.6;
         }
 
         .meaning-description {
-          background: rgba(0, 0, 0, 0.3);
+          background: rgba(0, 0, 0, 0.25);
           border-radius: var(--border-radius-small);
           padding: var(--space-3);
           margin-top: auto;
-          border-left: 2px solid #9b59b6;
+          border-left: 2px solid rgba(252, 163, 17, 0.4);
         }
 
         .selected-card .meaning-description {
-          border-left-color: var(--warning);
+          border-left-color: var(--primary-orange);
         }
 
         .revealed .meaning-description {
-          border-left-color: var(--success);
+          border-left-color: var(--primary-orange);
         }
 
         .meaning-description p {
           margin: 0;
-          color: var(--text-secondary);
-          line-height: 1.5;
+          color: rgba(255, 255, 255, 0.7);
+          line-height: 1.6;
           word-wrap: break-word;
+          font-size: 0.95rem;
         }
 
         @media (max-width: 768px) {

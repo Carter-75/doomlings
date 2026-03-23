@@ -118,7 +118,7 @@ const TrinketCard: React.FC<TrinketCardProps> = ({ trinket, onAdd, onRemove, onP
       </div>
       <footer style={{ display: 'flex', gap: 'var(--space-2)', marginTop: 'var(--space-4)' }}>
         <button className="button button-outline" onClick={onAdd}>Add</button>
-        <button className="button button-outline" onClick={onRemove} style={{ color: 'var(--error)', borderColor: 'var(--error)' }}>Remove</button>
+        <button className="button button-outline" onClick={onRemove}>Remove</button>
         <button className="button button-primary" onClick={onPocket} disabled={isPocketDisabled}>Pocket</button>
       </footer>
     </div>

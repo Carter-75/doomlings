@@ -8,7 +8,7 @@ interface MeaningOfLifeSectionProps {
   playerNames: string[];
   playerCount: number;
   playerMeanings: { [key: string]: any[] };
-  selectedMeanings: { [key: string]: string };
+  selectedMeanings: { [key: string]: string | null };
   revealedMeanings: { [key: string]: boolean };
   onAssignMeanings: () => void;
   onRevealAll: () => void;
@@ -29,6 +29,12 @@ export default function MeaningOfLifeSection({
   onToggleViewPlayer,
   viewingPlayer
 }: MeaningOfLifeSectionProps) {
+  const activePlayerKeys = playerNames
+    .slice(0, playerCount)
+    .map((playerName, index) => playerName.trim() || `Player ${index + 1}`)
+    .filter((pName) => (playerMeanings[pName] || []).length > 0);
+  const anyRevealed = activePlayerKeys.some((pName) => Boolean(revealedMeanings[pName]));
+
   return (
     <div className="meaning-of-life-section animate-fade-in">
       <h2 className="section-title">Meaning of Life</h2>
@@ -57,7 +63,7 @@ export default function MeaningOfLifeSection({
                   {hasCards && !isRevealed && (
                     <div className="mb-4">
                       <AnimatedButton 
-                        className={`is-small is-fullwidth ${isViewing ? 'is-warning' : 'is-info is-outlined'}`}
+                        className={`is-small is-fullwidth ${isViewing ? 'mol-view-toggle-active' : 'mol-view-toggle'}`}
                         onClick={() => onToggleViewPlayer(pName)}
                       >
                         {isViewing ? '🙈 Hide Cards' : '👁️ View Cards'}
@@ -96,14 +102,24 @@ export default function MeaningOfLifeSection({
 
       <div className="reveal-control-container box glass mt-8 p-4 border-dashed border-2 border-warning/30">
         <AnimatedButton className="is-warning is-fullwidth py-4 font-bold" onClick={onRevealAll}>
-          ⚠️ Reveal All Final Meanings
+          {anyRevealed ? '🙈 Hide All Final Meanings' : '⚠️ Reveal All Final Meanings'}
         </AnimatedButton>
       </div>
 
       <style jsx>{`
         .viewing-active {
-          border-color: var(--info) !important;
-          box-shadow: 0 0 15px rgba(61, 165, 217, 0.2) !important;
+          border-color: var(--primary-orange) !important;
+          box-shadow: 0 0 15px rgba(252, 163, 17, 0.2) !important;
+        }
+        .mol-view-toggle {
+          background: transparent !important;
+          border: 1px solid var(--primary-orange) !important;
+          color: var(--primary-orange) !important;
+        }
+        .mol-view-toggle-active {
+          background: var(--primary-orange) !important;
+          border: 1px solid var(--primary-orange) !important;
+          color: #111 !important;
         }
         .meaning-cards-grid-display {
            display: flex;

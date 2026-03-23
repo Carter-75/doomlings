@@ -22,6 +22,7 @@ export interface GameState {
     playerTrinkets: { [key: string]: any[] };
   };
   pocketedTrinkets: { [key: string]: any[] };
+  trinketsPocketedThisTurn: { [key: string]: boolean };
   dominantState: { [key: string]: { assignedTo: string; selectedTier: string | null } };
   isGameStarted: boolean;
 }
@@ -42,6 +43,7 @@ const INITIAL_STATE: GameState = {
   revealedMeanings: {},
   trinketState: { deck: [], playerTrinkets: {} },
   pocketedTrinkets: {},
+  trinketsPocketedThisTurn: {},
   dominantState: {},
   isGameStarted: false,
 };

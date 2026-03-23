@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useCardImage } from '../hooks/useCardImage';
 import { useTheme } from '@/lib/theme-context';
 import { useNotification } from '../lib/notification-context';
+import ThemedSelect from './ThemedSelect';
 
 interface Dominant {
   name: string;
@@ -45,6 +46,7 @@ const DominantCard: React.FC<DominantCardProps> = ({
 
   const [cardCopies, setCardCopies] = useState<CardCopy[]>([]);
   const [showCopies, setShowCopies] = useState(false);
+  const [showAllTiers, setShowAllTiers] = useState(false);
 
   // Check if any duplicates match the current search term
   const hasMatchingDuplicates = cardCopies.some(copy =>
@@ -92,15 +94,6 @@ const DominantCard: React.FC<DominantCardProps> = ({
     onChange({ selectedTier: randomTierKey || null });
   };
 
-  const handleAssignChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    onChange({ assignedTo: event.target.value });
-  };
-
-  const handleTierChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const tier = event.target.value;
-    onChange({ selectedTier: tier || null });
-  };
-
   const duplicateCard = () => {
     const newCopy: CardCopy = {
       id: `copy-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -143,6 +136,10 @@ const DominantCard: React.FC<DominantCardProps> = ({
 
   const toggleShowCopies = () => {
     setShowCopies(!showCopies);
+  };
+
+  const toggleShowAllTiers = () => {
+    setShowAllTiers((prev) => !prev);
   };
 
   const hasAssignedCards = assignedTo !== 'Assign' || cardCopies.some(copy => copy.assignedTo !== 'Assign');
@@ -244,6 +241,25 @@ const DominantCard: React.FC<DominantCardProps> = ({
             <em>Roll or set a tier</em>
           )}
         </div>
+
+        <button
+          className="button button-small tier-list-toggle"
+          onClick={toggleShowAllTiers}
+          type="button"
+        >
+          {showAllTiers ? 'Hide All Tiers' : 'Show All Tiers'}
+        </button>
+
+        {showAllTiers && (
+          <div className="all-tiers-list">
+            {Object.entries(dominant.tiers).map(([tier, text]) => (
+              <div key={tier} className="all-tier-item">
+                <span className="all-tier-label">Tier {tier}</span>
+                <span className="all-tier-text">{text}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="dominant-card-controls">
@@ -257,42 +273,30 @@ const DominantCard: React.FC<DominantCardProps> = ({
             🎲 Roll Tier
           </button>
 
-          <div className="dropdown-wrapper">
-            <select
-              value={selectedTier || ""}
-              onChange={handleTierChange}
-              className="styled-select"
-            >
-              <option value="">
-                Set Tier
-              </option>
-              {Object.keys(dominant.tiers).map(tier => (
-                <option key={tier} value={tier}>
-                  Tier {tier}
-                </option>
-              ))}
-            </select>
-          </div>
+          <ThemedSelect
+            value={selectedTier || ''}
+            onChange={(tierValue) => onChange({ selectedTier: tierValue || null })}
+            placeholder="Set Tier"
+            options={[
+              { value: '', label: 'Assign Tier' },
+              ...Object.keys(dominant.tiers).map((tier) => ({
+                value: tier,
+                label: `Tier ${tier}`,
+              })),
+            ]}
+          />
         </div>
 
         {/* Assignment Control */}
-        <div className="dropdown-wrapper">
-          <select
-            value={assignedTo}
-            onChange={handleAssignChange}
-            className="styled-select"
-          >
-            <option value="Assign" disabled>
-              {assignedTo === 'Assign' ? 'Assign Player' : assignedTo}
-            </option>
-            <option value="Assign">Unassigned</option>
-            {players.map(player => (
-              <option key={player} value={player}>
-                {player}
-              </option>
-            ))}
-          </select>
-        </div>
+        <ThemedSelect
+          value={assignedTo === 'Assign' ? '' : assignedTo}
+          onChange={(playerValue) => onChange({ assignedTo: playerValue || 'Assign' })}
+          placeholder="Assign Player"
+          options={[
+            { value: 'Assign', label: 'Unassigned' },
+            ...players.map((player) => ({ value: player, label: player })),
+          ]}
+        />
 
         {/* Duplication Controls */}
         <div className="duplication-controls">
@@ -378,40 +382,28 @@ const DominantCard: React.FC<DominantCardProps> = ({
                       🎲 Roll
                     </button>
 
-                    <div className="dropdown-wrapper">
-                      <select
-                        value={copy.selectedTier || ""}
-                        onChange={(e) => updateCopy(copy.id, { selectedTier: e.target.value || null })}
-                        className="styled-select"
-                      >
-                        <option value="">
-                          Set Tier
-                        </option>
-                        {Object.keys(dominant.tiers).map(tier => (
-                          <option key={tier} value={tier}>
-                            Tier {tier}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    <ThemedSelect
+                      value={copy.selectedTier || ''}
+                      onChange={(tierValue) => updateCopy(copy.id, { selectedTier: tierValue || null })}
+                      placeholder="Set Tier"
+                      options={[
+                        { value: '', label: 'Assign Tier' },
+                        ...Object.keys(dominant.tiers).map((tier) => ({
+                          value: tier,
+                          label: `Tier ${tier}`,
+                        })),
+                      ]}
+                    />
 
-                    <div className="dropdown-wrapper">
-                      <select
-                        value={copy.assignedTo}
-                        onChange={(e) => updateCopy(copy.id, { assignedTo: e.target.value })}
-                        className="styled-select"
-                      >
-                        <option value="Assign" disabled>
-                          {copy.assignedTo === 'Assign' ? 'Assign Player' : copy.assignedTo}
-                        </option>
-                        <option value="Assign">Unassigned</option>
-                        {players.map(player => (
-                          <option key={player} value={player}>
-                            {player}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    <ThemedSelect
+                      value={copy.assignedTo === 'Assign' ? '' : copy.assignedTo}
+                      onChange={(playerValue) => updateCopy(copy.id, { assignedTo: playerValue || 'Assign' })}
+                      placeholder="Assign Player"
+                      options={[
+                        { value: 'Assign', label: 'Unassigned' },
+                        ...players.map((player) => ({ value: player, label: player })),
+                      ]}
+                    />
                   </div>
                 </div>
               );
@@ -448,6 +440,53 @@ const DominantCard: React.FC<DominantCardProps> = ({
           display: flex;
           flex-direction: column;
           gap: 0.5rem;
+        }
+
+        .tier-list-toggle {
+          margin-top: 0.75rem;
+          width: 100%;
+          border: 1px dashed rgba(var(--secondary-rgb), 0.5);
+          color: var(--text-secondary);
+          background: rgba(var(--secondary-rgb), 0.08);
+        }
+
+        .tier-list-toggle:hover {
+          border-color: rgba(var(--secondary-rgb), 0.8);
+          color: var(--text-primary);
+          background: rgba(var(--secondary-rgb), 0.15);
+        }
+
+        .all-tiers-list {
+          margin-top: 0.75rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          border-radius: var(--border-radius-small);
+          border: 1px solid rgba(var(--secondary-rgb), 0.28);
+          background: rgba(0, 0, 0, 0.18);
+          padding: 0.75rem;
+        }
+
+        .all-tier-item {
+          display: flex;
+          flex-direction: column;
+          gap: 0.2rem;
+          border-left: 3px solid rgba(var(--secondary-rgb), 0.5);
+          padding-left: 0.55rem;
+        }
+
+        .all-tier-label {
+          font-size: 0.75rem;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          color: var(--secondary-orange);
+          font-weight: 700;
+        }
+
+        .all-tier-text {
+          font-size: 0.82rem;
+          color: var(--text-secondary);
+          line-height: 1.35;
         }
 
         .duplication-controls {

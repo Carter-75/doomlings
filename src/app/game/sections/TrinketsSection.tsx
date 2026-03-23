@@ -3,12 +3,14 @@
 import React from 'react';
 import AnimatedButton from '@/components/AnimatedButton';
 import TrinketCard from '@/components/TrinketCard';
+import { isPocketDisabledForAge } from '@/lib/trinketRules';
 
 interface TrinketsSectionProps {
   playerNames: string[];
   playerCount: number;
   trinketState: { deck: any[], playerTrinkets: { [key: string]: any[] } };
   pocketedTrinkets: { [key: string]: any[] };
+  trinketsPocketedThisTurn: { [key: string]: boolean };
   onAssignTrinkets: () => void;
   onTrinketAdd: (playerName: string, trinket: any) => void;
   onTrinketRemove: (playerName: string, trinket: any) => void;
@@ -20,6 +22,7 @@ export default function TrinketsSection({
   playerCount,
   trinketState,
   pocketedTrinkets,
+  trinketsPocketedThisTurn,
   onAssignTrinkets,
   onTrinketAdd,
   onTrinketRemove,
@@ -42,8 +45,8 @@ export default function TrinketsSection({
       <div className="player-trinkets-container mt-8">
         <h4 className="title is-5 text-secondary pl-2 mb-4">Player Trinkets & Pocketed Points</h4>
         <div className="columns is-multiline">
-          {playerNames.slice(0, playerCount).filter(n => n.trim()).map((playerName, index) => {
-            const pName = playerName.trim();
+          {playerNames.slice(0, playerCount).map((playerName, index) => {
+            const pName = playerName.trim() || `Player ${index + 1}`;
             const currentTrinkets = trinketState.playerTrinkets[pName] || [];
             const pocketed = pocketedTrinkets[pName] || [];
             const totalPoints = pocketed.reduce((sum, t) => sum + t.points, 0);
@@ -51,7 +54,9 @@ export default function TrinketsSection({
             return (
               <div key={index} className="column is-half-tablet is-one-third-desktop">
                 <div className="player-trinket-box box glass-light p-4 h-full border-white/5 transition-all">
-                  <h3 className="title is-5 mb-4 has-text-centered border-b border-white/10 pb-2">{pName}</h3>
+                  <div className="is-flex is-align-items-center is-justify-content-center gap-3 mb-4 border-b border-white/10 pb-2">
+                    <h3 className="title is-5 m-0">{pName}</h3>
+                  </div>
                   
                   <div className="trinkets-display-grid mb-4">
                     {currentTrinkets.map((trinket, tIndex) => (
@@ -61,7 +66,7 @@ export default function TrinketsSection({
                           onAdd={() => onTrinketAdd(pName, trinket)}
                           onRemove={() => onTrinketRemove(pName, trinket)}
                           onPocket={() => onTrinketPocket(pName, trinket)}
-                          isPocketDisabled={currentTrinkets.length !== 1}
+                          isPocketDisabled={isPocketDisabledForAge(currentTrinkets.length, Boolean(trinketsPocketedThisTurn[pName]))}
                         />
                       </div>
                     ))}
