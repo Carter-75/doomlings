@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/lib/theme-context";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import { NotificationProvider } from "@/lib/notification-context";
+import ScrollToTopOnRoute from "@/components/ScrollToTopOnRoute";
 
 const outfitFont = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
@@ -66,6 +67,7 @@ export default function RootLayout({
             <IframeProvider>
               <AdProvider>
                 <IframeWrapper>
+                  <ScrollToTopOnRoute />
                   <BackHandler />
                   {children}
                   <div className="ad-space-placeholder" style={{ width: '100%', height: 'var(--ad-banner-height)', display: 'block', flexShrink: 0, pointerEvents: 'none' }} />

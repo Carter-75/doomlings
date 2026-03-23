@@ -15,6 +15,7 @@ interface MeaningOfLifeSectionProps {
   onChooseMeaning: (playerName: string, cardName: string) => void;
   onToggleViewPlayer: (playerName: string) => void;
   viewingPlayer: string | null;
+  ageMultiplier?: number;
 }
 
 export default function MeaningOfLifeSection({
@@ -27,12 +28,22 @@ export default function MeaningOfLifeSection({
   onRevealAll,
   onChooseMeaning,
   onToggleViewPlayer,
-  viewingPlayer
+  viewingPlayer,
+  ageMultiplier = 1
 }: MeaningOfLifeSectionProps) {
   const activePlayerKeys = playerNames
     .slice(0, playerCount)
     .map((playerName, index) => playerName.trim() || `Player ${index + 1}`)
     .filter((pName) => (playerMeanings[pName] || []).length > 0);
+  const safeMultiplier = Number.isFinite(ageMultiplier) ? ageMultiplier : 1;
+
+  // Parse description and replace "sM" with calculated values
+  const parseDescription = (description: string) => {
+    return description.replace(/(\+|^|\s)(-?\d+)sM/g, (_match, prefix, amount) => {
+      const calculated = Math.round(Number(amount) * safeMultiplier);
+      return `${prefix}${calculated}`;
+    });
+  };
   const anyRevealed = activePlayerKeys.some((pName) => Boolean(revealedMeanings[pName]));
 
   return (
@@ -68,23 +79,25 @@ export default function MeaningOfLifeSection({
                       >
                         {isViewing ? '🙈 Hide Cards' : '👁️ View Cards'}
                       </AnimatedButton>
-                    </div>
-                  )}
-
-                  {(isViewing || isRevealed) && hasCards && (
-                    <div className="meaning-cards-grid-display animate-slide-up">
-                      {playerMeanings[pName]?.map((card, cardIndex) => (
-                        <div key={cardIndex} className="mb-3">
-                          <MeaningOfLifeCard
-                            meaning={card}
-                            isSelected={selectedMeanings[pName] === card.name}
-                            isRevealed={isRevealed || false}
-                            onChoose={() => onChooseMeaning(pName, card.name)}
-                            isViewing={isViewing}
-                            canSelect={!isRevealed}
-                          />
-                        </div>
-                      ))}
+                    {(isViewing || isRevealed) && hasCards && (
+                      <div className="meaning-cards-grid-display animate-slide-up">
+                        {playerMeanings[pName]?.map((card, cardIndex) => (
+                          <div key={cardIndex} className="mb-3">
+                            <MeaningOfLifeCard
+                              meaning={{
+                                ...card,
+                                description: parseDescription(card.description)
+                              }}
+                              isSelected={selectedMeanings[pName] === card.name}
+                              isRevealed={isRevealed || false}
+                              onChoose={() => onChooseMeaning(pName, card.name)}
+                              isViewing={isViewing}
+                              canSelect={!isRevealed}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
                     </div>
                   )}
 

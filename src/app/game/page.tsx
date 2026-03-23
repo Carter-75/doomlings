@@ -324,7 +324,7 @@ export default function GamePage() {
         ...current.slice(removeIndex + 1),
       ];
 
-      return {
+      const newState = {
         trinketState: {
           deck: [...prev.trinketState.deck, current[removeIndex]],
           playerTrinkets: {
@@ -333,6 +333,25 @@ export default function GamePage() {
           }
         }
       };
+
+      // Check for auto-progression in guided setup
+      if (guidedSetupStep === 'trinkets') {
+        const activePlayers = state.playerNames
+          .slice(0, state.playerCount)
+          .map((name, index) => name.trim() || `Player ${index + 1}`);
+        
+        const allPlayersSelectedOne = activePlayers.every((pKey) => {
+          const playerTrinkets = newState.trinketState.playerTrinkets[pKey] || [];
+          return playerTrinkets.length === 1;
+        });
+
+        if (allPlayersSelectedOne) {
+          setGuidedSetupStep('complete');
+          setActiveSection('gameDashboard');
+        }
+      }
+
+      return newState;
     });
   };
 
@@ -747,6 +766,7 @@ export default function GamePage() {
             }}
             onToggleViewPlayer={p => setViewingPlayer(viewingPlayer === p ? null : p)}
             viewingPlayer={viewingPlayer}
+                      ageMultiplier={calculateScalingMultiplier()}
           />
         )}
 
@@ -769,11 +789,6 @@ export default function GamePage() {
                 pocketedTrinkets: {},
                 trinketsPocketedThisTurn: {}
               });
-
-              if (guidedSetupStep === 'trinkets') {
-                setGuidedSetupStep('complete');
-                setActiveSection('gameDashboard');
-              }
             }}
             onTrinketPocket={handleTrinketPocket}
             onTrinketAdd={(p, _t) => handleTrinketAdd(p)}
