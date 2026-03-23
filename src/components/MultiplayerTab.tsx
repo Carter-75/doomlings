@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import GameSocketManager from '@/lib/gameSocketManager';
 import AnimatedButton from './AnimatedButton';
+import Modal from './Modal';
 
 interface MultiplayerTabProps {
     playerNames: string[];
@@ -17,6 +18,11 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
     // New state for room creation
     const [roomName, setRoomName] = useState('');
     const [roomPassword, setRoomPassword] = useState('');
+    
+    // New state for joining password
+    const [showPasswordModal, setShowPasswordModal] = useState(false);
+    const [pendingJoinRoomId, setPendingJoinRoomId] = useState<string | null>(null);
+    const [joinPassword, setJoinPassword] = useState('');
 
     // Use the primary player's name as the host name
     const hostName = playerNames[0] || 'Player 1';
@@ -97,19 +103,23 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
     };
 
     const handleJoinRoom = async (roomId: string, requiresPassword?: boolean) => {
-        let passwordToUse = undefined;
-
         if (requiresPassword) {
-            const userInput = window.prompt("This room requires a password:");
-            if (userInput === null) return; // User cancelled
-            passwordToUse = userInput;
+            setPendingJoinRoomId(roomId);
+            setShowPasswordModal(true);
+            setJoinPassword('');
+            return;
         }
 
+        executeJoinRoom(roomId);
+    };
+
+    const executeJoinRoom = async (roomId: string, password?: string) => {
         setIsConnecting(true);
         setError('');
         try {
             await socketManager.registerPlayer(hostName);
-            await socketManager.joinRoom(roomId, passwordToUse);
+            await socketManager.joinRoom(roomId, password);
+            setShowPasswordModal(false);
         } catch (err: any) {
             setError(err.message || 'Failed to join local room');
             setIsConnecting(false);
@@ -268,6 +278,39 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
                     </div>
                 )}
             </div>
+
+            {/* Password Modal */}
+            <Modal
+                isOpen={showPasswordModal}
+                onClose={() => setShowPasswordModal(false)}
+                title="🔒 Locked Room"
+                actions={
+                    <>
+                        <AnimatedButton onClick={() => setShowPasswordModal(false)} className="is-light">Cancel</AnimatedButton>
+                        <AnimatedButton 
+                            onClick={() => pendingJoinRoomId && executeJoinRoom(pendingJoinRoomId, joinPassword)} 
+                            className="is-primary"
+                            disabled={!joinPassword}
+                        >
+                            Connect
+                        </AnimatedButton>
+                    </>
+                }
+            >
+                <div className="field">
+                    <label className="label">Enter Room Password:</label>
+                    <div className="control">
+                        <input 
+                            className="input" 
+                            type="password" 
+                            value={joinPassword} 
+                            onChange={e => setJoinPassword(e.target.value)}
+                            placeholder="Password"
+                            autoFocus
+                        />
+                    </div>
+                </div>
+            </Modal>
         </div>
     );
 }

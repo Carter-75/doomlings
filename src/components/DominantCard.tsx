@@ -1,5 +1,8 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { useCardImage } from '../hooks/useCardImage';
+import { useNotification } from '../lib/notification-context';
 
 interface Dominant {
   name: string;
@@ -33,6 +36,7 @@ const DominantCard: React.FC<DominantCardProps> = ({
   searchTerm = '',
   resetTrigger = 0
 }) => {
+  const { showNotification } = useNotification();
   const { getCardImage } = useCardImage();
   const cardArtUrl = getCardImage(dominant.name);
   const [imgError, setImgError] = useState(false);
@@ -122,9 +126,16 @@ const DominantCard: React.FC<DominantCardProps> = ({
   };
 
   const clearAllCopies = () => {
-    if (cardCopies.length > 0 && window.confirm('Remove all duplicate cards?')) {
-      setCardCopies([]);
-      setShowCopies(false);
+    if (cardCopies.length > 0) {
+      showNotification({
+        title: 'Clear All Copies?',
+        message: 'Are you sure you want to remove all duplicate cards for this Dominant?',
+        type: 'warning',
+        onConfirm: () => {
+          setCardCopies([]);
+          setShowCopies(false);
+        }
+      });
     }
   };
 

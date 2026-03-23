@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback, use
 import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
 import { initializeAdMob, showBanner, hideBanner, isNative, showInterstitial } from './admob-service';
+import { useNotification } from './notification-context';
 
 // ─── RevenueCat config ────────────────────────────────────────────────────────
 // docs: https://www.revenuecat.com/docs/getting-started/installation/capacitor
@@ -66,6 +67,7 @@ function hasEntitlement(info: CustomerInfo): boolean {
 
 // ─────────────────────────────────────────────────────────────────────────────
 export function AdProvider({ children }: { children: React.ReactNode }) {
+    const { showNotification } = useNotification();
     const [adsRemoved, setAdsRemoved] = useState(false);
     const adsRemovedRef = useRef(false);
     const [loading, setLoading] = useState(true);
@@ -195,7 +197,11 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
     // ─── Direct Purchase Method (Mock Package) ────────────────────────────────
     const purchasePackage = useCallback(async (pkg: any) => {
         if (!isNative()) {
-            alert('Subscriptions are only available in the Android app. Download it from Google Play!');
+            showNotification({
+                title: 'Native App Required',
+                message: 'Subscriptions are only available in the Android app. Download it from Google Play!',
+                type: 'info'
+            });
             return;
         }
         try {
@@ -206,7 +212,11 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
             const purchaseResult = await rc.Purchases.purchasePackage({ aPackage: pkg });
             if (hasEntitlement(purchaseResult.customerInfo)) {
                 await applyAdsState(true);
-                alert('✅ Subscription successful! Ads have been removed.');
+                showNotification({
+                    title: 'Subscription Successful',
+                    message: '✅ Subscription successful! Ads have been removed.',
+                    type: 'success'
+                });
             }
         } catch (e: any) {
             console.error('[RC] Purchase error:', e);
@@ -214,7 +224,11 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
             if (rc && e.code === rc.PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) {
                 // User cancelled the purchase, do nothing
             } else {
-                alert('Something went wrong processing your purchase. Please try again.');
+                showNotification({
+                    title: 'Purchase Error',
+                    message: 'Something went wrong processing your purchase. Please try again.',
+                    type: 'error'
+                });
             }
         }
     }, [applyAdsState]);
@@ -222,7 +236,11 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
     // ─── Direct Purchase Method (By Product ID) ───────────────────────────────
     const purchaseProduct = useCallback(async (productIdentifier: string) => {
         if (!isNative()) {
-            alert('Subscriptions are only available in the Android app. Download it from Google Play!');
+            showNotification({
+                title: 'Native App Required',
+                message: 'Subscriptions are only available in the Android app. Download it from Google Play!',
+                type: 'info'
+            });
             return;
         }
         try {
@@ -246,7 +264,11 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
 
             if (hasEntitlement(purchaseResult.customerInfo)) {
                 await applyAdsState(true);
-                alert('✅ Subscription successful! Ads have been removed.');
+                showNotification({
+                    title: 'Subscription Successful',
+                    message: '✅ Subscription successful! Ads have been removed.',
+                    type: 'success'
+                });
             }
         } catch (e: any) {
             console.error('[RC] Purchase error:', e);
@@ -254,26 +276,45 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
             if (rc && e.code === rc.PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) {
                 // User cancelled the purchase, do nothing
             } else {
-                alert('Something went wrong processing your purchase. Please try again.');
+                showNotification({
+                    title: 'Purchase Error',
+                    message: 'Something went wrong processing your purchase. Please try again.',
+                    type: 'error'
+                });
             }
         }
     }, [applyAdsState, packages]);
 
     // ─── Restore purchases ──────────────────────────────────────────────────────
     const restorePurchases = useCallback(async () => {
-        if (!isNative()) { alert('Restore Purchases is only available in the Android app.'); return; }
+        if (!isNative()) {
+            showNotification({
+                title: 'Native App Required',
+                message: 'Restore Purchases is only available in the Android app.',
+                type: 'info'
+            });
+            return;
+        }
         try {
             const rc = await getPurchases();
             if (!rc) throw new Error('RC unavailable');
             const { customerInfo } = await rc.Purchases.restorePurchases();
             const active = hasEntitlement(customerInfo);
             await applyAdsState(active);
-            alert(active
-                ? '✅ Purchase restored! Ads have been removed.'
-                : 'No active subscription found for this Google Play account.');
+            showNotification({
+                title: 'Restore Result',
+                message: active 
+                    ? '✅ Purchase restored! Ads have been removed.'
+                    : 'No active subscription found for this Google Play account.',
+                type: active ? 'success' : 'info'
+            });
         } catch (e) {
             console.error('[RC] Restore failed:', e);
-            alert('Could not restore purchases. Check your connection and try again.');
+            showNotification({
+                title: 'Error',
+                message: 'Could not restore purchases. Check your connection and try again.',
+                type: 'error'
+            });
         }
     }, [applyAdsState]);
 

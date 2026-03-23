@@ -118,153 +118,74 @@ export default function HomePage() {
               </div>
             )}
 
-            <button
-              onClick={() => setShowAdvanced(!showAdvanced)}
-              className="button button-ghost mt-4"
-              style={{ maxWidth: '300px', margin: '1.5rem auto', display: 'flex' }}
-            >
-              {showAdvanced ? 'Hide Advanced Options ▲' : 'Show Advanced Options ▼'}
-            </button>
-
-            {showAdvanced && (
-              <div className="advanced-section mt-4 fade-in">
-                <div className="grid grid-auto">
-                  {!isIframe && (
-                    <Link href="/contact" className="card">
-                      <h3 className="text-center mb-2">📞 Contact</h3>
-                      <p className="text-center">
-                        Get help, report issues, or request features with comprehensive support
-                      </p>
-                    </Link>
-                  )}
-
-                  {!isIframe && (
-                    <Link href="/privacy-policy" className="card">
-                      <h3 className="text-center mb-2">🔒 Privacy</h3>
-                      <p className="text-center">
-                        Learn about our privacy-first approach and Android compatibility
-                      </p>
-                    </Link>
-                  )}
-                </div>
-
-                {!isPortfolioEmbed && (
-                  <div className="card mt-4">
-                    <h3 className="text-center mb-2">🚀 Professional Android App</h3>
-                    <p className="text-center">
-                      Built with the latest Android 15 (API 35) target for enhanced security, performance,
-                      and Google Play compliance. Enjoy a safe and modern gaming experience.
-                    </p>
-                  </div>
-                )}
-
-                <div className="card mt-4">
-                  <h2 className="text-center mb-3">Complete Game Management</h2>
-                  <div className="grid grid-2">
-                    <div className="card">
-                      <p>🎲 Roll challenges and track game rules with smart logic</p>
-                    </div>
-                    <div className="card">
-                      <p>📊 Manage Age decks and Catastrophe modes</p>
-                    </div>
-                    <div className="card">
-                      <p>🎯 Handle Meaning of Life cards with custom configurations</p>
-                    </div>
-                    <div className="card">
-                      <p>💎 Track Dominant cards and tiers with color-coded system</p>
-                    </div>
-                    <div className="card">
-                      <p>🌐 Sync gameplay automatically across local WiFi devices</p>
-                    </div>
-                    <div className="card">
-                      <p>💾 Save and load multiple game states with persistent storage</p>
-                    </div>
-                    <div className="card">
-                      <p>📱 Mobile-friendly design with responsive controls</p>
-                    </div>
-                    <div className="card">
-                      <p>🌙 Dark theme optimized for extended gameplay</p>
-                    </div>
-                  </div>
-                </div>
+            {/* Complete Game Management Section */}
+            <div className="features-grid mt-8">
+              <div className="feature-card">
+                <h3>📜 Complete Game Management</h3>
+                <p>Manage all aspects of your game from a single app. From setup to final scoring, we've got you covered.</p>
               </div>
-            )}
+              <div className="feature-card">
+                <h3>🔄 Real-time Synchronization</h3>
+                <p>Connect with other devices on your WiFi network to automatically sync Age progressions and Challenges.</p>
+              </div>
+            </div>
+
+            {/* Expandable Advanced Section */}
+            <div className="mt-8 pt-6 border-t border-white/10">
+              <button
+                className="secondary-action-link"
+                onClick={() => setShowAdvanced(!showAdvanced)}
+              >
+                {showAdvanced ? 'Hide Options' : 'Show Advanced Options'}
+              </button>
+
+              {showAdvanced && (
+                <div className="mt-6 flex flex-wrap justify-center gap-6 fade-in">
+                  <Link href="https://doomlings.com/pages/contact" target="_blank" className="text-muted hover:text-white transition-colors">
+                    📧 Contact
+                  </Link>
+                  <Link href="/privacy" className="text-muted hover:text-white transition-colors">
+                    ⚖️ Privacy Policy
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
         </main>
       </div>
 
+      {/* Premium Popup */}
       {showPremiumPopup && (
-        <>
-          <div
-            style={{
-              position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-              backgroundColor: 'rgba(0, 0, 0, 0.7)', zIndex: 9999
-            }}
-            onClick={() => setShowPremiumPopup(false)}
-          />
-          <div
-            style={{
-              position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-              width: '90%', maxWidth: '400px', zIndex: 10000,
-              backgroundColor: '#111', borderRadius: '12px', padding: '10px 0',
-              border: '1px solid rgba(255, 193, 7, 0.4)',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.8)',
-              display: 'flex', flexDirection: 'column', alignItems: 'center'
-            }}
-          >
+        <div className="premium-popup-overlay">
+          <div className="premium-popup-content pop-in">
             <button
+              className="premium-popup-close"
               onClick={() => setShowPremiumPopup(false)}
-              style={{
-                position: 'absolute', top: '10px', right: '15px',
-                background: 'transparent', border: 'none', color: '#888',
-                fontSize: '24px', cursor: 'pointer', zIndex: 10
+            >
+              &times;
+            </button>
+            <h2 className="premium-title">✨ Unlock Premium</h2>
+            <p className="premium-description">
+              Remove all ads and unlock advanced game management features!
+            </p>
+            <button
+              className="premium-btn"
+              onClick={() => {
+                // Logic to navigate to premium or trigger purchase
+                setShowPremiumPopup(false);
+                router.push('/premium');
               }}
             >
-              ×
+              UPGRADE NOW
             </button>
-            <div style={{ width: '100%', padding: '30px 20px 10px', textAlign: 'center' }}>
-              <h2 style={{ color: '#FFD700', fontSize: '24px', fontWeight: 'bold', marginBottom: '10px' }}>Upgrade to Premium</h2>
-              <p style={{ color: '#eee', fontSize: '16px', marginBottom: '25px' }}>Unlock all cards & remove ads for as low as <strong>.99/mo</strong>!</p>
-              
-              <button
-                onClick={() => {
-                  setShowPremiumPopup(false);
-                  router.push('/premium');
-                }}
-                style={{
-                  background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-                  border: 'none',
-                  color: '#000',
-                  padding: '12px 30px',
-                  borderRadius: '30px',
-                  fontWeight: 'bold',
-                  fontSize: '16px',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 15px rgba(255, 215, 0, 0.3)',
-                  marginBottom: '15px',
-                  width: '100%'
-                }}
-              >
-                View Subscription Plans
-              </button>
-
-              <button
-                onClick={() => setShowPremiumPopup(false)}
-                style={{
-                  background: 'transparent', 
-                  border: 'none', 
-                  color: '#aaa',
-                  padding: '10px', 
-                  cursor: 'pointer',
-                  fontSize: '14px', 
-                  textDecoration: 'underline'
-                }}
-              >
-                Maybe Later
-              </button>
-            </div>
+            <button
+              className="secondary-action-link"
+              onClick={() => setShowPremiumPopup(false)}
+            >
+              Maybe later
+            </button>
           </div>
-        </>
+        </div>
       )}
 
     </div>

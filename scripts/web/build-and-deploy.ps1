@@ -75,6 +75,33 @@ Write-Host ""
 $RootDir = (Resolve-Path (Join-Path $PSScriptRoot ".." "..")).Path
 Set-Location $RootDir
 Write-Status "Changed working directory to: $RootDir" "INFO"
+
+# Fix JAVA_HOME if invalid
+$currentJavaHome = [System.Environment]::GetEnvironmentVariable("JAVA_HOME", "Process")
+if (-not $currentJavaHome -or -not (Test-Path (Join-Path $currentJavaHome "bin\java.exe"))) {
+    Write-Status "Current JAVA_HOME is invalid or not set ($currentJavaHome)" "WARNING"
+    
+    $potentialJDKs = @(
+        "C:\Program Files\Android\Android Studio\jbr",
+        "$env:LOCALAPPDATA\Android\Sdk\jdk",
+        "C:\Program Files\Microsoft\jdk-21.0.8.9-hotspot"
+    )
+    
+    foreach ($jdk in $potentialJDKs) {
+        if (Test-Path (Join-Path $jdk "bin\java.exe")) {
+            $env:JAVA_HOME = $jdk
+            Write-Status "Automatically set JAVA_HOME to: $jdk" "SUCCESS"
+            break
+        }
+    }
+    
+    if (-not $env:JAVA_HOME) {
+        Write-Status "Could not find a valid JDK automatically. Gradle builds may fail." "ERROR"
+    }
+}
+else {
+    Write-Status "Using existing JAVA_HOME: $currentJavaHome" "INFO"
+}
 $BuildOutputDir = Join-Path $RootDir "builds"
 $BackupDir = Join-Path $BuildOutputDir "backup"
 $AndroidDir = Join-Path $RootDir "android"

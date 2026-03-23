@@ -7,6 +7,7 @@ import { AdProvider } from "@/lib/ad-context";
 import { ThemeProvider } from "@/lib/theme-context";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
+import { NotificationProvider } from "@/lib/notification-context";
 
 const outfitFont = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
@@ -56,15 +57,17 @@ export default function RootLayout({
       </head>
       <body className={`${outfitFont.className} ${outfitFont.variable}`}>
         <ThemeProvider>
-          <IframeProvider>
-            <AdProvider>
-              <IframeWrapper>
-                <BackHandler />
-                {children}
-                <div className="ad-space-placeholder" style={{ width: '100%', height: 'var(--ad-banner-height)', display: 'block', flexShrink: 0, pointerEvents: 'none' }} />
-              </IframeWrapper>
-            </AdProvider>
-          </IframeProvider>
+          <NotificationProvider>
+            <IframeProvider>
+              <AdProvider>
+                <IframeWrapper>
+                  <BackHandler />
+                  {children}
+                  <div className="ad-space-placeholder" style={{ width: '100%', height: 'var(--ad-banner-height)', display: 'block', flexShrink: 0, pointerEvents: 'none' }} />
+                </IframeWrapper>
+              </AdProvider>
+            </IframeProvider>
+          </NotificationProvider>
         </ThemeProvider>
         <Analytics />
       </body>

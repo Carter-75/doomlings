@@ -7,19 +7,19 @@ import { useCardImage } from '../hooks/useCardImage';
 interface GameTurnProps {
   playerCount: number;
   playerNames: string[];
-  currentRule: Rule | null;
+  currentRule: any | null;
   challengePlayer: string | null;
-  currentAge: Age | null;
+  currentAge: any | null;
   isCatastrophe: boolean;
   isLastAge: boolean;
-  trinketState: TrinketState;
-  pocketedTrinkets: { [key: string]: Trinket[] };
+  trinketState: { deck: any[], playerTrinkets: { [key: string]: any[] } };
+  pocketedTrinkets: { [key: string]: any[] };
   trinketsPocketedThisTurn: { [key: string]: boolean };
   onNextTurn: () => void;
-  handleTrinketAdd: (playerName: string, trinket: Trinket) => void;
-  handleTrinketRemove: (playerName: string, trinket: Trinket) => void;
-  handleTrinketPocket: (playerName: string, trinket: Trinket) => void;
-  catastropheMode: boolean;
+  onTrinketAdd: (playerName: string, trinket: any) => void;
+  onTrinketRemove: (playerName: string, trinket: any) => void;
+  onTrinketPocket: (playerName: string, trinket: any) => void;
+  onResetAll: () => void;
 }
 
 const GameTurn: React.FC<GameTurnProps> = ({
@@ -34,10 +34,10 @@ const GameTurn: React.FC<GameTurnProps> = ({
   pocketedTrinkets,
   trinketsPocketedThisTurn,
   onNextTurn,
-  handleTrinketAdd,
-  handleTrinketRemove,
-  handleTrinketPocket,
-  catastropheMode,
+  onTrinketAdd,
+  onTrinketRemove,
+  onTrinketPocket,
+  onResetAll
 }) => {
   const { getCardImage } = useCardImage();
   const cardArtUrl = currentAge ? getCardImage(currentAge.name) : null;
@@ -60,16 +60,16 @@ const GameTurn: React.FC<GameTurnProps> = ({
         <div className="column">
           <div className="age-config box">
             <h2 className="title is-4 has-text-centered">Challenge</h2>
-            <div className={`age-display mt-4 has-text-centered ${catastropheMode ? 'catastrophe-mode' : ''}`}>
+            <div className={`age-display mt-4 has-text-centered ${isCatastrophe ? 'catastrophe-mode' : ''}`}>
               {currentRule ? (
-                <div className={`rule-display ${catastropheMode ? 'catastrophe-mode' : ''}`}>
+                <div className={`rule-display ${isCatastrophe ? 'catastrophe-mode' : ''}`}>
                   {challengePlayer && (
                     <h3 className="challenge-player-title">For: {challengePlayer}</h3>
                   )}
                   <h4>{currentRule.title}</h4>
                   <p>{currentRule.description}</p>
                 </div>
-              ) : <p>Roll for a new challenge.</p>}
+              ) : <p>Roll for a new challenge in the Challenges tab.</p>}
             </div>
           </div>
         </div>
@@ -143,9 +143,9 @@ const GameTurn: React.FC<GameTurnProps> = ({
                       <TrinketCard
                         key={`${trinket.name}-${tIndex}`}
                         trinket={trinket}
-                        onAdd={() => handleTrinketAdd(pName, trinket)}
-                        onRemove={() => handleTrinketRemove(pName, trinket)}
-                        onPocket={() => handleTrinketPocket(pName, trinket)}
+                        onAdd={() => onTrinketAdd(pName, trinket)}
+                        onRemove={() => onTrinketRemove(pName, trinket)}
+                        onPocket={() => onTrinketPocket(pName, trinket)}
                         isPocketDisabled={currentTrinkets.length !== 1 || trinketsPocketedThisTurn[pName]}
                         isFogged={trinketsPocketedThisTurn[pName]}
                       />
@@ -164,16 +164,7 @@ const GameTurn: React.FC<GameTurnProps> = ({
       </div>
 
       <div className="player-control box mt-4" style={{ display: 'flex', justifyContent: 'center' }}>
-        <AnimatedButton id="reset-all-btn" className="is-danger" onClick={() => {
-            if (window.confirm("Are you sure you want to reset all app data? This cannot be undone.")) {
-                const tutorialSeen = localStorage.getItem('doomlingsTutorialSeen');
-                localStorage.clear();
-                if (tutorialSeen) {
-                    localStorage.setItem('doomlingsTutorialSeen', tutorialSeen);
-                }
-                window.location.reload();
-            }
-        }}>
+        <AnimatedButton id="reset-all-btn" className="is-danger" onClick={onResetAll}>
           Reset All App Data
         </AnimatedButton>
       </div>

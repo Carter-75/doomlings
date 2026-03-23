@@ -7,231 +7,62 @@ import { useAds } from '@/lib/ad-context';
 import { useTheme } from '@/lib/theme-context';
 import { Capacitor } from '@capacitor/core';
 import DeveloperSettings from '@/components/DeveloperSettings';
-
-// Cloud Sync Section - Coming Soon
-const CloudSyncSection = () => (
-    <div className="cloud-sync-section">
-        <div className="coming-soon-banner">
-            <h3>🚀 Coming Soon</h3>
-            <p>Cloud sync will allow you to:</p>
-            <ul>
-                <li>📱 Sync settings across devices</li>
-                <li>💾 Backup your game saves</li>
-                <li>🔄 Access your data anywhere</li>
-                <li>👥 Share configurations with friends</li>
-            </ul>
-            <p className="note">
-                <strong>Note:</strong> All sync features will be completely optional.
-                The app will always work fully offline if you prefer.
-            </p>
-        </div>
-        <div className="sync-status">
-            <div className="status-indicator offline">
-                <span className="status-dot"></span>
-                <span>Offline Mode (Local Storage Only)</span>
-            </div>
-        </div>
-    </div>
-);
+import Modal from '@/components/Modal';
+import AnimatedButton from '@/components/AnimatedButton';
 
 const SettingsPage = () => {
-    const { adsRemoved, subscriptionStatus, packages, purchasePackage, restorePurchases, loading: adsLoading } = useAds();
+    const { adsRemoved, packages, purchasePackage, restorePurchases, loading: adsLoading } = useAds();
     const { theme, setTheme } = useTheme();
     const isNativeApp = typeof window !== 'undefined' && Capacitor.isNativePlatform();
 
-    // State for UI scaling
+    // UI States
     const [scale, setScale] = useState(100);
+    const [modal, setModal] = useState<{ isOpen: boolean; title: string; message: string; type?: 'info' | 'warning' | 'error' | 'success'; onConfirm?: () => void } | null>(null);
 
-    // State for JSON editor
+    // JSON Editor State
     const [jsonFiles, setJsonFiles] = useState<string[]>([]);
     const [editingFile, setEditingFile] = useState<string | null>(null);
     const [fileContent, setFileContent] = useState('');
 
-    // State for confirmation dialog
-    const [showConfirm, setShowConfirm] = useState(false);
-    const [fileToDelete, setFileToDelete] = useState<string | null>(null);
-
+    // Game Files State
     const [fileName, setFileName] = useState('');
     const [savedFiles, setSavedFiles] = useState<string[]>([]);
     const [message, setMessage] = useState('');
 
-    // Game Preferences State
+    // Preferences
     const [showScrollToTop, setShowScrollToTop] = useState(true);
     const [warnUnpocketedTrinkets, setWarnUnpocketedTrinkets] = useState(true);
-    
-    // Advanced Settings State
     const [enableAnimations, setEnableAnimations] = useState(true);
     const [showTooltips, setShowTooltips] = useState(true);
     const [developerMode, setDeveloperMode] = useState(false);
 
     useEffect(() => {
-        const savedScaling = localStorage.getItem('uiScaling');
-        if (savedScaling) {
-            setScale(parseInt(savedScaling, 10));
-        }
+        const loadPrefs = async () => {
+            const savedScaling = localStorage.getItem('uiScaling');
+            if (savedScaling) setScale(parseInt(savedScaling, 10));
 
-        // Load Game Preferences
-        const savedShowScrollToTop = localStorage.getItem('showScrollToTop');
-        if (savedShowScrollToTop !== null) {
-            setShowScrollToTop(savedShowScrollToTop === 'true');
-        }
-        const savedWarnUnpocketedTrinkets = localStorage.getItem('warnUnpocketedTrinkets');
-        if (savedWarnUnpocketedTrinkets !== null) {
-            setWarnUnpocketedTrinkets(savedWarnUnpocketedTrinkets === 'true');
-        }
+            setShowScrollToTop(localStorage.getItem('showScrollToTop') !== 'false');
+            setWarnUnpocketedTrinkets(localStorage.getItem('warnUnpocketedTrinkets') !== 'false');
+            setEnableAnimations(localStorage.getItem('enableAnimations') !== 'false');
+            setShowTooltips(localStorage.getItem('showTooltips') !== 'false');
+            setDeveloperMode(localStorage.getItem('developerMode') === 'true');
 
-        // Load Advanced Settings
-        const savedEnableAnimations = localStorage.getItem('enableAnimations');
-        if (savedEnableAnimations !== null) {
-            setEnableAnimations(savedEnableAnimations === 'true');
-        }
-        const savedShowTooltips = localStorage.getItem('showTooltips');
-        if (savedShowTooltips !== null) {
-            setShowTooltips(savedShowTooltips === 'true');
-        }
-        const savedDeveloperMode = localStorage.getItem('developerMode');
-        if (savedDeveloperMode !== null) {
-            setDeveloperMode(savedDeveloperMode === 'true');
-        }
-
-        fetchJsonFiles();
-        fetchSavedFiles();
+            fetchJsonFiles();
+            fetchSavedFiles();
+        };
+        loadPrefs();
     }, []);
-
-    // Stub functions for now
-    const handleScaleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setScale(parseInt(e.target.value, 10));
-    };
-
-    const handleShowScrollToTopChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const checked = e.target.checked;
-        setShowScrollToTop(checked);
-        localStorage.setItem('showScrollToTop', String(checked));
-    };
-
-    const handleWarnUnpocketedTrinketsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const checked = e.target.checked;
-        setWarnUnpocketedTrinkets(checked);
-        localStorage.setItem('warnUnpocketedTrinkets', String(checked));
-    };
-
-    const handleEnableAnimationsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const checked = e.target.checked;
-        setEnableAnimations(checked);
-        localStorage.setItem('enableAnimations', String(checked));
-    };
-
-    const handleShowTooltipsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const checked = e.target.checked;
-        setShowTooltips(checked);
-        localStorage.setItem('showTooltips', String(checked));
-    };
-
-    const handleDeveloperModeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const checked = e.target.checked;
-        setDeveloperMode(checked);
-        localStorage.setItem('developerMode', String(checked));
-    };
-
-    const applyScale = () => {
-        const scaleValue = scale / 100;
-        document.documentElement.style.setProperty('--ui-scale', scaleValue.toString());
-        localStorage.setItem('uiScaling', scale.toString());
-        alert(`UI scale set to ${scale}%`);
-    };
 
     const fetchJsonFiles = async () => {
         try {
             const response = await fetch('/api/list-files');
-            if (!response.ok) {
-                console.warn('Failed to fetch files (route may not exist in static export)');
-                return;
+            if (response.ok) {
+                const data = await response.json();
+                setJsonFiles(data);
             }
-            const data = await response.json();
-            setJsonFiles(data);
-        } catch (error) {
-            console.warn('Error fetching json files:', error);
-            // Handle error state in UI
+        } catch (e) {
+            console.warn('API routes not available in this environment');
         }
-    };
-
-    const viewFile = async (fileName: string) => {
-        try {
-            const response = await fetch(`/api/get-file?file=${fileName}`);
-            if (!response.ok) {
-                throw new Error('Failed to fetch file content');
-            }
-            const data = await response.json();
-            setFileContent(JSON.stringify(data, null, 2));
-        } catch (error) {
-            console.error(error);
-            setFileContent('Error loading file content.');
-        }
-    };
-
-    const editFile = (fileName: string) => {
-        setEditingFile(fileName);
-        viewFile(fileName); // Load content into editor
-    };
-
-    const saveFile = async (fileName: string) => {
-        try {
-            const response = await fetch('/api/save-file', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ fileName, content: fileContent }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to save file');
-            }
-
-            alert('File saved successfully!');
-            setEditingFile(null);
-        } catch (error) {
-            console.error(error);
-            if (error instanceof Error) {
-                alert(`Error saving file: ${error.message}`);
-            } else {
-                alert('An unknown error occurred.');
-            }
-        }
-    };
-
-    const deleteFile = (fileName: string) => {
-        setFileToDelete(fileName);
-        setShowConfirm(true);
-    };
-
-    const confirmDelete = async () => {
-        if (fileToDelete) {
-            try {
-                const response = await fetch(`/api/delete-file?file=${fileToDelete}`, {
-                    method: 'DELETE',
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Failed to delete file');
-                }
-
-                alert('File deleted successfully!');
-                // Refetch the file list to update the UI
-                fetchJsonFiles();
-            } catch (error) {
-                console.error(error);
-                if (error instanceof Error) {
-                    alert(`Error deleting file: ${error.message}`);
-                } else {
-                    alert('An unknown error occurred.');
-                }
-            }
-        }
-        setShowConfirm(false);
-        setFileToDelete(null);
     };
 
     const fetchSavedFiles = async () => {
@@ -239,937 +70,242 @@ const SettingsPage = () => {
             const { keys } = await Preferences.keys();
             const gameFiles = keys.filter(key => key.startsWith('gameState_'));
             setSavedFiles(gameFiles.map(key => key.replace('gameState_', '')));
-        } catch (error) {
-            console.error('Error fetching saved files:', error);
-            setMessage('Error fetching saved files.');
+        } catch (e) {
+            console.error('Error fetching saved files:', e);
         }
     };
 
-    const handleLoad = async (fileToLoad: string) => {
+    const applyScale = () => {
+        const scaleValue = scale / 100;
+        document.documentElement.style.setProperty('--ui-scale', scaleValue.toString());
+        localStorage.setItem('uiScaling', scale.toString());
+        setModal({
+            isOpen: true,
+            title: 'Scale Applied',
+            message: `UI scale set to ${scale}%`,
+            type: 'success'
+        });
+    };
+
+    const handleSave = async (f: string) => {
         try {
-            const result = await Preferences.get({ key: `gameState_${fileToLoad}` });
-            if (result.value) {
-                localStorage.setItem('gameState', result.value);
-                setMessage(`Game state "${fileToLoad}" loaded successfully! You can now return to the game.`);
+            const response = await fetch('/api/save-file', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fileName: f, content: fileContent }),
+            });
+            if (response.ok) {
+                setModal({ isOpen: true, title: 'Saved', message: 'File saved successfully!', type: 'success' });
+                setEditingFile(null);
             } else {
-                setMessage(`No data found for "${fileToLoad}".`);
+                throw new Error('Failed to save');
             }
-        } catch (error) {
-            console.error('Error loading game state:', error);
-            setMessage('Error loading game state.');
+        } catch (e: any) {
+            setModal({ isOpen: true, title: 'Error', message: e.message, type: 'error' });
         }
     };
 
-    const handleSave = async () => {
-        if (!fileName.trim()) {
-            setMessage('Please enter a file name.');
-            return;
-        }
-
-        try {
-            const gameState = localStorage.getItem('gameState');
-            if (gameState) {
-                await Preferences.set({
-                    key: `gameState_${fileName}`,
-                    value: gameState,
-                });
-                setMessage(`Game state saved as "${fileName}"!`);
-                // Manually refresh the list to show the new file
+    const handleDeleteGame = (file: string) => {
+        setModal({
+            isOpen: true,
+            title: 'Delete Save?',
+            message: `Are you sure you want to delete "${file}"?`,
+            type: 'warning',
+            onConfirm: async () => {
+                await Preferences.remove({ key: `gameState_${file}` });
                 fetchSavedFiles();
-                setFileName(''); // Clear input
-            } else {
-                setMessage('No game state found to save. Please play the game first.');
+                setModal(null);
             }
-        } catch (error) {
-            console.error('Error saving game state:', error);
-            setMessage('Error saving game state.');
-        }
+        });
     };
 
-    const handleDelete = async (fileToDelete: string) => {
-        if (!confirm(`Are you sure you want to delete "${fileToDelete}"?`)) {
-            return;
-        }
-
-        try {
-            await Preferences.remove({ key: `gameState_${fileToDelete}` });
-            setMessage(`"${fileToDelete}" has been deleted.`);
-            // Manually refresh the list
-            fetchSavedFiles();
-        } catch (error) {
-            console.error('Error deleting file:', error);
-            setMessage('Error deleting file.');
-        }
+    const handleResetAll = () => {
+        setModal({
+            isOpen: true,
+            title: 'RESET ALL DATA?',
+            message: 'This will wipe all game progress, settings, and themes. This cannot be undone.',
+            type: 'error',
+            onConfirm: () => {
+                const tutorialSeen = localStorage.getItem('doomlingsTutorialSeen');
+                localStorage.clear();
+                if (tutorialSeen) localStorage.setItem('doomlingsTutorialSeen', tutorialSeen);
+                window.location.reload();
+            }
+        });
     };
 
     return (
-        <>
-            {/* Styles */}
-            <style jsx>{`
-                /* All the CSS from settings.html goes here */
-                .container {
-                    width: 100%;
-                    max-width: 100vw;
-                    overflow-x: hidden;
-                    padding: 0 10px;
-                    box-sizing: border-box;
-                }
-                /* ... (rest of the styles from the file) */
-                 .settings-container {
-            max-width: 800px;
-            width: 90%;
-            margin: var(--space-8) auto;
-            padding: 0;
-            background: transparent;
-            box-shadow: none;
-            box-sizing: border-box;
-            overflow-x: hidden;
-        }
+        <div className="settings-page min-h-screen p-4 pb-20 max-w-4xl mx-auto">
+            <header className="mb-8 text-center pt-8">
+                <h1 className="title is-1 has-text-weight-bold">Settings</h1>
+            </header>
 
-        @media screen and (max-width: 600px) {
-            .settings-container {
-                width: 95%;
-                margin: var(--space-4) auto;
-            }
-        }
-
-        .settings-section {
-            margin-bottom: var(--space-6);
-            padding: var(--space-6);
-            background: var(--light-bg);
-            border-radius: var(--border-radius);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: var(--shadow-card);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            box-sizing: border-box;
-            overflow-x: hidden;
-            overflow-wrap: break-word;
-            word-wrap: break-word;
-        }
-
-        .settings-section h2 {
-            color: var(--primary-orange);
-            margin-bottom: var(--space-4);
-            font-size: clamp(1.25rem, 3vw, 1.5rem);
-            font-weight: 700;
-        }
-        
-        .scale-control {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
-            overflow: hidden;
-        }
-
-        .scale-control label {
-            color: #fff;
-            min-width: 200px;
-            flex-shrink: 0;
-            max-width: 100%;
-            white-space: normal;
-        }
-
-        .scale-control input[type="range"] {
-            flex: 1;
-            min-width: 150px;
-            max-width: 100%;
-        }
-
-        .scale-value {
-            color: #00ff88;
-            min-width: 50px;
-            text-align: right;
-        }
-
-        .json-editor {
-            margin-top: 20px;
-        }
-
-        .json-file {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-            border: 1px solid rgba(0, 157, 255, 0.3);
-        }
-
-        .json-file-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .json-file-name {
-            color: #fff;
-            font-weight: bold;
-        }
-
-        .json-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .json-content {
-            background: rgba(0, 0, 0, 0.5);
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            font-family: monospace;
-            color: #fff;
-            white-space: pre-wrap;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .json-edit-mode textarea {
-            width: 100%;
-            min-height: 200px;
-            background: rgba(0, 0, 0, 0.5);
-            color: #fff;
-            border: 1px solid rgba(0, 157, 255, 0.5);
-            border-radius: 5px;
-            padding: 10px;
-            font-family: monospace;
-            margin-top: 10px;
-        }
-
-        .action-btn {
-            background: linear-gradient(135deg, var(--primary-red), var(--primary-orange));
-            color: var(--text-primary);
-            padding: var(--space-2) var(--space-4);
-            border: none;
-            border-radius: var(--border-radius-small);
-            cursor: pointer;
-            font-size: clamp(0.75rem, 1.8vw, 0.875rem);
-            font-weight: 600;
-            transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
-            box-shadow: var(--shadow-primary);
-        }
-
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-primary), var(--glow-primary);
-            filter: brightness(1.1);
-        }
-
-        .delete-btn {
-            background: linear-gradient(135deg, var(--error), #dc2f02);
-            box-shadow: 0 4px 15px rgba(230, 57, 70, 0.25);
-        }
-        .delete-btn:hover {
-            box-shadow: 0 4px 15px rgba(230, 57, 70, 0.4), 0 0 20px rgba(230, 57, 70, 0.3);
-        }
-        
-        .confirm-dialog {
-            display: ${showConfirm ? 'block' : 'none'};
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.9);
-            padding: 20px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 0, 0, 0.5);
-            z-index: 1000;
-            text-align: center;
-        }
-
-        .confirm-dialog h3 {
-            color: #fff;
-            margin-bottom: 20px;
-        }
-
-        .confirm-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-        
-        .overlay {
-            display: ${showConfirm ? 'block' : 'none'};
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 999;
-        }
-
-        .cloud-sync-section {
-            text-align: center;
-        }
-
-        .coming-soon-banner {
-            background: linear-gradient(135deg, rgba(60, 130, 247, 0.1), rgba(0, 255, 136, 0.1));
-            border: 1px solid rgba(60, 130, 247, 0.3);
-            border-radius: 10px;
-            padding: 25px;
-            margin-bottom: 20px;
-        }
-
-        .coming-soon-banner h3 {
-            color: #00ff88;
-            margin-bottom: 15px;
-            font-size: 1.4em;
-        }
-
-        .coming-soon-banner p {
-            color: #e0e0e0;
-            margin-bottom: 15px;
-            line-height: 1.6;
-        }
-
-        .coming-soon-banner ul {
-            text-align: left;
-            max-width: 400px;
-            margin: 20px auto;
-            color: #ccc;
-        }
-
-        .coming-soon-banner li {
-            margin-bottom: 8px;
-            padding-left: 5px;
-        }
-
-        .coming-soon-banner .note {
-            background: rgba(0, 255, 136, 0.1);
-            border: 1px solid rgba(0, 255, 136, 0.2);
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 20px;
-            font-size: 0.9em;
-            color: #b0b0b0;
-        }
-
-        .sync-status {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-weight: bold;
-        }
-
-        .status-indicator.offline {
-            background: rgba(128, 128, 128, 0.2);
-            border: 1px solid rgba(128, 128, 128, 0.3);
-            color: #ccc;
-        }
-
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #888;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-
-        .app-info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .info-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: var(--border-radius-small);
-            padding: var(--space-5);
-            text-align: center;
-            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
-        }
-
-        .info-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-secondary);
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .info-card h3 {
-            color: var(--primary-orange);
-            margin-bottom: var(--space-2);
-            font-size: 1.1em;
-        }
-
-        .info-card p {
-            color: #fff;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .info-card small {
-            color: #ccc;
-            font-size: 0.85em;
-        }
-
-        .advanced-settings {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .setting-item {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: var(--border-radius-small);
-            padding: var(--space-5);
-            max-width: 100%;
-            box-sizing: border-box;
-            overflow: hidden;
-            transition: background 0.2s ease, border-color 0.2s ease;
-        }
-        .setting-item:hover {
-            background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .setting-item label {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: var(--text-primary);
-            font-weight: 600;
-            cursor: pointer;
-            max-width: 100%;
-            flex-wrap: wrap;
-        }
-
-        .setting-item input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--primary-orange);
-            cursor: pointer;
-        }
-
-        .setting-item small {
-            display: block;
-            color: #ccc;
-            margin-top: 8px;
-            margin-left: 30px;
-            font-size: 0.9em;
-            line-height: 1.4;
-        }
-            /* ── Remove Ads Premium Section ── */
-        .premium-section {
-            background: var(--light-bg);
-            border: 1px solid rgba(255, 193, 7, 0.2);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-card);
-            backdrop-filter: blur(24px);
-            padding: var(--space-6);
-            margin-bottom: var(--space-6);
-            text-align: center;
-        }
-        .premium-section h2 {
-            color: var(--warning);
-            margin-bottom: var(--space-2);
-        }
-        .premium-section p {
-            color: #ccc;
-            margin-bottom: 18px;
-            font-size: 0.95em;
-        }
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 0.85em;
-            margin-bottom: 20px;
-        }
-        .status-badge.active {
-            background: rgba(0, 255, 136, 0.15);
-            border: 1px solid rgba(0, 255, 136, 0.4);
-            color: #00ff88;
-        }
-        .status-badge.free {
-            background: rgba(255, 193, 7, 0.15);
-            border: 1px solid rgba(255, 193, 7, 0.4);
-            color: #ffc107;
-        }
-        .premium-btn-row {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        .subscribe-btn {
-            background: linear-gradient(135deg, #ffc107, #ff5722);
-            color: #000;
-            padding: 12px 28px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: bold;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .subscribe-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
-        }
-        .restore-btn {
-            background: transparent;
-            color: #ccc;
-            padding: 12px 20px;
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: border-color 0.2s, color 0.2s;
-        }
-        .restore-btn:hover {
-            border-color: rgba(255,255,255,0.5);
-            color: #fff;
-        }
-        .manage-btn {
-            background: transparent;
-            color: #00ff88;
-            padding: 12px 20px;
-            border: 1px solid rgba(0, 255, 136, 0.4);
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: border-color 0.2s, background 0.2s;
-        }
-        .manage-btn:hover {
-            background: rgba(0, 255, 136, 0.1);
-            border-color: rgba(0, 255, 136, 0.7);
-        }
-        .premium-feature-list {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 18px 0;
-            text-align: left;
-            display: inline-block;
-        }
-        .premium-feature-list li {
-            color: #e0e0e0;
-            padding: 4px 0;
-            font-size: 0.9em;
-        }
-        .web-only-note {
-            color: #888;
-            font-size: 0.8em;
-            margin-top: 12px;
-        }
-        .packages-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
-        .package-card {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 193, 7, 0.3);
-            border-radius: 8px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .package-card h3 {
-            color: #ffc107;
-            margin: 0;
-            font-size: 1.1em;
-        }
-        .package-card p {
-            color: #ccc;
-            margin: 0;
-            font-size: 0.9em;
-        }
-        .package-price {
-            font-size: 1.25em;
-            font-weight: bold;
-            color: #fff;
-            margin: 5px 0;
-        }
-            `}</style>
-
-            {/* Overlay and Confirmation Dialog */}
-            <div className="overlay" onClick={() => setShowConfirm(false)}></div>
-            <div className="confirm-dialog">
-                <h3>Are you sure you want to delete this file?</h3>
-                <div className="confirm-actions">
-                    <button className="action-btn delete-btn" onClick={confirmDelete}>Yes, Delete</button>
-                    <button className="action-btn" onClick={() => setShowConfirm(false)}>Cancel</button>
+            {/* Premium Section */}
+            <section className="settings-section box bg-glass p-6 mb-6">
+                <h2 className="title is-4 text-warning">✨ Premium Status</h2>
+                <div className="mb-4">
+                    {adsRemoved ? (
+                        <div className="tag is-success is-medium">✅ Ads Removed</div>
+                    ) : (
+                        <div className="tag is-warning is-medium">🔔 Free Tier (Ads Enabled)</div>
+                    )}
                 </div>
-            </div>
-
-            {/* Main Content */}
-            <div className="container">
-                <div className="settings-container">
-                    <h1 style={{ color: 'var(--text-primary)', textAlign: 'center', fontWeight: '800', marginBottom: '2rem' }}>Settings</h1>
-
-                    {/* ── Remove Ads Premium Section ── */}
-                    <div className="premium-section">
-                        <h2>✨ Remove Ads</h2>
-                        <p>Enjoy an ad-free experience with our Monthly, Yearly, or Lifetime plans!</p>
-
-                        {adsLoading ? (
-                            <div className="status-badge free">⏳ Checking subscription…</div>
-                        ) : adsRemoved ? (
-                            <div className="status-badge active">✅ Premium Active — Ads Removed</div>
-                        ) : (
-                            <div className="status-badge free">🔔 Free Tier — Ads Enabled</div>
-                        )}
-
-                        {!adsRemoved && (
-                            <ul className="premium-feature-list">
-                                <li>🚫 No banner ads</li>
-                                <li>🚫 No interstitial ads</li>
-                                <li>⚡ Faster, cleaner gameplay</li>
-                                <li>❤️ Support the developer</li>
-                            </ul>
-                        )}
-
-                        {!adsRemoved && isNativeApp && packages.length > 0 && (
-                            <div className="packages-grid">
-                                {packages.map((pkg: any) => (
-                                    <div key={pkg.identifier} className="package-card">
-                                        <h3>{pkg.product.title}</h3>
-                                        <p>{pkg.product.description}</p>
-                                        <div className="package-price">{pkg.product.priceString}</div>
-                                        <button
-                                            className="subscribe-btn"
-                                            onClick={() => purchasePackage(pkg)}
-                                            disabled={adsLoading}
-                                        >
-                                            Subscribe
-                                        </button>
-                                    </div>
-                                ))}
+                
+                {!adsRemoved && isNativeApp && (
+                    <div className="columns is-multiline mt-4">
+                        {packages.map((pkg: any) => (
+                            <div key={pkg.identifier} className="column is-4">
+                                <div className="card bg-black/20 p-4 rounded-lg text-center border border-white/5 h-full is-flex is-flex-direction-column">
+                                    <h3 className="has-text-weight-bold mb-2">{pkg.product.title}</h3>
+                                    <p className="is-size-7 mb-4 flex-grow">{pkg.product.description}</p>
+                                    <div className="title is-5 mb-4">{pkg.product.priceString}</div>
+                                    <AnimatedButton className="is-primary is-small" onClick={() => purchasePackage(pkg)}>Buy</AnimatedButton>
+                                </div>
                             </div>
-                        )}
+                        ))}
+                    </div>
+                )}
 
-                        {!adsRemoved && isNativeApp && packages.length === 0 && !adsLoading && (
-                            <p style={{ color: '#ccc', fontStyle: 'italic', marginBottom: '20px' }}>No plans available right now.</p>
-                        )}
+                <div className="mt-6 flex gap-4 is-justify-content-center">
+                    <AnimatedButton className="is-light" onClick={restorePurchases}>🔄 Restore Purchases</AnimatedButton>
+                </div>
+            </section>
 
-                        <div className="premium-btn-row">
-                            <button
-                                className="restore-btn"
-                                onClick={restorePurchases}
-                                disabled={adsLoading}
+            {/* UI Customization */}
+            <section className="settings-section box bg-glass p-6 mb-6">
+                <h2 className="title is-4 text-primary">🎨 Personalization</h2>
+                
+                <div className="field mb-6">
+                    <label className="label">UI Scale: {scale}%</label>
+                    <div className="control is-flex is-align-items-center gap-4">
+                        <input type="range" min="50" max="125" value={scale} onChange={e => setScale(parseInt(e.target.value))} className="slider is-fullwidth" />
+                        <AnimatedButton className="is-small is-info" onClick={applyScale}>Apply</AnimatedButton>
+                    </div>
+                </div>
+
+                <div className="theme-selector">
+                    <label className="label mb-3">Color Theme</label>
+                    <div className="grid grid-cols-5 gap-3">
+                        {[
+                            { id: 'default', color: 'linear-gradient(135deg, #d63447, #ff7b4d)' },
+                            { id: 'ocean', color: 'linear-gradient(135deg, #0284c7, #38bdf8)' },
+                            { id: 'forest', color: 'linear-gradient(135deg, #166534, #4ade80)' },
+                            { id: 'purple', color: 'linear-gradient(135deg, #7e22ce, #c084fc)' },
+                            { id: 'midnight', color: 'linear-gradient(135deg, #1e1b4b, #6366f1)' },
+                            { id: 'sunset', color: 'linear-gradient(135deg, #be123c, #fbbf24)' },
+                            { id: 'cyber', color: 'linear-gradient(135deg, #f0abfc, #2dd4bf)' },
+                            { id: 'gold', color: 'linear-gradient(135deg, #854d0e, #fde047)' },
+                            { id: 'mint', color: 'linear-gradient(135deg, #0f766e, #6ee7b7)' },
+                            { id: 'mono', color: 'linear-gradient(135deg, #52525b, #d4d4d8)' },
+                        ].map(t => (
+                            <div 
+                                key={t.id} 
+                                onClick={() => setTheme(t.id)}
+                                className={`theme-swatch p-1 rounded-md cursor-pointer transition-all ${theme === t.id ? 'ring-2 ring-primary ring-offset-2 ring-offset-black' : 'opacity-60 hover:opacity-100'}`}
                             >
-                                🔄 Restore Purchases
-                            </button>
-                        </div>
-
-                        {!isNativeApp && (
-                            <p className="web-only-note">Subscriptions are managed through Google Play on the Android app.</p>
-                        )}
+                                <div className="h-8 rounded w-full" style={{ background: t.color }}></div>
+                            </div>
+                        ))}
                     </div>
+                </div>
+            </section>
 
-                    {/* UI Scaling Section */}
-                    <div className="settings-section">
-                        <h2>UI Scaling</h2>
-                        <div className="scale-control">
-                            <label htmlFor="ui-scale">Scale Interface:</label>
-                            <input type="range" id="ui-scale" min="50" max="125" value={scale} onChange={handleScaleChange} />
-                            <span className="scale-value">{scale}%</span>
-                        </div>
-                        <button className="action-btn" onClick={applyScale}>Apply Scale</button>
+            {/* Game Saves */}
+            <section className="settings-section box bg-glass p-6 mb-6">
+                <h2 className="title is-4 text-primary">💾 Saved Games</h2>
+                <div className="field has-addons mb-6">
+                    <div className="control is-expanded">
+                        <input className="input" type="text" placeholder="New save name..." value={fileName} onChange={e => setFileName(e.target.value)} />
                     </div>
-
-                    {/* Theme Picker Section */}
-                    <div className="settings-section">
-                        <h2>🎨 App Theme</h2>
-                        <div className="theme-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '15px', marginTop: '15px' }}>
-                            {[
-                                { id: 'default', name: 'Default', colors: ['#d63447', '#ff7b4d'] },
-                                { id: 'ocean', name: 'Ocean', colors: ['#0284c7', '#38bdf8'] },
-                                { id: 'forest', name: 'Forest', colors: ['#166534', '#4ade80'] },
-                                { id: 'purple', name: 'Purple', colors: ['#7e22ce', '#c084fc'] },
-                                { id: 'midnight', name: 'Midnight', colors: ['#1e1b4b', '#6366f1'] },
-                                { id: 'sunset', name: 'Sunset', colors: ['#be123c', '#fbbf24'] },
-                                { id: 'cyberpunk', name: 'Cyber', colors: ['#f0abfc', '#2dd4bf'] },
-                                { id: 'gold', name: 'Gold', colors: ['#854d0e', '#fde047'] },
-                                { id: 'mint', name: 'Mint', colors: ['#0f766e', '#6ee7b7'] },
-                                { id: 'monochrome', name: 'Mono', colors: ['#52525b', '#d4d4d8'] },
-                            ].map(t => (
-                                <div
-                                    key={t.id}
-                                    onClick={() => setTheme(t.id)}
-                                    style={{
-                                        cursor: 'pointer',
-                                        padding: '10px',
-                                        borderRadius: '8px',
-                                        border: `2px solid ${theme === t.id ? 'var(--primary-orange)' : 'rgba(255,255,255,0.05)'}`,
-                                        background: theme === t.id ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.2)',
-                                        textAlign: 'center',
-                                        transition: 'all 0.2s',
-                                        transform: theme === t.id ? 'scale(1.05)' : 'scale(1)'
-                                    }}
-                                >
-                                    <div style={{
-                                        width: '100%',
-                                        height: '40px',
-                                        borderRadius: '4px',
-                                        background: `linear-gradient(135deg, ${t.colors[0]}, ${t.colors[1]})`,
-                                        marginBottom: '8px',
-                                        boxShadow: theme === t.id ? 'var(--glow-primary)' : 'none'
-                                    }}></div>
-                                    <span style={{ color: theme === t.id ? 'var(--primary-orange)' : 'var(--text-secondary)', fontSize: '0.9em', fontWeight: 'bold' }}>{t.name}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Cloud Sync Section */}
-                    <div className="settings-section">
-                        <h2>Cloud Sync</h2>
-                        <CloudSyncSection />
-                    </div>
-
-                    {/* JSON Editor Section */}
-                    <div className="settings-section">
-                        <h2>Customize Game Data</h2>
-                        <div className="json-editor">
-                            {jsonFiles.map(file => (
-                                <div key={file} className="json-file">
-                                    <div className="json-file-header">
-                                        <span className="json-file-name">{file}</span>
-                                        <div className="json-actions">
-                                            {editingFile === file ? (
-                                                <>
-                                                    <button className="action-btn" onClick={() => saveFile(file)}>Save</button>
-                                                    <button className="action-btn" onClick={() => setEditingFile(null)}>Cancel</button>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <button className="action-btn" onClick={() => viewFile(file)}>View</button>
-                                                    <button className="action-btn" onClick={() => editFile(file)}>Edit</button>
-                                                    <button className="action-btn delete-btn" onClick={() => deleteFile(file)}>Delete</button>
-                                                </>
-                                            )}
-                                        </div>
-                                    </div>
-                                    {editingFile === file ? (
-                                        <textarea value={fileContent} onChange={e => setFileContent(e.target.value)}></textarea>
-                                    ) : (
-                                        <div className="json-content" style={{ display: 'block' }}>
-                                            <pre>{fileContent}</pre>
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* App Information Section */}
-                    <div className="settings-section">
-                        <h2>App Information</h2>
-                        <div className="app-info-grid">
-                            <div className="info-card">
-                                <h3>📱 Version</h3>
-                                <p>2.1.0</p>
-                                <small>Android 15 compatible with enhanced UI</small>
-                            </div>
-                            <div className="info-card">
-                                <h3>🎮 Game Support</h3>
-                                <p>Doomlings Board Game</p>
-                                <small>Official companion app</small>
-                            </div>
-                            <div className="info-card">
-                                <h3>💾 Storage</h3>
-                                <p>Local Device Only</p>
-                                <small>No cloud storage required</small>
-                            </div>
-                            <div className="info-card">
-                                <h3>🔒 Privacy</h3>
-                                <p>{adsRemoved ? 'Ad-Free' : 'Ad-Supported'}</p>
-                                <small>{adsRemoved ? 'Premium — full privacy' : 'Free tier: Google AdMob ads'}</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Game Preferences Section */}
-                    <div className="settings-section">
-                        <h2>Game Preferences</h2>
-                        <div className="advanced-settings">
-                            <div className="setting-item">
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        checked={showScrollToTop}
-                                        onChange={handleShowScrollToTopChange}
-                                    />
-                                    <span>Show Scroll-to-Top Button</span>
-                                </label>
-                                <small>Displays a floating button to quickly scroll to the top of the page when you are scrolled down.</small>
-                            </div>
-                            <div className="setting-item">
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        checked={warnUnpocketedTrinkets}
-                                        onChange={handleWarnUnpocketedTrinketsChange}
-                                    />
-                                    <span>Warn for Unpocketed Trinkets</span>
-                                </label>
-                                <small>Prompts you if players haven't pocketed a trinket when advancing to the next turn.</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Advanced Settings Section */}
-                    <div className="settings-section">
-                        <h2>Advanced Settings</h2>
-                        <div className="advanced-settings">
-                            <div className="setting-item">
-                                <label>
-                                    <input 
-                                        type="checkbox" 
-                                        checked={enableAnimations} 
-                                        onChange={handleEnableAnimationsChange}
-                                    />
-                                    <span>Enable animations and transitions</span>
-                                </label>
-                                <small>Disable for better performance on older devices</small>
-                            </div>
-                            <div className="setting-item">
-                                <label>
-                                    <input 
-                                        type="checkbox" 
-                                        checked={showTooltips} 
-                                        onChange={handleShowTooltipsChange}
-                                    />
-                                    <span>Show tooltips and help text</span>
-                                </label>
-                                <small>Display helpful hints throughout the app</small>
-                            </div>
-                            <div className="setting-item">
-                                <label>
-                                    <input 
-                                        type="checkbox" 
-                                        checked={developerMode} 
-                                        onChange={handleDeveloperModeChange}
-                                    />
-                                    <span>Developer mode</span>
-                                </label>
-                                <small>Show additional debugging information</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Save & Load Game Section */}
-                    <div className="settings-section">
-                        <h2>Save & Load Game</h2>
-                        {message &&
-                            <div className="notification is-info is-light">
-                                <button className="delete" onClick={() => setMessage('')}></button>
-                                {message}
-                            </div>
-                        }
-
-                        <div className="box">
-                            <h3 className="subtitle">Save Current Game</h3>
-                            <div className="field has-addons">
-                                <div className="control is-expanded">
-                                    <input
-                                        className="input"
-                                        type="text"
-                                        placeholder="e.g., My Awesome Game"
-                                        value={fileName}
-                                        onChange={(e) => setFileName(e.target.value)}
-                                        onKeyPress={(e) => e.key === 'Enter' && handleSave()}
-                                    />
-                                </div>
-                                <div className="control">
-                                    <button className="button is-primary" onClick={handleSave} disabled={!fileName.trim()}>
-                                        Save
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="box">
-                            <h3 className="subtitle">Load Saved Game</h3>
-                            {savedFiles.length > 0 ? (
-                                <table className="table is-fullwidth is-hoverable">
-                                    <tbody>
-                                        {savedFiles.map((file) => (
-                                            <tr key={file}>
-                                                <td style={{ verticalAlign: 'middle' }}>{file}</td>
-                                                <td className="has-text-right">
-                                                    <button className="button is-success mr-2" onClick={() => handleLoad(file)}>
-                                                        Load
-                                                    </button>
-                                                    <button className="button is-danger is-light" onClick={() => handleDelete(file)}>
-                                                        Delete
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            ) : (
-                                <p>No saved games found. Go play a game and save it!</p>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Danger Zone Section */}
-                    <div className="settings-section" style={{ border: '1px solid rgba(255, 68, 68, 0.3)', background: 'rgba(255, 0, 0, 0.05)' }}>
-                        <h2>⚠️ Danger Zone</h2>
-                        <button className="subscribe-btn" style={{ background: 'linear-gradient(135deg, #ff4444, #cc0000)', width: '100%', color: 'white' }} onClick={() => {
-                            if (window.confirm("Are you sure you want to reset all app data? This cannot be undone.")) {
-                                const tutorialSeen = localStorage.getItem('doomlingsTutorialSeen');
-                                localStorage.clear();
-                                if (tutorialSeen) {
-                                    localStorage.setItem('doomlingsTutorialSeen', tutorialSeen);
-                                }
-                                window.location.reload();
+                    <div className="control">
+                        <AnimatedButton className="is-primary" onClick={async () => {
+                            const state = localStorage.getItem('gameState');
+                            if (state && fileName) {
+                                await Preferences.set({ key: `gameState_${fileName}`, value: state });
+                                fetchSavedFiles();
+                                setFileName('');
                             }
-                        }}>
-                            Reset All App Data
-                        </button>
+                        }}>Save Current</AnimatedButton>
                     </div>
-
-                    {/* Developer Settings */}
-                    {developerMode && <DeveloperSettings />}
                 </div>
-            </div>
 
-            <footer style={{
-                textAlign: 'center',
-                paddingTop: '30px',
-                paddingBottom: 'calc(30px + var(--ad-banner-height, 0px))',
-                marginTop: '40px',
-                borderTop: '1px solid rgba(255, 255, 255, 0.1)'
-            }}>
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', flexWrap: 'wrap' }}>
-                    <Link href="/" style={{ color: '#ccc', textDecoration: 'none', transition: 'color 0.3s ease' }}>
-                        🏠 Home
-                    </Link>
+                <div className="saves-list space-y-2">
+                    {savedFiles.map(file => (
+                        <div key={file} className="is-flex is-justify-content-between is-align-items-center p-3 bg-black/20 rounded border border-white/5">
+                            <span className="has-text-weight-medium">{file}</span>
+                            <div className="buttons are-small mb-0">
+                                <AnimatedButton className="is-success" onClick={async () => {
+                                    const { value } = await Preferences.get({ key: `gameState_${file}` });
+                                    if (value) {
+                                        localStorage.setItem('gameState', value);
+                                        setModal({ isOpen: true, title: 'Loaded', message: `Game "${file}" loaded.`, type: 'success' });
+                                    }
+                                }}>Load</AnimatedButton>
+                                <AnimatedButton className="is-danger is-light" onClick={() => handleDeleteGame(file)}>Delete</AnimatedButton>
+                            </div>
+                        </div>
+                    ))}
+                    {savedFiles.length === 0 && <p className="text-muted text-center py-4">No saved games found.</p>}
                 </div>
+            </section>
+
+            {/* General Preferences */}
+            <section className="settings-section box bg-glass p-6 mb-6">
+                <h2 className="title is-4 text-primary">⚙️ Preferences</h2>
+                <div className="space-y-4">
+                    {[
+                        { id: 'showScrollToTop', label: 'Scroll to Top Button', value: showScrollToTop, set: setShowScrollToTop, note: 'Floating button for long pages' },
+                        { id: 'warnUnpocketedTrinkets', label: 'Trinket Warnings', value: warnUnpocketedTrinkets, set: setWarnUnpocketedTrinkets, note: 'Alert if trinkets are left unpocketed' },
+                        { id: 'enableAnimations', label: 'Enable Animations', value: enableAnimations, set: setEnableAnimations, note: 'Smooth transitions and effects' },
+                        { id: 'developerMode', label: 'Developer Mode', value: developerMode, set: setDeveloperMode, note: 'Advanced debugging information' },
+                    ].map(pref => (
+                        <div key={pref.id} className="is-flex is-align-items-center gap-4 p-4 rounded bg-black/10 border border-white/5">
+                            <input type="checkbox" checked={pref.value} onChange={e => {
+                                pref.set(e.target.checked);
+                                localStorage.setItem(pref.id, String(e.target.checked));
+                            }} className="checkbox-large" />
+                            <div>
+                                <div className="has-text-weight-bold">{pref.label}</div>
+                                <div className="is-size-7 text-muted">{pref.note}</div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            {/* Danger Zone */}
+            <section className="settings-section box bg-glass p-6 mb-6 border-error/30 bg-error/5">
+                <h2 className="title is-4 text-error">⚠️ Danger Zone</h2>
+                <p className="is-size-7 mb-4 text-error/70">Careful! These actions are permanent.</p>
+                <AnimatedButton className="is-danger is-fullwidth" onClick={handleResetAll}>🔥 Reset All App Data</AnimatedButton>
+            </section>
+
+            <footer className="footer-simple mt-12 py-8 text-center border-t border-white/10">
+                <Link href="/" className="text-muted hover:text-white transition-colors">🏠 Back to Home</Link>
+                <div className="mt-4 is-size-7 text-muted">Version 2.2.0 • Build 2024.10</div>
             </footer>
-        </>
+
+            {/* Modal system */}
+            {modal && (
+                <Modal
+                    isOpen={modal.isOpen}
+                    onClose={() => setModal(null)}
+                    title={modal.title}
+                    type={modal.type}
+                    actions={
+                        modal.onConfirm ? (
+                          <>
+                            <AnimatedButton onClick={() => setModal(null)} className="is-light">Cancel</AnimatedButton>
+                            <AnimatedButton onClick={modal.onConfirm} className={`is-${modal.type || 'primary'}`}>Confirm</AnimatedButton>
+                          </>
+                        ) : null
+                    }
+                >
+                    <p>{modal.message}</p>
+                </Modal>
+            )}
+        </div>
     );
 };
 
-export default SettingsPage; 
+export default SettingsPage;

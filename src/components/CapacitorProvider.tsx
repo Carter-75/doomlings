@@ -1,8 +1,8 @@
-'use client';
-
 import { useEffect } from 'react';
+import { useNotification } from '@/lib/notification-context';
 
 export default function CapacitorProvider() {
+  const { showNotification } = useNotification();
   useEffect(() => {
     // Check if we're running in a native Capacitor environment
     const isNative = typeof window !== 'undefined' && 
@@ -25,16 +25,20 @@ export default function CapacitorProvider() {
 
         // Simple web-based prompt for rating (fallback)
         if (counter === 3 || (maybeLater > 0 && counter - maybeLater >= 5)) {
-          const userWantsToRate = window.confirm(
-            'Are you enjoying the DOOMlings Companion app? Would you like to rate it on the Play Store?'
-          );
+          showNotification({
+            title: 'Enjoying the app?',
+            message: 'Are you enjoying the DOOMlings Companion app? Would you like to rate it on the Play Store?',
+            type: 'success',
+            confirmText: 'Rate Now',
+            cancelText: 'Maybe Later',
+            onConfirm: () => {
+              localStorage.setItem('rated', 'true');
+              window.open('https://play.google.com/store/apps/details?id=com.doomlings.companion', '_blank');
+            }
+          });
           
-          if (userWantsToRate) {
-            localStorage.setItem('rated', 'true');
-            // In a real native app, this would open the store
-            window.open('https://play.google.com/store/apps/details?id=com.doomlings.companion', '_blank');
-          } else {
-            localStorage.setItem('maybe_later', counter.toString());
+          if (!localStorage.getItem('rated')) {
+             localStorage.setItem('maybe_later', counter.toString());
           }
         }
       };

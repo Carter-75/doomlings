@@ -2,9 +2,10 @@
 
 import React, { useState, FormEvent } from 'react';
 import Link from 'next/link';
+import { useNotification } from '@/lib/notification-context';
 
 const ContactPage = () => {
-    const [status, setStatus] = useState<{ message: string; type: 'success' | 'error' | '' }>({ message: '', type: '' });
+    const { showNotification } = useNotification();
     const [activeTab, setActiveTab] = useState<'contact' | 'faq' | 'support'>('contact');
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -19,14 +20,21 @@ const ContactPage = () => {
 
         try {
             window.location.href = mailtoLink;
-            setStatus({ message: "Opening your email client...", type: 'success' });
+            showNotification({
+                title: 'Success',
+                message: "Opening your email client...",
+                type: 'success'
+            });
 
             setTimeout(() => {
                 form.reset();
-                setStatus({ message: '', type: '' });
-            }, 3000);
+            }, 1000);
         } catch (error) {
-            setStatus({ message: "Error opening email client. Please try again.", type: 'error' });
+            showNotification({
+                title: 'Error',
+                message: "Error opening email client. Please try again.",
+                type: 'error'
+            });
         }
     };
 
@@ -66,299 +74,30 @@ const ContactPage = () => {
     ];
 
     return (
-        <>
-            <style jsx>{`
-                .contact-container {
-                    max-width: 900px;
-                    margin: 40px auto;
-                    padding: 20px;
-                    background: rgba(0, 0, 0, 0.8);
-                    border-radius: 15px;
-                    box-shadow: 0 0 30px rgba(0, 157, 255, 0.3);
-                }
+        <div className="home-container" style={{ minHeight: '100vh', padding: '2rem 1rem' }}>
 
-                .contact-header {
-                    text-align: center;
-                    margin-bottom: 30px;
-                }
-
-                .contact-header h1 {
-                    color: #00ff88;
-                    font-size: 2.5em;
-                    margin-bottom: 10px;
-                    text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
-                }
-
-                .contact-header p {
-                    color: #ccc;
-                    font-size: 1.1em;
-                }
-
-                .tab-navigation {
-                    display: flex;
-                    justify-content: center;
-                    margin-bottom: 30px;
-                    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                }
-
-                .tab-button {
-                    background: none;
-                    border: none;
-                    color: #ccc;
-                    padding: 15px 25px;
-                    cursor: pointer;
-                    font-size: 16px;
-                    transition: all 0.3s ease;
-                    border-bottom: 3px solid transparent;
-                }
-
-                .tab-button.active {
-                    color: #3c82f7;
-                    border-bottom-color: #3c82f7;
-                }
-
-                .tab-button:hover {
-                    color: #00ff88;
-                }
-
-                .tab-content {
-                    min-height: 400px;
-                }
-
-                .contact-form {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 20px;
-                    max-width: 600px;
-                    margin: 0 auto;
-                }
-
-                .form-group {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 8px;
-                }
-
-                .form-group label {
-                    color: #fff;
-                    font-size: 16px;
-                    font-weight: bold;
-                }
-
-                .form-group input,
-                .form-group select,
-                .form-group textarea {
-                    padding: 12px;
-                    border: 2px solid rgba(60, 130, 247, 0.3);
-                    border-radius: 8px;
-                    background: rgba(0, 0, 0, 0.5);
-                    color: #fff;
-                    font-size: 16px;
-                    transition: border-color 0.3s ease;
-                }
-
-                .form-group input:focus,
-                .form-group select:focus,
-                .form-group textarea:focus {
-                    outline: none;
-                    border-color: #3c82f7;
-                    box-shadow: 0 0 10px rgba(60, 130, 247, 0.3);
-                }
-
-                .form-group textarea {
-                    min-height: 120px;
-                    resize: vertical;
-                }
-
-                .submit-btn {
-                    background: linear-gradient(45deg, #3c82f7, #00ff88);
-                    color: white;
-                    padding: 15px 30px;
-                    border: none;
-                    border-radius: 8px;
-                    cursor: pointer;
-                    font-size: 18px;
-                    font-weight: bold;
-                    transition: transform 0.2s, box-shadow 0.2s;
-                    margin-top: 10px;
-                }
-
-                .submit-btn:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 6px 20px rgba(60, 130, 247, 0.4);
-                }
-
-                .status-message {
-                    text-align: center;
-                    margin-top: 20px;
-                    padding: 15px;
-                    border-radius: 8px;
-                    font-weight: bold;
-                }
-
-                .status-message.success {
-                    background-color: rgba(0, 255, 136, 0.2);
-                    color: #00ff88;
-                    border: 1px solid rgba(0, 255, 136, 0.3);
-                }
-
-                .status-message.error {
-                    background-color: rgba(255, 68, 68, 0.2);
-                    color: #ff4444;
-                    border: 1px solid rgba(255, 68, 68, 0.3);
-                }
-
-                .faq-section {
-                    max-width: 800px;
-                    margin: 0 auto;
-                }
-
-                .faq-item {
-                    background: rgba(0, 0, 0, 0.5);
-                    border: 1px solid rgba(60, 130, 247, 0.2);
-                    border-radius: 8px;
-                    margin-bottom: 15px;
-                    overflow: hidden;
-                }
-
-                .faq-question {
-                    background: rgba(60, 130, 247, 0.1);
-                    padding: 20px;
-                    color: #fff;
-                    font-weight: bold;
-                    cursor: pointer;
-                    transition: background 0.3s ease;
-                    border: none;
-                    width: 100%;
-                    text-align: left;
-                    font-size: 16px;
-                }
-
-                .faq-question:hover {
-                    background: rgba(60, 130, 247, 0.2);
-                }
-
-                .faq-answer {
-                    padding: 20px;
-                    color: #e0e0e0;
-                    line-height: 1.6;
-                    border-top: 1px solid rgba(60, 130, 247, 0.1);
-                }
-
-                .support-section {
-                    max-width: 700px;
-                    margin: 0 auto;
-                    text-align: center;
-                }
-
-                .support-grid {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                    gap: 20px;
-                    margin: 30px 0;
-                }
-
-                .support-card {
-                    background: rgba(0, 0, 0, 0.5);
-                    border: 1px solid rgba(60, 130, 247, 0.3);
-                    border-radius: 10px;
-                    padding: 25px;
-                    text-align: center;
-                    transition: transform 0.3s ease;
-                }
-
-                .support-card:hover {
-                    transform: translateY(-5px);
-                    box-shadow: 0 10px 25px rgba(60, 130, 247, 0.2);
-                }
-
-                .support-card h3 {
-                    color: #3c82f7;
-                    margin-bottom: 15px;
-                    font-size: 1.3em;
-                }
-
-                .support-card p {
-                    color: #ccc;
-                    line-height: 1.6;
-                }
-
-                .footer-nav {
-                    text-align: center;
-                    padding-top: 30px;
-                    padding-bottom: calc(30px + var(--ad-banner-height, 0px));
-                    margin-top: 40px;
-                    border-top: 1px solid rgba(255, 255, 255, 0.1);
-                }
-
-                .footer-nav a {
-                    color: #ccc;
-                    text-decoration: none;
-                    margin: 0 20px;
-                    transition: color 0.3s ease;
-                }
-
-                .footer-nav a:hover {
-                    color: #00ff88;
-                }
-
-                @media (max-width: 768px) {
-                    .contact-container {
-                        margin: 20px;
-                        padding: 15px;
-                    }
-                    
-                    .contact-header h1 {
-                        font-size: 2em;
-                    }
-
-                    .tab-navigation {
-                        flex-direction: column;
-                    }
-
-                    .tab-button {
-                        padding: 10px;
-                    }
-
-                    .support-grid {
-                        grid-template-columns: 1fr;
-                    }
-                }
-            `}</style>
-
-            <div className="gradient-overlay"></div>
-            <div className="blue-glow-container">
-                <div className="blue-circles">
-                    <div className="blue-circle"></div>
-                    <div className="blue-circle"></div>
-                    <div className="blue-circle"></div>
-                    <div className="blue-circle"></div>
-                    <div className="blue-circle"></div>
-                </div>
-            </div>
-
-            <div className="container">
-                <div className="contact-container">
-                    <div className="contact-header">
-                        <h1>Get in Touch</h1>
-                        <p>We're here to help with your Doomlings Companion App experience!</p>
+            <div className="container max-w-4xl">
+                <div className="box p-8 backdrop-blur-xl bg-opacity-80">
+                    <div className="text-center mb-8">
+                        <h1 className="hero-title text-5xl mb-4">Get in Touch</h1>
+                        <p className="text-xl text-muted">We're here to help with your Doomlings Companion App experience!</p>
                     </div>
 
-                    <div className="tab-navigation">
+                    <div className="nav mb-8">
                         <button
-                            className={`tab-button ${activeTab === 'contact' ? 'active' : ''}`}
+                            className={`nav-button ${activeTab === 'contact' ? 'is-primary' : 'is-light'}`}
                             onClick={() => setActiveTab('contact')}
                         >
                             📧 Contact Us
                         </button>
                         <button
-                            className={`tab-button ${activeTab === 'faq' ? 'active' : ''}`}
+                            className={`nav-button ${activeTab === 'faq' ? 'is-primary' : 'is-light'}`}
                             onClick={() => setActiveTab('faq')}
                         >
                             ❓ FAQ
                         </button>
                         <button
-                            className={`tab-button ${activeTab === 'support' ? 'active' : ''}`}
+                            className={`nav-button ${activeTab === 'support' ? 'is-primary' : 'is-light'}`}
                             onClick={() => setActiveTab('support')}
                         >
                             🛠️ Support
@@ -368,65 +107,61 @@ const ContactPage = () => {
                     <div className="tab-content">
                         {activeTab === 'contact' && (
                             <div>
-                                <form className="contact-form" onSubmit={handleSubmit}>
-                                    <div className="form-group">
-                                        <label htmlFor="name">Your Name *</label>
-                                        <input type="text" id="name" name="name" required />
+                                <form className="grid-1 max-w-xl mx-auto" onSubmit={handleSubmit}>
+                                    <div className="field">
+                                        <label className="label" htmlFor="name">Your Name *</label>
+                                        <input className="input" type="text" id="name" name="name" required />
                                     </div>
 
-                                    <div className="form-group">
-                                        <label htmlFor="email">Your Email *</label>
-                                        <input type="email" id="email" name="email" required />
+                                    <div className="field">
+                                        <label className="label" htmlFor="email">Your Email *</label>
+                                        <input className="input" type="email" id="email" name="email" required />
                                     </div>
 
-                                    <div className="form-group">
-                                        <label htmlFor="category">Category</label>
-                                        <select id="category" name="category">
-                                            <option value="general">General Inquiry</option>
-                                            <option value="bug">Bug Report</option>
-                                            <option value="feature">Feature Request</option>
-                                            <option value="help">Need Help</option>
-                                            <option value="feedback">Feedback</option>
-                                        </select>
+                                    <div className="field">
+                                        <label className="label" htmlFor="category">Category</label>
+                                        <div className="dropdown-wrapper">
+                                            <select className="styled-select" id="category" name="category">
+                                                <option value="general">General Inquiry</option>
+                                                <option value="bug">Bug Report</option>
+                                                <option value="feature">Feature Request</option>
+                                                <option value="help">Need Help</option>
+                                                <option value="feedback">Feedback</option>
+                                            </select>
+                                        </div>
                                     </div>
 
-                                    <div className="form-group">
-                                        <label htmlFor="subject">Subject *</label>
-                                        <input type="text" id="subject" name="subject" required />
+                                    <div className="field">
+                                        <label className="label" htmlFor="subject">Subject *</label>
+                                        <input className="input" type="text" id="subject" name="subject" required />
                                     </div>
 
-                                    <div className="form-group">
-                                        <label htmlFor="message">Message *</label>
+                                    <div className="field">
+                                        <label className="label" htmlFor="message">Message *</label>
                                         <textarea
+                                            className="input"
                                             id="message"
                                             name="message"
                                             required
+                                            style={{ minHeight: '120px' }}
                                             placeholder="Please describe your question, issue, or feedback in detail..."
                                         ></textarea>
                                     </div>
 
-                                    <button type="submit" className="submit-btn">Send Message</button>
+                                    <button type="submit" className="button is-primary w-full">Send Message</button>
                                 </form>
-
-                                {status.message && (
-                                    <div className={`status-message ${status.type}`}>
-                                        {status.message}
-                                    </div>
-                                )}
                             </div>
                         )}
 
                         {activeTab === 'faq' && (
-                            <div className="faq-section">
-                                <h2 style={{ color: '#fff', textAlign: 'center', marginBottom: '30px' }}>
-                                    Frequently Asked Questions
-                                </h2>
+                            <div className="grid-1 max-w-2xl mx-auto">
+                                <h2 className="section-title text-center">Frequently Asked Questions</h2>
                                 {faqs.map((faq, index) => (
-                                    <div key={index} className="faq-item">
-                                        <button className="faq-question">
+                                    <div key={index} className="box p-0 overflow-hidden mb-4">
+                                        <div className="p-4 bg-opacity-10 bg-white font-bold border-b border-white border-opacity-10">
                                             {faq.question}
-                                        </button>
-                                        <div className="faq-answer">
+                                        </div>
+                                        <div className="p-4 text-muted">
                                             {faq.answer}
                                         </div>
                                     </div>
@@ -435,18 +170,16 @@ const ContactPage = () => {
                         )}
 
                         {activeTab === 'support' && (
-                            <div className="support-section">
-                                <h2 style={{ color: '#fff', marginBottom: '20px' }}>
-                                    Support & Resources
-                                </h2>
-                                <p style={{ color: '#ccc', marginBottom: '30px' }}>
+                            <div className="text-center">
+                                <h2 className="section-title">Support & Resources</h2>
+                                <p className="text-muted mb-8">
                                     Here are the different ways you can get help with the Doomlings Companion App:
                                 </p>
 
-                                <div className="support-grid">
-                                    <div className="support-card">
-                                        <h3>📧 Email Support</h3>
-                                        <p>
+                                <div className="grid-2 gap-6 mb-8">
+                                    <div className="box p-6 hover-scale">
+                                        <h3 className="section-title is-small is-secondary mb-4">📧 Email Support</h3>
+                                        <p className="text-sm text-left">
                                             Send us an email at <strong>phoenix75.help@gmail.com</strong> for:
                                             <br />• Bug reports
                                             <br />• Feature requests
@@ -455,9 +188,9 @@ const ContactPage = () => {
                                         </p>
                                     </div>
 
-                                    <div className="support-card">
-                                        <h3>🔧 Self-Help</h3>
-                                        <p>
+                                    <div className="box p-6 hover-scale">
+                                        <h3 className="section-title is-small is-secondary mb-4">🔧 Self-Help</h3>
+                                        <p className="text-sm text-left">
                                             Many issues can be resolved by:
                                             <br />• Refreshing the app
                                             <br />• Clearing browser cache
@@ -466,9 +199,9 @@ const ContactPage = () => {
                                         </p>
                                     </div>
 
-                                    <div className="support-card">
-                                        <h3>📱 App Issues</h3>
-                                        <p>
+                                    <div className="box p-6 hover-scale">
+                                        <h3 className="section-title is-small is-secondary mb-4">📱 App Issues</h3>
+                                        <p className="text-sm text-left">
                                             If the app isn't working properly:
                                             <br />• Try refreshing the page
                                             <br />• Check your browser compatibility
@@ -477,9 +210,9 @@ const ContactPage = () => {
                                         </p>
                                     </div>
 
-                                    <div className="support-card">
-                                        <h3>💡 Feature Ideas</h3>
-                                        <p>
+                                    <div className="box p-6 hover-scale">
+                                        <h3 className="section-title is-small is-secondary mb-4">💡 Feature Ideas</h3>
+                                        <p className="text-sm text-left">
                                             Have ideas for improvements?
                                             <br />• We love user feedback!
                                             <br />• Send us your suggestions
@@ -489,32 +222,23 @@ const ContactPage = () => {
                                     </div>
                                 </div>
 
-                                <div style={{
-                                    background: 'rgba(0, 255, 136, 0.1)',
-                                    border: '1px solid rgba(0, 255, 136, 0.3)',
-                                    borderRadius: '10px',
-                                    padding: '20px',
-                                    marginTop: '30px'
-                                }}>
-                                    <h3 style={{ color: '#00ff88', marginBottom: '15px' }}>
-                                        🚀 Coming Soon Features
-                                    </h3>
-                                    <p style={{ color: '#e0e0e0' }}>
-                                        We're working on exciting new features including cloud sync,
-                                        enhanced customization options, and improved mobile experience.
-                                        Stay tuned for updates!
+                                <div className="box p-6 bg-opacity-20 bg-success border-success">
+                                    <h3 className="section-title is-small is-success mb-2">🚀 Latest Features</h3>
+                                    <p className="text-muted">
+                                        We recently added local multiplayer sync and a modular game engine! 
+                                        More updates coming soon.
                                     </p>
                                 </div>
                             </div>
                         )}
                     </div>
                 </div>
+                
+                <div className="text-center mt-8">
+                    <Link href="/" className="button is-light">🏠 Home</Link>
+                </div>
             </div>
-
-            <div className="footer-nav">
-                <Link href="/">🏠 Home</Link>
-            </div>
-        </>
+        </div>
     );
 };
 
