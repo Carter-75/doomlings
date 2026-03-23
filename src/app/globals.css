@@ -251,6 +251,7 @@ body {
   overflow-x: hidden;
   position: relative;
   min-height: 100vh;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 8px);
 }
 
 /* Advanced Background Effects */

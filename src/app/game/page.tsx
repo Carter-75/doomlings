@@ -495,10 +495,6 @@ export default function GamePage() {
       </nav>
 
       <style jsx>{`
-        .game-page-container {
-          padding-top: calc(env(safe-area-inset-top, 0px) + 10px);
-        }
-
         .game-nav {
           padding: 16px;
           border: 1px solid rgba(var(--secondary-rgb), 0.24);
@@ -577,10 +573,6 @@ export default function GamePage() {
         }
 
         @media (max-width: 768px) {
-          .game-page-container {
-            padding-top: calc(env(safe-area-inset-top, 0px) + 6px);
-          }
-
           .game-nav {
             padding: 10px;
           }

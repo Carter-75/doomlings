@@ -59,7 +59,7 @@ export default function HomePage() {
             </p>
 
             <div className="grid grid-auto mt-4">
-              <a href="#" onClick={handlePlayGameClick} className="card">
+              <a href="/game" onClick={handlePlayGameClick} className="card">
                 <h3 className="text-center mb-2">🎮 Play Game</h3>
                 <p className="text-center">
                   Start or continue your DOOMlings game with full state tracking
