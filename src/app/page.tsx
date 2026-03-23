@@ -74,47 +74,69 @@ export default function HomePage() {
               </Link>
             </div>
 
-            {!adsRemoved && (
-              <div className="mt-4">
-                <Link href="/premium" className="card" style={{ border: '1px solid var(--warning)' }}>
-                  <h3 className="text-center mb-2" style={{ color: 'var(--warning)' }}>✨ Remove Ads</h3>
-                  <p className="text-center" style={{ color: 'var(--text-secondary)' }}>
-                    Upgrade to Premium for an uninterrupted, ad-free experience.
-                  </p>
-                </Link>
-              </div>
-            )}
-
             {/* Inline Mode Selection */}
             {showModeModal && (
-              <div className="mt-8 mb-6 animate-in fade-in duration-200">
-                <h2 className="text-center mb-2" style={{ color: 'var(--primary-orange)', fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', fontWeight: 700 }}>Choose Game Mode</h2>
-                <p className="text-center mb-6" style={{ color: 'var(--text-secondary)' }}>How would you like to play today?</p>
+              <div className="mt-8 mb-8 animate-in fade-in duration-300">
+                <h2 className="text-center mb-1" style={{ color: 'var(--primary-orange)', fontSize: 'clamp(1.5rem, 5vw, 2.25rem)', fontWeight: 800 }}>Choose Game Mode</h2>
+                <p className="text-center mb-6" style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>How would you like to play today?</p>
 
-                <div className="grid grid-auto">
+                <div className="grid grid-auto gap-4 sm:grid-cols-2">
                   {/* Companion App Link */}
-                  <Link href="/game" className="card">
-                    <h3 className="text-center mb-2">📱 Companion App</h3>
-                    <p className="text-center mt-2" style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
-                      Track physical card game scores, ages, and rules. Optionally sync your stats across local WiFi.
-                    </p>
+                  <Link href="/game" className="card group hover-scale border-primary/20 bg-black/40 p-8 block">
+                    <div className="text-center">
+                      <h3 className="is-size-4 mb-2">📱 Companion App</h3>
+                      <p className="is-size-7 text-muted max-w-xs mx-auto">
+                        The official digital companion. Track scores, ages, and rules for your physical game.
+                      </p>
+                    </div>
                   </Link>
 
                   {/* Full Game (Coming Soon) */}
-                  <div className="card relative overflow-hidden group/disabled cursor-not-allowed opacity-60 pointer-events-none">
-                    <div className="absolute inset-0 z-10 flex items-center justify-center backdrop-blur-[2px]" style={{ background: 'var(--dark-bg)', opacity: 0.8 }}>
-                      <span className="font-bold py-2 px-6 rounded-full transform rotate-[-12deg] shadow-lg text-lg" style={{ background: 'var(--primary-orange)', color: 'var(--darker-bg)', border: '2px solid rgba(255,255,255,0.2)' }}>
-                        Coming Soon!
+                  <div className="card relative overflow-hidden cursor-not-allowed border-white/5 bg-black/40 p-8 block">
+                    <div className="absolute top-3 right-3 z-20">
+                      <span 
+                        className="status-pill text-[10px] font-bold py-1 px-3 shadow-sm" 
+                        style={{ 
+                          backgroundColor: 'rgba(var(--primary-rgb), 0.15)', 
+                          color: 'var(--primary)', 
+                          border: '1px solid var(--primary)',
+                          backdropFilter: 'blur(4px)'
+                        }}
+                      >
+                        COMING SOON!
                       </span>
                     </div>
-                    <div className="filter grayscale" style={{ opacity: 0.4 }}>
-                      <h3 className="text-center mb-2">🎮 Full Digital Game</h3>
-                      <p className="text-center mt-2" style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
-                        Play the cards entirely on your device with rules enforcement and matchmaking.
+                    <div className="text-center filter grayscale opacity-20">
+                      <h3 className="is-size-4 mb-2">🎮 Full Digital Game</h3>
+                      <p className="is-size-7 text-muted max-w-xs mx-auto">
+                        Play entire matches digitally with laws, rules enforcement, and global matchmaking.
                       </p>
                     </div>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {!adsRemoved && (
+              <div className="mt-8 mb-6">
+                <Link 
+                  href="/premium" 
+                  className="card group relative overflow-hidden transition-all hover:scale-[1.01] active:scale-[0.99] block p-8" 
+                  style={{ 
+                    border: '1px solid var(--primary)', 
+                    background: 'rgba(var(--primary-rgb), 0.15)',
+                    backgroundColor: '#15181c',
+                    boxShadow: '0 0 30px rgba(var(--primary-rgb), 0.1)'
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
+                  <div className="text-center relative z-10">
+                    <h3 className="is-size-4 mb-1" style={{ color: 'var(--primary)', fontWeight: 800 }}>✨ Remove All Ads</h3>
+                    <p className="is-size-7 opacity-80" style={{ color: 'var(--text-secondary)' }}>
+                      Unlock the premium aesthetic and support the developer.
+                    </p>
+                  </div>
+                </Link>
               </div>
             )}
 
@@ -140,11 +162,11 @@ export default function HomePage() {
               </button>
 
               {showAdvanced && (
-                <div className="mt-6 flex flex-wrap justify-center gap-6 fade-in">
-                  <Link href="https://doomlings.com/pages/contact" target="_blank" className="text-muted hover:text-white transition-colors">
+                <div className="mt-8 flex flex-wrap justify-center gap-4 fade-in">
+                  <Link href="/contact" className="button is-ghost is-small opacity-70 hover:opacity-100">
                     📧 Contact
                   </Link>
-                  <Link href="/privacy" className="text-muted hover:text-white transition-colors">
+                  <Link href="/privacy" className="button is-ghost is-small opacity-70 hover:opacity-100">
                     ⚖️ Privacy Policy
                   </Link>
                 </div>

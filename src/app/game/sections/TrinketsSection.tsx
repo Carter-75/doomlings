@@ -26,50 +26,68 @@ export default function TrinketsSection({
   onTrinketPocket
 }: TrinketsSectionProps) {
   return (
-    <div className="trinkets-section">
+    <div className="trinkets-section animate-fade-in">
       <h2 className="section-title">Trinkets</h2>
       
-      <div className="player-control box mb-4">
-        <AnimatedButton className="is-primary is-fullwidth" onClick={onAssignTrinkets}>
-          Assign Trinkets
+      <div className="player-control box glass p-6 mt-6 has-text-centered shadow-lg">
+        <AnimatedButton id="assign-trinkets-btn" className="is-primary is-fullwidth button-premium py-6" onClick={onAssignTrinkets}>
+          💎 Assign Trinkets
         </AnimatedButton>
-        <p className="has-text-centered mt-2 is-size-7 text-muted">
-          Trinkets Left in Deck: {trinketState.deck.length}
+        <p className="has-text-centered mt-4 is-size-7 text-muted italic">
+          Each player receives 2 trinkets to pick from. <br/>
+          Trinkets Left in Deck: <span className="text-white font-bold">{trinketState.deck.length}</span>
         </p>
       </div>
 
-      <div className="player-trinkets-grid">
-        {playerNames.slice(0, playerCount).filter(n => n.trim()).map((playerName, index) => {
-          const pName = playerName.trim();
-          const currentTrinkets = trinketState.playerTrinkets[pName] || [];
-          const pocketed = pocketedTrinkets[pName] || [];
-          const totalPoints = pocketed.reduce((sum, t) => sum + t.points, 0);
+      <div className="player-trinkets-container mt-8">
+        <h4 className="title is-5 text-secondary pl-2 mb-4">Player Trinkets & Pocketed Points</h4>
+        <div className="columns is-multiline">
+          {playerNames.slice(0, playerCount).filter(n => n.trim()).map((playerName, index) => {
+            const pName = playerName.trim();
+            const currentTrinkets = trinketState.playerTrinkets[pName] || [];
+            const pocketed = pocketedTrinkets[pName] || [];
+            const totalPoints = pocketed.reduce((sum, t) => sum + t.points, 0);
 
-          return (
-            <div key={index} className="player-trinket-section box mb-4">
-              <h3 className="title is-5 has-text-centered">{pName}</h3>
-              
-              <div className="trinkets-container mb-3">
-                {currentTrinkets.map((trinket, tIndex) => (
-                  <TrinketCard
-                    key={tIndex}
-                    trinket={trinket}
-                    onAdd={() => onTrinketAdd(pName, trinket)}
-                    onRemove={() => onTrinketRemove(pName, trinket)}
-                    onPocket={() => onTrinketPocket(pName, trinket)}
-                    isPocketDisabled={currentTrinkets.length !== 1}
-                  />
-                ))}
-              </div>
+            return (
+              <div key={index} className="column is-half-tablet is-one-third-desktop">
+                <div className="player-trinket-box box glass-light p-4 h-full border-white/5 transition-all">
+                  <h3 className="title is-5 mb-4 has-text-centered border-b border-white/10 pb-2">{pName}</h3>
+                  
+                  <div className="trinkets-display-grid mb-4">
+                    {currentTrinkets.map((trinket, tIndex) => (
+                      <div key={tIndex} className="mb-2">
+                        <TrinketCard
+                          trinket={trinket}
+                          onAdd={() => onTrinketAdd(pName, trinket)}
+                          onRemove={() => onTrinketRemove(pName, trinket)}
+                          onPocket={() => onTrinketPocket(pName, trinket)}
+                          isPocketDisabled={currentTrinkets.length !== 1}
+                        />
+                      </div>
+                    ))}
+                    {currentTrinkets.length === 0 && pocketed.length === 0 && (
+                      <p className="has-text-centered text-muted is-size-7 italic py-4">Waiting for trinkets...</p>
+                    )}
+                  </div>
 
-              {pocketed.length > 0 && (
-                <div className="pocketed-trinkets-info mt-2 pt-2 border-t border-white/5">
-                  <p className="has-text-weight-bold">Pocketed Points: {totalPoints}</p>
+                  {pocketed.length > 0 && (
+                    <div className="pocketed-trinkets-info mt-4 pt-3 border-t border-white/10">
+                      <div className="is-flex is-justify-content-between is-align-items-center">
+                        <span className="text-muted is-size-7 uppercase letter-spacing-1">Pocketed Points</span>
+                        <span className="tag is-success is-rounded font-bold shadow-sm">+{totalPoints}</span>
+                      </div>
+                      <div className="mt-2 is-flex is-flex-wrap-wrap gap-1">
+                        {pocketed.map((t, idx) => (
+                          <span key={idx} className="tag is-dark is-small opacity-80" title={t.name}>💎</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          );
-        })}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

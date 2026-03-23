@@ -4,6 +4,7 @@
 import React, { useState } from 'react';
 import { Card } from '@/modules/doomlings/types/Card';
 import { useCardImage } from '../hooks/useCardImage';
+import { useTheme } from '@/lib/theme-context';
 
 interface GameCardProps {
   card: Card;
@@ -31,6 +32,7 @@ const GameCard: React.FC<GameCardProps> = ({
   showDetails = true
 }) => {
   const { getCardImage } = useCardImage();
+  const { cardArtPreference } = useTheme();
   const cardArtUrl = getCardImage(card.name);
   const [imgError, setImgError] = useState(false);
 
@@ -129,7 +131,7 @@ const GameCard: React.FC<GameCardProps> = ({
         ${getRarityBorder()}
         backdrop-blur-sm
       `}>
-        {cardArtUrl && !imgError && (
+        {cardArtPreference === 'official' && cardArtUrl && !imgError && (
           <img 
             src={cardArtUrl} 
             alt={card.name} 
@@ -138,15 +140,44 @@ const GameCard: React.FC<GameCardProps> = ({
           />
         )}
 
-        {(!cardArtUrl || imgError) && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10" style={{
-            background: 'inherit', // Uses the outer getCardColorStyles gradient perfectly
+        {cardArtPreference === 'ai' && (
+          <div className="absolute inset-0 z-0">
+            <img 
+              src={`/assets/placeholders/${
+                card.type === 'age' ? 'age' : 
+                card.type === 'catastrophe' ? 'catastrophe' : 
+                card.type === 'treasure' ? 'trinket' : 
+                card.type === 'dominant' ? 'dominant' : 
+                'trait'
+              }.png`}
+              alt="AI Card Art"
+              className="w-full h-full object-cover opacity-80 contrast-110"
+            />
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10" style={{
+              background: 'radial-gradient(circle, transparent 20%, rgba(0,0,0,0.3) 100%)',
+              borderRadius: 'inherit'
+            }}>
+               <span className="text-white font-bold opacity-30" style={{
+                  fontSize: size === 'small' ? '24px' : size === 'large' ? '56px' : '36px',
+                  textShadow: '0 2px 4px rgba(0,0,0,0.5)'
+              }}>{getCardTypeIcon()}</span>
+            </div>
+          </div>
+        )}
+
+        {cardArtPreference === 'official' && (!cardArtUrl || imgError) && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 bg-black/40" style={{
             borderRadius: 'inherit'
           }}>
-            <span className="text-white font-bold opacity-90" style={{
-                fontSize: size === 'small' ? '32px' : size === 'large' ? '72px' : '48px',
-                textShadow: '0 2px 4px rgba(0,0,0,0.5)'
-            }}>?</span>
+             <span className="text-white/40 text-4xl font-bold">?</span>
+          </div>
+        )}
+
+        {cardArtPreference === 'none' && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 bg-black/10" style={{
+            borderRadius: 'inherit'
+          }}>
+             {/* No image at all - just background color showing through */}
           </div>
         )}
 

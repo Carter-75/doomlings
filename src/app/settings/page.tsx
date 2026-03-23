@@ -12,7 +12,7 @@ import AnimatedButton from '@/components/AnimatedButton';
 
 const SettingsPage = () => {
     const { adsRemoved, packages, purchasePackage, restorePurchases, loading: adsLoading } = useAds();
-    const { theme, setTheme } = useTheme();
+    const { theme, setTheme, cardArtPreference, setCardArtPreference } = useTheme();
     const isNativeApp = typeof window !== 'undefined' && Capacitor.isNativePlatform();
 
     // UI States
@@ -142,17 +142,43 @@ const SettingsPage = () => {
 
             {/* Premium Section */}
             <section className="settings-section box bg-glass p-6 mb-6">
-                <h2 className="title is-4 text-warning">✨ Premium Status</h2>
-                <div className="mb-4">
+                <div className="is-flex is-justify-content-between is-align-items-start mb-4">
+                    <h2 className="title is-4 text-warning mb-0">✨ Premium Status</h2>
                     {adsRemoved ? (
-                        <div className="tag is-success is-medium">✅ Ads Removed</div>
+                        <div className="tag is-success is-light is-medium">Active</div>
                     ) : (
-                        <div className="tag is-warning is-medium">🔔 Free Tier (Ads Enabled)</div>
+                        <div className="tag is-dark is-medium">Free Tier</div>
+                    )}
+                </div>
+
+                <div className="card bg-black/20 p-5 rounded-lg border border-white/5 mb-6 text-center">
+                    {adsRemoved ? (
+                        <>
+                            <div className="is-size-3 mb-2">💎</div>
+                            <h3 className="has-text-weight-bold is-size-5 mb-1">Companion Pro Unlocked</h3>
+                            <p className="text-muted is-size-7 mb-4">Thank you for supporting DOOMlings! You have full access to all features and no ads.</p>
+                            {isNativeApp && (
+                                <Link
+                                    href="https://play.google.com/store/account/subscriptions"
+                                    target="_blank"
+                                    className="button is-small is-ghost"
+                                >
+                                    Manage Subscription
+                                </Link>
+                            )}
+                        </>
+                    ) : (
+                        <>
+                            <div className="is-size-3 mb-2">🔔</div>
+                            <h3 className="has-text-weight-bold is-size-5 mb-1">Standard Access</h3>
+                            <p className="text-muted is-size-7 mb-4">Support the app and remove all advertisements by upgrading to Companion Pro.</p>
+                            <Link href="/premium" className="button is-primary is-small">Explore Premium</Link>
+                        </>
                     )}
                 </div>
                 
                 {!adsRemoved && isNativeApp && (
-                    <div className="columns is-multiline mt-4">
+                    <div className="columns is-multiline">
                         {packages.map((pkg: any) => (
                             <div key={pkg.identifier} className="column is-4">
                                 <div className="card bg-black/20 p-4 rounded-lg text-center border border-white/5 h-full is-flex is-flex-direction-column">
@@ -166,8 +192,8 @@ const SettingsPage = () => {
                     </div>
                 )}
 
-                <div className="mt-6 flex gap-4 is-justify-content-center">
-                    <AnimatedButton className="is-light" onClick={restorePurchases}>🔄 Restore Purchases</AnimatedButton>
+                <div className="mt-4 flex gap-4 is-justify-content-center">
+                    <AnimatedButton className="is-light is-small" onClick={restorePurchases}>🔄 Restore Purchases</AnimatedButton>
                 </div>
             </section>
 
@@ -183,30 +209,68 @@ const SettingsPage = () => {
                     </div>
                 </div>
 
-                <div className="theme-selector">
-                    <label className="label mb-3">Color Theme</label>
-                    <div className="grid grid-cols-5 gap-3">
+                <div className="theme-selector mb-10">
+                    <label className="label mb-4" style={{ color: 'var(--primary-orange)', fontWeight: 700 }}>Color Theme</label>
+                    <div 
+                        className="grid gap-3" 
+                        style={{ 
+                            display: 'grid', 
+                            gridTemplateColumns: 'repeat(5, 1fr)',
+                            width: '100%'
+                        }}
+                    >
                         {[
-                            { id: 'default', color: 'linear-gradient(135deg, #d63447, #ff7b4d)' },
-                            { id: 'ocean', color: 'linear-gradient(135deg, #0284c7, #38bdf8)' },
-                            { id: 'forest', color: 'linear-gradient(135deg, #166534, #4ade80)' },
-                            { id: 'purple', color: 'linear-gradient(135deg, #7e22ce, #c084fc)' },
-                            { id: 'midnight', color: 'linear-gradient(135deg, #1e1b4b, #6366f1)' },
-                            { id: 'sunset', color: 'linear-gradient(135deg, #be123c, #fbbf24)' },
-                            { id: 'cyber', color: 'linear-gradient(135deg, #f0abfc, #2dd4bf)' },
-                            { id: 'gold', color: 'linear-gradient(135deg, #854d0e, #fde047)' },
-                            { id: 'mint', color: 'linear-gradient(135deg, #0f766e, #6ee7b7)' },
-                            { id: 'mono', color: 'linear-gradient(135deg, #52525b, #d4d4d8)' },
+                            { id: 'default', name: 'Classic Royale', colors: ['#e63946', '#fca311'] },
+                            { id: 'ocean', name: 'Ocean', colors: ['#0284c7', '#38bdf8'] },
+                            { id: 'forest', name: 'Forest', colors: ['#166534', '#4ade80'] },
+                            { id: 'purple', name: 'Purple', colors: ['#7209b7', '#b5179e'] },
+                            { id: 'midnight', name: 'Midnight', colors: ['#1e1b4b', '#6366f1'] },
+                            { id: 'sunset', name: 'Sunset', colors: ['#be123c', '#fbbf24'] },
+                            { id: 'cyberpunk', name: 'Cyber', colors: ['#f0abfc', '#2dd4bf'] },
+                            { id: 'gold', name: 'Gold', colors: ['#854d0e', '#fde047'] },
+                            { id: 'mint', name: 'Mint', colors: ['#0f766e', '#6ee7b7'] },
+                            { id: 'monochrome', name: 'Mono', colors: ['#52525b', '#d4d4d8'] },
                         ].map(t => (
-                            <div 
+                            <button 
                                 key={t.id} 
                                 onClick={() => setTheme(t.id)}
-                                className={`theme-swatch p-1 rounded-md cursor-pointer transition-all ${theme === t.id ? 'ring-2 ring-primary ring-offset-2 ring-offset-black' : 'opacity-60 hover:opacity-100'}`}
+                                className={`p-4 rounded-xl border transition-all flex flex-col items-center justify-center relative overflow-hidden theme-hover-glow ${theme === t.id ? 'selected-ring' : 'border-white/10'}`}
+                                style={{ 
+                                    minHeight: '60px',
+                                    background: `linear-gradient(135deg, ${t.colors[0]}, ${t.colors[1]})`,
+                                }}
                             >
-                                <div className="h-8 rounded w-full" style={{ background: t.color }}></div>
-                            </div>
+                                <div className="absolute inset-0 bg-black/10 opacity-0 hover:opacity-100 transition-opacity"></div>
+                                <div className="text-xs font-black uppercase tracking-widest mix-blend-overlay text-white drop-shadow-md select-none z-10">{t.name}</div>
+                            </button>
                         ))}
                     </div>
+                </div>
+
+                <div className="card-art-selector mb-10">
+                    <label className="label mb-4" style={{ color: 'var(--primary-orange)', fontWeight: 700 }}>Card Art Style</label>
+                    <div className="flex flex-wrap gap-4 justify-center mb-6">
+                        {[
+                            { id: 'ai', icon: '✨', label: 'AI Art' },
+                            { id: 'official', icon: '🎨', label: 'Official Art' },
+                            { id: 'none', icon: '🚫', label: 'No Image' },
+                        ].map(style => (
+                            <button 
+                                key={style.id}
+                                className={`p-3 px-6 rounded-xl transition-all border flex items-center gap-3 theme-hover-glow ${cardArtPreference === style.id ? 'selected-ring' : 'muted-btn'}`}
+                                onClick={() => setCardArtPreference(style.id as any)}
+                            >
+                                <span className="text-xl">{style.icon}</span> <span className="text-xs font-bold">{style.label}</span>
+                            </button>
+                        ))}
+                    </div>
+                    <p className="is-size-7 text-muted mt-2">
+                        {cardArtPreference === 'ai' 
+                            ? "Shows the premium set of custom AI-generated art for each card type." 
+                            : cardArtPreference === 'official'
+                            ? "Uses original Doomlings art. Shows a simple '?' if an image is missing."
+                            : "Hides all card images for a clean, distraction-free experience."}
+                    </p>
                 </div>
             </section>
 
@@ -259,15 +323,22 @@ const SettingsPage = () => {
                         { id: 'enableAnimations', label: 'Enable Animations', value: enableAnimations, set: setEnableAnimations, note: 'Smooth transitions and effects' },
                         { id: 'developerMode', label: 'Developer Mode', value: developerMode, set: setDeveloperMode, note: 'Advanced debugging information' },
                     ].map(pref => (
-                        <div key={pref.id} className="is-flex is-align-items-center gap-4 p-4 rounded bg-black/10 border border-white/5">
-                            <input type="checkbox" checked={pref.value} onChange={e => {
-                                pref.set(e.target.checked);
-                                localStorage.setItem(pref.id, String(e.target.checked));
-                            }} className="checkbox-large" />
+                        <div key={pref.id} className="is-flex is-align-items-center is-justify-content-between p-4 rounded bg-black/10 border border-white/5">
                             <div>
                                 <div className="has-text-weight-bold">{pref.label}</div>
                                 <div className="is-size-7 text-muted">{pref.note}</div>
                             </div>
+                            <label className="switch">
+                                <input 
+                                    type="checkbox" 
+                                    checked={pref.value} 
+                                    onChange={e => {
+                                        pref.set(e.target.checked);
+                                        localStorage.setItem(pref.id, String(e.target.checked));
+                                    }} 
+                                />
+                                <span className="slider-round"></span>
+                            </label>
                         </div>
                     ))}
                 </div>
@@ -304,6 +375,55 @@ const SettingsPage = () => {
                     <p>{modal.message}</p>
                 </Modal>
             )}
+
+            <style jsx>{`
+                .switch {
+                    position: relative;
+                    display: inline-block;
+                    width: 48px;
+                    height: 24px;
+                }
+                .switch input {
+                    opacity: 0;
+                    width: 0;
+                    height: 0;
+                }
+                .slider-round {
+                    position: absolute;
+                    cursor: pointer;
+                    top: 0; left: 0; right: 0; bottom: 0;
+                    background-color: rgba(255,255,255,0.1);
+                    transition: .4s;
+                    border-radius: 24px;
+                    border: 1px solid rgba(255,255,255,0.1);
+                }
+                .slider-round:before {
+                    position: absolute;
+                    content: "";
+                    height: 18px;
+                    width: 18px;
+                    left: 2px;
+                    bottom: 2px;
+                    background-color: white;
+                    transition: .4s;
+                    border-radius: 50%;
+                }
+                input:checked + .slider-round {
+                    background-color: var(--primary-orange);
+                    box-shadow: 0 0 15px rgba(252, 163, 17, 0.4);
+                }
+                input:checked + .slider-round:before {
+                    transform: translateX(24px);
+                }
+                .theme-swatch-btn:hover {
+                    transform: translateY(-2px);
+                    background: rgba(255,255,255,0.05) !important;
+                }
+                .theme-swatch-btn.active {
+                    background: rgba(252, 163, 17, 0.1) !important;
+                    box-shadow: 0 0 15px rgba(252, 163, 17, 0.15);
+                }
+            `}</style>
         </div>
     );
 };

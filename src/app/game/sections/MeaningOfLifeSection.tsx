@@ -30,62 +30,87 @@ export default function MeaningOfLifeSection({
   viewingPlayer
 }: MeaningOfLifeSectionProps) {
   return (
-    <div className="meaning-of-life-section">
+    <div className="meaning-of-life-section animate-fade-in">
       <h2 className="section-title">Meaning of Life</h2>
       
-      <div className="player-control box mb-4">
-        <AnimatedButton className="is-primary is-fullwidth" onClick={onAssignMeanings}>
-          Assign Meaning of Life Cards
+      <div className="player-control box glass p-6 mt-6 has-text-centered shadow-lg">
+        <AnimatedButton id="assign-mol-btn" className="is-primary is-fullwidth button-premium py-6" onClick={onAssignMeanings}>
+          🎴 Assign Meaning of Life Cards
+        </AnimatedButton>
+        <p className="mt-4 text-muted is-size-7 italic">Each player will receive 2 secret objectives to choose from.</p>
+      </div>
+
+      <div className="player-meaning-cards-container mt-8">
+        <h4 className="title is-5 text-secondary pl-2 mb-4">Player Hidden Objectives</h4>
+        <div className="columns is-multiline">
+          {playerNames.slice(0, playerCount).map((playerName, index) => {
+            const pName = playerName.trim() || `Player ${index + 1}`;
+            const hasCards = playerMeanings[pName] && playerMeanings[pName].length > 0;
+            const isRevealed = revealedMeanings[pName];
+            const isViewing = viewingPlayer === pName;
+
+            return (
+              <div key={index} className="column is-half-tablet is-one-third-desktop">
+                <div className={`player-meaning-card-box box glass-light p-4 h-full border-white/5 transition-all ${isViewing ? 'viewing-active' : ''}`}>
+                  <h3 className="title is-5 mb-4 has-text-centered border-b border-white/10 pb-2">{pName}</h3>
+                  
+                  {hasCards && !isRevealed && (
+                    <div className="mb-4">
+                      <AnimatedButton 
+                        className={`is-small is-fullwidth ${isViewing ? 'is-warning' : 'is-info is-outlined'}`}
+                        onClick={() => onToggleViewPlayer(pName)}
+                      >
+                        {isViewing ? '🙈 Hide Cards' : '👁️ View Cards'}
+                      </AnimatedButton>
+                    </div>
+                  )}
+
+                  {(isViewing || isRevealed) && hasCards && (
+                    <div className="meaning-cards-grid-display animate-slide-up">
+                      {playerMeanings[pName]?.map((card, cardIndex) => (
+                        <div key={cardIndex} className="mb-3">
+                          <MeaningOfLifeCard
+                            meaning={card}
+                            isSelected={selectedMeanings[pName] === card.name}
+                            isRevealed={isRevealed || false}
+                            onChoose={() => onChooseMeaning(pName, card.name)}
+                            isViewing={isViewing}
+                            canSelect={!isRevealed}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {!hasCards && (
+                    <div className="has-text-centered py-4">
+                      <p className="text-muted is-size-7 italic">Waiting for assignment...</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="reveal-control-container box glass mt-8 p-4 border-dashed border-2 border-warning/30">
+        <AnimatedButton className="is-warning is-fullwidth py-4 font-bold" onClick={onRevealAll}>
+          ⚠️ Reveal All Final Meanings
         </AnimatedButton>
       </div>
 
-      <div className="player-meaning-cards-grid">
-        {playerNames.slice(0, playerCount).map((playerName, index) => {
-          const pName = playerName.trim() || `Player ${index + 1}`;
-          const hasCards = playerMeanings[pName] && playerMeanings[pName].length > 0;
-          const isRevealed = revealedMeanings[pName];
-          const isViewing = viewingPlayer === pName;
-
-          return (
-            <div key={index} className="player-meaning-card-container box mb-4">
-              <h3 className="title is-5 has-text-centered">{pName}</h3>
-              
-              {hasCards && !isRevealed && (
-                <div className="mb-3">
-                  <AnimatedButton 
-                    className="is-info is-small is-fullwidth"
-                    onClick={() => onToggleViewPlayer(pName)}
-                  >
-                    {isViewing ? 'Hide Cards' : 'View Cards'}
-                  </AnimatedButton>
-                </div>
-              )}
-
-              {(isViewing || isRevealed) && hasCards && (
-                <div className="meaning-cards-container">
-                  {playerMeanings[pName]?.map((card, cardIndex) => (
-                    <MeaningOfLifeCard
-                      key={cardIndex}
-                      card={card}
-                      isSelected={selectedMeanings[pName] === card.name}
-                      isRevealed={isRevealed || false}
-                      onChoose={() => onChooseMeaning(pName, card.name)}
-                      isViewing={isViewing}
-                      canSelect={!isRevealed}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="player-control box mt-4">
-        <AnimatedButton className="is-warning is-fullwidth" onClick={onRevealAll}>
-          Reveal All Meanings
-        </AnimatedButton>
-      </div>
+      <style jsx>{`
+        .viewing-active {
+          border-color: var(--info) !important;
+          box-shadow: 0 0 15px rgba(61, 165, 217, 0.2) !important;
+        }
+        .meaning-cards-grid-display {
+           display: flex;
+           flex-direction: column;
+           gap: 12px;
+        }
+      `}</style>
     </div>
   );
 }

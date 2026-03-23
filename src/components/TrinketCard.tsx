@@ -1,5 +1,6 @@
 import React from 'react';
 import { useCardImage } from '../hooks/useCardImage';
+import { useTheme } from '@/lib/theme-context';
 
 interface Trinket {
   name: string;
@@ -18,6 +19,7 @@ interface TrinketCardProps {
 }
 
 const TrinketCard: React.FC<TrinketCardProps> = ({ trinket, onAdd, onRemove, onPocket, isPocketDisabled, isFogged }) => {
+  const { cardArtPreference } = useTheme();
   const { getCardImage } = useCardImage();
   const cardArtUrl = getCardImage(trinket.name);
   const [imgError, setImgError] = React.useState(false);
@@ -26,7 +28,7 @@ const TrinketCard: React.FC<TrinketCardProps> = ({ trinket, onAdd, onRemove, onP
     <div className={`card ${isFogged ? 'opacity-50' : ''}`} style={{ padding: 'var(--space-4)', margin: 'var(--space-2)' }}>
       <div className="card-content">
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-3)' }}>
-          {cardArtUrl && !imgError ? (
+          {cardArtPreference === 'official' && cardArtUrl && !imgError && (
             <img
               src={cardArtUrl}
               alt={trinket.name}
@@ -40,7 +42,42 @@ const TrinketCard: React.FC<TrinketCardProps> = ({ trinket, onAdd, onRemove, onP
                 objectFit: 'contain'
               }}
             />
-          ) : (
+          )}
+
+          {cardArtPreference === 'ai' && (
+            <div style={{
+              width: '45px',
+              height: '63px',
+              borderRadius: 'var(--border-radius-small)',
+              boxShadow: 'var(--shadow-secondary)',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              <img
+                src="/assets/placeholders/trinket.png"
+                alt="AI Art"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  opacity: 0.8,
+                  filter: 'contrast(110%)'
+                }}
+              />
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'rgba(0,0,0,0.2)'
+              }}>
+                <span style={{ fontSize: '18px', filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.5))' }}>💍</span>
+              </div>
+            </div>
+          )}
+
+          {cardArtPreference === 'official' && (!cardArtUrl || imgError) && (
             <div style={{
               width: '45px',
               height: '63px',
@@ -57,6 +94,18 @@ const TrinketCard: React.FC<TrinketCardProps> = ({ trinket, onAdd, onRemove, onP
               padding: '2px'
             }}>
               ?
+            </div>
+          )}
+
+          {cardArtPreference === 'none' && (
+            <div style={{
+              width: '45px',
+              height: '63px',
+              borderRadius: 'var(--border-radius-small)',
+              backgroundColor: 'rgba(0,0,0,0.1)',
+              boxShadow: 'var(--shadow-secondary)'
+            }}>
+              {/* No Image */}
             </div>
           )}
           <h4 style={{ margin: 0, color: 'var(--primary-orange)', fontWeight: 'bold' }}>{trinket.name}</h4>
@@ -76,4 +125,5 @@ const TrinketCard: React.FC<TrinketCardProps> = ({ trinket, onAdd, onRemove, onP
   );
 };
 
-export default TrinketCard; 
+export default TrinketCard;
+ 

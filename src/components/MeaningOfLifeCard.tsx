@@ -1,31 +1,35 @@
-import React from 'react';
-import { useCardImage } from '../hooks/useCardImage';
+'use client';
 
-interface Meaning {
+import React, { useState } from 'react';
+import { useCardImage } from '../hooks/useCardImage';
+import { useTheme } from '@/lib/theme-context';
+
+interface MeaningOfLife {
   name: string;
   description: string;
 }
 
 interface MeaningOfLifeCardProps {
-  card: Meaning;
+  meaning: MeaningOfLife;
   isRevealed: boolean;
   isSelected: boolean;
   onChoose: () => void;
   isViewing?: boolean;
-  canSelect?: boolean; // New prop to indicate if selection is still allowed
+  canSelect?: boolean;
 }
 
 const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
-  card,
+  meaning,
   isRevealed,
   isSelected,
   onChoose,
   isViewing,
   canSelect = true
 }) => {
+  const { cardArtPreference } = useTheme();
   const { getCardImage } = useCardImage();
-  const cardArtUrl = getCardImage(card.name);
-  const [imgError, setImgError] = React.useState(false);
+  const cardArtUrl = getCardImage(meaning.name);
+  const [imgError, setImgError] = useState(false);
 
   const cardClasses = [
     'meaning-card',
@@ -46,12 +50,12 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
       {/* Always show header for selected cards, or when viewing/revealed */}
       {(isSelected || isRevealed || isViewing) && (
         <div className="meaning-card-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
-            {cardArtUrl && !imgError ? (
+          <h4 className="meaning-card-name" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
+            {cardArtPreference === 'official' && cardArtUrl && !imgError && (
               <img
                 src={cardArtUrl}
-                alt={card.name}
-                title={card.name}
+                alt={meaning.name}
+                title={meaning.name}
                 onError={() => setImgError(true)}
                 style={{
                   width: '45px',
@@ -61,7 +65,40 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
                   objectFit: 'contain'
                 }}
               />
-            ) : (
+            )}
+            {cardArtPreference === 'ai' && (
+              <div style={{
+                width: '45px',
+                height: '63px',
+                borderRadius: 'var(--border-radius-small)',
+                boxShadow: 'var(--shadow-secondary)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}>
+                <img
+                  src="/assets/placeholders/meaning.png"
+                  alt="AI Art"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    opacity: 0.8,
+                    filter: 'contrast(110%)'
+                  }}
+                />
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: 'rgba(0,0,0,0.2)'
+                }}>
+                  <span style={{ fontSize: '18px', filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.5))' }}>✨</span>
+                </div>
+              </div>
+            )}
+            {cardArtPreference === 'official' && (!cardArtUrl || imgError) && (
               <div style={{
                 width: '45px',
                 height: '63px',
@@ -78,11 +115,20 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
                 ?
               </div>
             )}
-            <h4 className="meaning-card-name" style={{ margin: 0 }}>
-              {card.name}
-              {isSelected && <span className="selection-badge">✓ SELECTED</span>}
-            </h4>
-          </div>
+            {cardArtPreference === 'none' && (
+              <div style={{
+                width: '45px',
+                height: '63px',
+                borderRadius: 'var(--border-radius-small)',
+                backgroundColor: 'rgba(0,0,0,0.1)',
+                boxShadow: 'var(--shadow-secondary)'
+              }}>
+                {/* No Art */}
+              </div>
+            )}
+            {meaning.name}
+            {isSelected && <span className="selection-badge">✓ SELECTED</span>}
+          </h4>
           {isSelected && !isRevealed && (
             <div className="selection-indicator">
               <span className="selection-icon">🎯</span>
@@ -94,7 +140,7 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
 
       {(isRevealed || isViewing) && (
         <div className="meaning-description">
-          <p>{card.description}</p>
+          <p>{meaning.description}</p>
         </div>
       )}
 

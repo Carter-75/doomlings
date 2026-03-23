@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useCardImage } from '../hooks/useCardImage';
+import { useTheme } from '@/lib/theme-context';
 import { useNotification } from '../lib/notification-context';
 
 interface Dominant {
@@ -36,6 +37,7 @@ const DominantCard: React.FC<DominantCardProps> = ({
   searchTerm = '',
   resetTrigger = 0
 }) => {
+  const { theme, cardArtPreference } = useTheme();
   const { showNotification } = useNotification();
   const { getCardImage } = useCardImage();
   const cardArtUrl = getCardImage(dominant.name);
@@ -150,36 +152,81 @@ const DominantCard: React.FC<DominantCardProps> = ({
       {/* Main Card */}
       <div className="dominant-card-main">
         <h3 className="dominant-name" style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-          {cardArtUrl && !imgError ? (
-            <img
-              src={cardArtUrl}
-              alt={dominant.name}
-              title={dominant.name}
-              onError={() => setImgError(true)}
-              style={{
-                width: '60px',
+            {cardArtPreference === 'official' && cardArtUrl && !imgError && (
+              <img
+                src={cardArtUrl}
+                alt={dominant.name}
+                title={dominant.name}
+                onError={() => setImgError(true)}
+                style={{
+                  width: '45px',
+                  height: '63px',
+                  borderRadius: 'var(--border-radius-small)',
+                  boxShadow: 'var(--shadow-secondary)',
+                  objectFit: 'contain'
+                }}
+              />
+            )}
+            {cardArtPreference === 'ai' && (
+              <div style={{
+                width: '45px',
+                height: '63px',
                 borderRadius: 'var(--border-radius-small)',
-                boxShadow: 'var(--shadow-primary)',
-                objectFit: 'contain'
-              }}
-            />
-          ) : (
-            <div style={{
-              width: '60px',
-              height: '84px',
-              borderRadius: 'var(--border-radius-small)',
-              background: 'linear-gradient(135deg, var(--light-bg), var(--primary-orange))',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'var(--text-primary)',
-              fontSize: '18px',
-              fontWeight: 'bold',
-              boxShadow: 'var(--shadow-primary)'
-            }}>
-              ?
-            </div>
-          )}
+                boxShadow: 'var(--shadow-secondary)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}>
+                <img
+                  src="/assets/placeholders/dominant.png"
+                  alt="AI Art"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    opacity: 0.8,
+                    filter: 'contrast(110%)'
+                  }}
+                />
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: 'rgba(0,0,0,0.2)'
+                }}>
+                  <span style={{ fontSize: '18px', filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.5))' }}>👑</span>
+                </div>
+              </div>
+            )}
+            {cardArtPreference === 'official' && (!cardArtUrl || imgError) && (
+              <div style={{
+                width: '45px',
+                height: '63px',
+                borderRadius: 'var(--border-radius-small)',
+                background: 'linear-gradient(135deg, var(--light-bg), var(--warning))',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--text-primary)',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                boxShadow: 'var(--shadow-secondary)'
+              }}>
+                ?
+              </div>
+            )}
+            {cardArtPreference === 'none' && (
+              <div style={{
+                width: '45px',
+                height: '63px',
+                borderRadius: 'var(--border-radius-small)',
+                backgroundColor: 'rgba(0,0,0,0.1)',
+                boxShadow: 'var(--shadow-secondary)'
+              }}>
+                {/* No Art */}
+              </div>
+            )}
           <span>
             {dominant.name}
             {hasMatchingDuplicates && <span className="match-indicator"> 🔍</span>}

@@ -136,49 +136,50 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
         const isHost = currentRoom.hostId === socketManager.getPlayerId();
 
         return (
-            <div className="section">
-                <div className="box" style={{ border: '2px solid var(--info)', boxShadow: 'var(--shadow-primary)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem' }}>
-                        <h2 className="title is-4" style={{ margin: 0, display: 'flex', alignItems: 'center', color: 'var(--info)' }}>
-                            <span style={{ fontSize: '1.5rem', marginRight: '10px' }}>📡</span> Local Sync Active
+            <div className="section animate-fade-in">
+                <div className="box glass p-6 border-1 border-info/30 shadow-xl overflow-hidden relative" style={{ minHeight: '400px' }}>
+                    <div className="is-flex is-justify-content-between is-align-items-center mb-6 border-b border-white/10 pb-4">
+                        <h2 className="title is-4 m-0 is-flex is-align-items-center text-info">
+                            <span className="mr-3 animate-pulse">📡</span> Local Sync Active
                         </h2>
-                        <AnimatedButton onClick={handleLeaveRoom} className="is-danger is-small">
-                            {isHost ? 'Stop Hosting' : 'Disconnect'}
+                        <AnimatedButton onClick={handleLeaveRoom} className="is-danger is-outlined is-small px-4 font-bold">
+                            {isHost ? '🛑 Stop Hosting' : '🔌 Disconnect'}
                         </AnimatedButton>
                     </div>
 
-                    <div className="content">
-                        <div className="box mb-3" style={{ background: 'var(--light-bg)' }}>
-                            <p className="heading" style={{ color: 'var(--text-secondary)' }}>Room Host</p>
-                            <p className="title is-5 mb-1" style={{ color: 'var(--text-primary)' }}>{isHost ? '👑 You' : currentRoom.name}</p>
-                            {currentRoom.password && (
-                                <p className="help is-danger">🔒 Password Protected</p>
-                            )}
+                    <div className="columns is-multiline">
+                        <div className="column is-12-mobile is-5-tablet">
+                            <div className="box glass-light p-5 h-full border-white/5">
+                                <p className="text-muted is-size-7 uppercase letter-spacing-1 mb-2">Room Host</p>
+                                <p className="title is-4 mb-2">{isHost ? '👑 You' : currentRoom.name}</p>
+                                {currentRoom.password && (
+                                    <span className="tag is-danger is-light is-rounded px-3">🔒 Secured Session</span>
+                                )}
+                                <div className="mt-6 pt-4 border-t border-white/5">
+                                    <div className="notification is-info is-light py-3 px-4 shadow-inner">
+                                        <p className="is-size-7">✓ Actions like <strong>Age Flipping</strong> and <strong>Challenges</strong> are now syncing in real-time.</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div className="box mb-3" style={{ background: 'var(--light-bg)' }}>
-                            <p className="heading" style={{ color: 'var(--text-secondary)' }}>Connected Devices ({currentRoom.players.length})</p>
-                            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                                {currentRoom.players.map((p: any) => (
-                                    <li key={p.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                                        <span style={{ color: 'var(--text-primary)' }}>
-                                            <span style={{ color: 'var(--info)', fontWeight: 'bold', marginRight: '8px' }}>•</span> {p.name} {p.id === socketManager.getPlayerId() && '(You)'}
-                                        </span>
-                                        {p.id === currentRoom.hostId && (
-                                            <span className="tag is-primary is-light">Host</span>
-                                        )}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-
-                        <div className="notification is-info is-light mt-4">
-                            ✓ Your game actions (Age Deck, Scores, Challenges) are automatically syncing with these devices.
-                            {!isHost && (
-                                <p className="help mt-2" style={{ fontStyle: 'italic' }}>
-                                    Note: Sync data is only saved on the Host's device to prevent overwriting your own local game saves.
-                                </p>
-                            )}
+                        <div className="column is-12-mobile is-7-tablet">
+                            <div className="box glass-light p-5 h-full border-white/5">
+                                <p className="text-muted is-size-7 uppercase letter-spacing-1 mb-4">Connected Devices ({currentRoom.players.length})</p>
+                                <div className="devices-list">
+                                    {currentRoom.players.map((p: any) => (
+                                        <div key={p.id} className="device-item is-flex is-justify-content-between is-align-items-center mb-3 p-3 rounded-lg border-1 border-white/5 hover:bg-white/5 transition-all">
+                                            <div className="is-flex is-align-items-center">
+                                                <div className={`status-dot mr-3 ${p.id === currentRoom.hostId ? 'bg-primary' : 'bg-success'}`} style={{ width: 8, height: 8, borderRadius: '50%' }}></div>
+                                                <span className="font-bold">{p.name} {p.id === socketManager.getPlayerId() && <span className="text-muted font-normal ml-1">(You)</span>}</span>
+                                            </div>
+                                            {p.id === currentRoom.hostId && (
+                                                <span className="tag is-primary is-small font-black">HOST</span>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -188,95 +189,102 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
 
     // Not connected - show room browser
     return (
-        <div className="section pt-2">
-            <h2 className="section-title" style={{ display: 'flex', alignItems: 'center' }}>
-                <span style={{ marginRight: '10px' }}>🌐</span> Local WiFi Sync
+        <div className="section pt-2 animate-fade-in">
+            <h2 className="section-title is-flex is-align-items-center">
+                <span className="mr-3">🌐</span> Local WiFi Sync
             </h2>
-            <p className="subtitle is-6 mb-5 has-text-centered">
-                Connect with other devices on your WiFi network to automatically sync Age progressions, Trinket assignments, and Challenges.
+            <p className="subtitle is-6 mb-8 has-text-centered text-muted italic">
+                Connect multiple devices on your WiFi to sync Age progression and Challenges.
             </p>
 
             {error && (
-                <div className="notification is-danger is-light">
+                <div className="notification is-danger is-light mb-6 shadow-md animate-bounce">
                     ⚠️ {error}
                 </div>
             )}
 
-            <div className="box mb-5">
-                <h3 className="title is-5">Host A New Session</h3>
-                <div className="field">
-                    <label className="label">Room Name (Optional)</label>
-                    <div className="control">
-                        <input
-                            className="input"
-                            type="text"
-                            placeholder={`${hostName}'s Sync Room`}
-                            value={roomName}
-                            onChange={(e) => setRoomName(e.target.value)}
-                        />
-                    </div>
-                </div>
-                
-                <div className="field mb-4">
-                    <label className="label">Password (Optional)</label>
-                    <div className="control">
-                        <input
-                            className="input"
-                            type="text"
-                            placeholder="Leave blank for open room"
-                            value={roomPassword}
-                            onChange={(e) => setRoomPassword(e.target.value)}
-                        />
-                    </div>
-                </div>
-
-                <AnimatedButton
-                    onClick={handleCreateRoom}
-                    disabled={isConnecting}
-                    className="is-primary is-fullwidth"
-                >
-                    {isConnecting ? 'Starting Sync...' : '📡 Start Hosting'}
-                </AnimatedButton>
-            </div>
-
-            <div className="box">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '1rem' }}>
-                    <h3 className="title is-5 m-0">Available Devices</h3>
-                    <button onClick={loadLocalRooms} disabled={isConnecting} className="button is-small is-ghost" style={{ padding: 0 }}>
-                        🔄 Scan Again
-                    </button>
-                </div>
-
-                {localRooms.length === 0 ? (
-                    <div className="notification is-light has-text-centered py-5">
-                        <div style={{ fontSize: '2rem', marginBottom: '10px' }}>🔍</div>
-                        <p className="has-text-weight-bold">No host devices found.</p>
-                        <p className="is-size-7 mt-2">Make sure you are on the same WiFi as the host.</p>
-                    </div>
-                ) : (
-                    <div>
-                        {localRooms.map(room => (
-                            <div key={room.id} className="box" style={{ padding: '1rem', marginBottom: '1rem', background: 'rgba(0,0,0,0.02)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <div>
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        <h4 className="title is-6 m-0 mr-2">{room.name}</h4>
-                                        {room.password && <span className="tag is-danger is-light">🔒</span>}
-                                    </div>
-                                    <p className="is-size-7 mt-1">
-                                        {room.currentPlayers} Device{room.currentPlayers !== 1 ? 's' : ''} Connected
-                                    </p>
-                                </div>
-                                <AnimatedButton
-                                    onClick={() => handleJoinRoom(room.id, !!room.password)}
-                                    disabled={isConnecting}
-                                    className="is-info is-small"
-                                >
-                                    Connect
-                                </AnimatedButton>
+            <div className="columns is-multiline">
+                <div className="column is-12-tablet is-5-desktop">
+                    <div className="box glass p-6 border-1 border-white/10 h-full shadow-lg">
+                        <h3 className="title is-5 mb-6 text-secondary border-b border-white/10 pb-3">📡 Host A Session</h3>
+                        
+                        <div className="field mb-4">
+                            <label className="label text-muted is-size-7">Room Name</label>
+                            <div className="control">
+                                <input
+                                    className="input premium-input"
+                                    type="text"
+                                    placeholder={`${hostName}'s Room`}
+                                    value={roomName}
+                                    onChange={(e) => setRoomName(e.target.value)}
+                                />
                             </div>
-                        ))}
+                        </div>
+                        
+                        <div className="field mb-6">
+                            <label className="label text-muted is-size-7">Password (Optional)</label>
+                            <div className="control">
+                                <input
+                                    className="input premium-input"
+                                    type="password"
+                                    placeholder="Keep empty for public"
+                                    value={roomPassword}
+                                    onChange={(e) => setRoomPassword(e.target.value)}
+                                />
+                            </div>
+                        </div>
+
+                        <AnimatedButton
+                            onClick={handleCreateRoom}
+                            disabled={isConnecting}
+                            className="is-primary is-fullwidth button-premium py-4"
+                        >
+                            {isConnecting ? 'Starting...' : '✨ Create Sync Room'}
+                        </AnimatedButton>
                     </div>
-                )}
+                </div>
+
+                <div className="column is-12-tablet is-7-desktop">
+                    <div className="box glass p-6 border-1 border-white/10 h-full shadow-lg">
+                        <div className="is-flex is-justify-content-between is-align-items-center mb-6 border-b border-white/10 pb-3">
+                            <h3 className="title is-5 m-0 text-secondary">📱 Nearby Devices</h3>
+                            <button onClick={loadLocalRooms} disabled={isConnecting} className="button is-small is-primary is-text is-ghost px-2">
+                                🔄 Refresh
+                            </button>
+                        </div>
+
+                        {localRooms.length === 0 ? (
+                            <div className="has-text-centered py-12 px-6 rounded-xl glass-light border-dashed border-2 border-white/5 opacity-50">
+                                <div className="is-size-2 mb-4">🔍</div>
+                                <p className="font-bold mb-1">Scanning for hosts...</p>
+                                <p className="is-size-7">Ensure other devices are on the same WiFi.</p>
+                            </div>
+                        ) : (
+                            <div className="available-rooms-list pr-1" style={{ maxHeight: '350px', overflowY: 'auto' }}>
+                                {localRooms.map(room => (
+                                    <div key={room.id} className="box glass-light mb-4 p-4 hover:border-white/20 transition-all is-flex is-justify-content-between is-align-items-center">
+                                        <div>
+                                            <div className="is-flex is-align-items-center">
+                                                <h4 className="title is-6 m-0 mr-2">{room.name}</h4>
+                                                {room.password && <span className="tag is-danger is-rounded is-small">🔒</span>}
+                                            </div>
+                                            <p className="is-size-7 text-muted mt-1">
+                                                {room.currentPlayers} Device{room.currentPlayers !== 1 ? 's' : ''} Connected
+                                            </p>
+                                        </div>
+                                        <AnimatedButton
+                                            onClick={() => handleJoinRoom(room.id, !!room.password)}
+                                            disabled={isConnecting}
+                                            className="is-info is-small px-4 font-bold"
+                                        >
+                                            Connect
+                                        </AnimatedButton>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
 
             {/* Password Modal */}
@@ -311,6 +319,20 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
                     </div>
                 </div>
             </Modal>
+
+            <style jsx>{`
+                .premium-input {
+                    background: rgba(0, 0, 0, 0.4) !important;
+                    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+                    color: white !important;
+                    height: 48px;
+                    border-radius: 12px;
+                }
+                .premium-input:focus {
+                    border-color: var(--primary-orange) !important;
+                    background: rgba(0, 0, 0, 0.6) !important;
+                }
+            `}</style>
         </div>
     );
 }

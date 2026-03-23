@@ -212,38 +212,65 @@ export default function TutorialOverlay({ steps, currentStep, onNext, onBack, on
             {/* Tooltip card */}
             <div
                 ref={tooltipRef}
-                className="tutorial-tooltip"
-                style={{ ...tooltipStyle, opacity, transition: 'opacity 0.3s ease' }}
+                className="tutorial-tooltip glass shadow-2xl border-1 border-white/20"
+                style={{ ...tooltipStyle, opacity, transition: 'opacity 0.3s ease', borderRadius: '16px', overflow: 'hidden' }}
             >
-                {arrowPos === 'top' && <div className="tutorial-arrow tutorial-arrow-top" />}
+                {arrowPos === 'top' && <div className="tutorial-arrow tutorial-arrow-top" style={{ borderBottomColor: 'rgba(255, 255, 255, 0.1)' }} />}
 
-                <div className="tutorial-header">
-                    <span className="tutorial-step-badge">
+                <div className="tutorial-header p-4 is-flex is-justify-content-between is-align-items-center border-b border-white/10 bg-white/5">
+                    <span className="tutorial-step-badge tag is-primary is-rounded font-black px-3">
                         {currentStep + 1} / {steps.length}
                     </span>
-                    <button className="tutorial-skip-btn" onClick={onSkip}>✕ Skip</button>
+                    <button className="tutorial-skip-btn button is-text is-small text-muted hover:text-white" onClick={onSkip}>✕ Skip Tour</button>
                 </div>
 
-                <div className="tutorial-progress-bar">
-                    <div className="tutorial-progress-fill" style={{ width: `${progress}%` }} />
+                <div className="tutorial-progress-bar h-1 bg-white/5">
+                    <div className="tutorial-progress-fill h-full transition-all duration-500" style={{ width: `${progress}%`, background: 'linear-gradient(90deg, var(--primary-orange), var(--secondary-gold))' }} />
                 </div>
 
-                <h3 className="tutorial-step-title">{step.title}</h3>
-                <p className="tutorial-step-message">{step.message}</p>
+                <div className="p-5">
+                    <h3 className="tutorial-step-title title is-5 mb-3 text-secondary" style={{ fontWeight: 800 }}>{step.title}</h3>
+                    <p className="tutorial-step-message is-size-6 text-muted mb-6" style={{ lineHeight: 1.5, whiteSpace: 'pre-line' }}>{step.message}</p>
 
-                <div className="tutorial-footer" style={{ display: 'flex', gap: '8px' }}>
-                    {currentStep > 0 && (
-                        <button className="tutorial-back-btn" onClick={onBack} style={{ flex: 1 }}>
-                            ← Back
+                    <div className="tutorial-footer is-flex gap-2">
+                        {currentStep > 0 && (
+                            <button className="tutorial-back-btn button is-light is-outlined flex-1 font-bold" onClick={onBack}>
+                                ← Back
+                            </button>
+                        )}
+                        <button className="tutorial-next-btn button is-primary flex-1 font-black button-premium shadow-lg" onClick={onNext}>
+                            {isLast ? '🎉 Finish' : 'Next →'}
                         </button>
-                    )}
-                    <button className="tutorial-next-btn" onClick={onNext} style={{ flex: currentStep > 0 ? 1 : 'none', width: currentStep > 0 ? 'auto' : '100%' }}>
-                        {isLast ? '🎉 Done!' : 'Next →'}
-                    </button>
+                    </div>
                 </div>
 
-                {arrowPos === 'bottom' && <div className="tutorial-arrow tutorial-arrow-bottom" />}
+                {arrowPos === 'bottom' && <div className="tutorial-arrow tutorial-arrow-bottom" style={{ borderTopColor: 'rgba(255, 255, 255, 0.1)' }} />}
             </div>
+
+            <style jsx>{`
+                .tutorial-tooltip {
+                    background: rgba(15, 15, 20, 0.9) !important;
+                    backdrop-filter: blur(20px) !important;
+                    max-width: 340px;
+                }
+                .tutorial-arrow {
+                    width: 0;
+                    height: 0;
+                    border-left: 10px solid transparent;
+                    border-right: 10px solid transparent;
+                    position: absolute;
+                    left: 50%;
+                    transform: translateX(-50%);
+                }
+                .tutorial-arrow-top {
+                    border-bottom: 10px solid rgba(255, 255, 255, 0.1);
+                    top: -10px;
+                }
+                .tutorial-arrow-bottom {
+                    border-top: 10px solid rgba(255, 255, 255, 0.1);
+                    bottom: -10px;
+                }
+            `}</style>
         </>
     );
 }

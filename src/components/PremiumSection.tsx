@@ -9,26 +9,26 @@ export const PremiumSection = () => {
     const isNativeApp = typeof window !== 'undefined' && Capacitor.isNativePlatform();
 
     return (
-        <div className="premium-section">
-            <h2>✨ Remove Ads</h2>
-            <p>Enjoy an ad-free experience with our Monthly, Yearly, or Lifetime plans!</p>
+        <div className="box p-8 backdrop-blur-xl bg-opacity-80 text-center w-full max-w-2xl mx-auto premium-bg">
+            <h2 className="section-title mb-2">✨ Remove Ads</h2>
+            <p className="text-muted mb-6">Enjoy an ad-free experience with our Monthly, Yearly, or Lifetime plans!</p>
 
-            <div className="premium-header">
+            <div className="flex justify-center mb-8">
                 {adsLoading ? (
-                    <div className="status-badge loading">⏳ Checking subscription…</div>
+                    <span className="status-pill info">⏳ Checking subscription…</span>
                 ) : adsRemoved ? (
-                    <div className="status-badge active">✅ Premium Active — Ads Removed</div>
+                    <span className="status-pill success">✅ Premium Active — Ads Removed</span>
                 ) : (
-                    <div className="status-badge free">
-                        <span className="pulse-dot"></span>
+                    <span className="status-pill warning">
+                        <span className="pulse-dot mr-2"></span>
                         Current Status: Free Tier (Ads Enabled)
-                    </div>
+                    </span>
                 )}
             </div>
 
             {!adsRemoved && (
-                <div className="features-container">
-                    <ul className="premium-feature-list">
+                <div className="box p-6 bg-opacity-10 bg-white border-white/10 mb-8 inline-block text-left">
+                    <ul className="list-disc pl-6 space-y-2 text-muted">
                         <li>🚫 No banner ads</li>
                         <li>🚫 No interstitial ads</li>
                         <li>⚡ Faster, cleaner gameplay</li>
@@ -38,209 +38,39 @@ export const PremiumSection = () => {
             )}
 
             {!adsRemoved && (
-                <div className="packages-grid">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                     {[
-                        { identifier: 'remove_ads_monthly', title: 'Monthly – Remove Ads', description: 'Ad-free for 1 month.', priceString: '$3.99/mo' },
-                        { identifier: 'remove_ads_yearly', title: 'Yearly – Remove Ads', description: 'Ad-free for 1 year. Includes a 1-week free trial!', priceString: '$39.99/yr' },
-                        { identifier: 'remove_ads_lifetime', title: 'Lifetime – Remove Ads', description: 'Ad-free forever.', priceString: '$49.99' }
+                        { identifier: 'remove_ads_monthly', title: 'Monthly', description: 'Ad-free for 1 month.', priceString: '$3.99/mo' },
+                        { identifier: 'remove_ads_yearly', title: 'Yearly', description: 'Ad-free for 1 year. Includes a 1-week free trial!', priceString: '$39.99/yr' },
+                        { identifier: 'remove_ads_lifetime', title: 'Lifetime', description: 'Ad-free forever.', priceString: '$49.99' }
                     ].map((pkg) => (
-                        <div key={pkg.identifier} className="package-card">
-                            <h3>{pkg.title}</h3>
-                            <p>{pkg.description}</p>
-                            <div className="package-price">{pkg.priceString}</div>
+                        <div key={pkg.identifier} className="card p-5 hover-scale border-primary/20 flex flex-col gap-2 bg-black/20">
+                            <h3 className="has-text-weight-bold is-size-5 mb-0" style={{ color: 'var(--primary)' }}>{pkg.title}</h3>
+                            <p className="is-size-7 text-muted mb-2">{pkg.description}</p>
+                            <div className="title is-4 mb-3">{pkg.priceString}</div>
                             <button
-                                className="subscribe-btn"
+                                className="button is-primary w-full button-premium"
                                 onClick={() => purchaseProduct(pkg.identifier)}
                                 disabled={adsLoading}
                             >
-                                Subscribe
+                                Get Started
                             </button>
                         </div>
                     ))}
                 </div>
             )}
 
-            <div className="premium-btn-row">
-                <button
-                    className="restore-btn"
-                    onClick={restorePurchases}
-                    disabled={adsLoading}
-                >
-                    🔄 Restore Purchases
-                </button>
+            <div className="flex gap-4 justify-center flex-wrap pt-4 border-t border-white/10">
+                {isNativeApp && (
+                    <button
+                        className="button is-ghost is-small text-muted"
+                        onClick={restorePurchases}
+                        disabled={adsLoading}
+                    >
+                        🔄 Restore Previous Purchases
+                    </button>
+                )}
             </div>
-
-            <style jsx>{`
-                .premium-section {
-                    background: var(--light-bg);
-                    border: 1px solid rgba(255, 193, 7, 0.2);
-                    border-radius: var(--border-radius);
-                    box-shadow: var(--shadow-card);
-                    backdrop-filter: blur(24px);
-                    padding: var(--space-6);
-                    margin-bottom: var(--space-6);
-                    text-align: center;
-                }
-                .premium-section h2 {
-                    color: var(--warning);
-                    margin-bottom: var(--space-2);
-                    font-size: clamp(1.25rem, 3vw, 1.5rem);
-                }
-                .premium-section p {
-                    color: var(--text-secondary);
-                    margin-bottom: var(--space-4);
-                    font-size: 0.95em;
-                }
-                .premium-header {
-                    margin: var(--space-4) 0 var(--space-6) 0;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    width: 100%;
-                }
-                .status-badge {
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 10px;
-                    padding: var(--space-2) var(--space-6);
-                    border-radius: 30px;
-                    font-weight: bold;
-                    font-size: 0.95em;
-                    letter-spacing: 0.5px;
-                    box-shadow: var(--shadow-primary);
-                    transition: all 0.3s ease;
-                }
-                .status-badge.active {
-                    background: rgba(0, 255, 136, 0.1);
-                    border: 1px solid rgba(0, 255, 136, 0.3);
-                    color: var(--success);
-                    box-shadow: var(--shadow-secondary);
-                }
-                .status-badge.free {
-                    background: rgba(255, 193, 7, 0.1);
-                    border: 1px solid rgba(255, 193, 7, 0.3);
-                    color: var(--warning);
-                }
-                .status-badge.loading {
-                    background: rgba(255, 255, 255, 0.05);
-                    border: 1px solid rgba(255, 255, 255, 0.1);
-                    color: var(--text-muted);
-                }
-                .pulse-dot {
-                    width: 8px;
-                    height: 8px;
-                    background-color: var(--warning);
-                    border-radius: 50%;
-                    box-shadow: 0 0 8px var(--warning);
-                    animation: pulse 2s infinite;
-                }
-                @keyframes pulse {
-                    0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); }
-                    70% { box-shadow: 0 0 0 6px rgba(255, 193, 7, 0); }
-                    100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
-                }
-                .features-container {
-                    background: rgba(255, 255, 255, 0.02);
-                    border-radius: var(--border-radius);
-                    padding: var(--space-4) var(--space-6);
-                    display: inline-block;
-                    margin-bottom: var(--space-6);
-                    border: 1px solid rgba(255,255,255,0.05);
-                }
-                .packages-grid {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                    gap: var(--space-4);
-                    margin: var(--space-5) 0;
-                }
-                .package-card {
-                    background: rgba(255, 255, 255, 0.02);
-                    border: 1px solid rgba(255, 193, 7, 0.2);
-                    border-radius: var(--border-radius-small);
-                    padding: var(--space-4);
-                    display: flex;
-                    flex-direction: column;
-                    gap: var(--space-2);
-                    transition: transform 0.2s, box-shadow 0.2s;
-                }
-                .package-card:hover {
-                    transform: translateY(-2px);
-                    box-shadow: var(--shadow-secondary);
-                    border-color: rgba(255, 193, 7, 0.4);
-                }
-                .package-card h3 {
-                    color: var(--warning);
-                    margin: 0;
-                    font-size: 1.1em;
-                }
-                .package-card p {
-                    color: var(--text-secondary);
-                    margin: 0;
-                    font-size: 0.9em;
-                }
-                .package-price {
-                    font-size: 1.25em;
-                    font-weight: bold;
-                    color: var(--text-primary);
-                    margin: var(--space-1) 0;
-                }
-                .premium-btn-row {
-                    display: flex;
-                    gap: var(--space-3);
-                    justify-content: center;
-                    flex-wrap: wrap;
-                }
-                .subscribe-btn {
-                    background: linear-gradient(135deg, var(--warning), var(--accent-orange));
-                    color: #000;
-                    padding: var(--space-3) var(--space-6);
-                    border: none;
-                    border-radius: var(--border-radius-small);
-                    cursor: pointer;
-                    font-size: 15px;
-                    font-weight: bold;
-                    transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
-                }
-                .subscribe-btn:hover {
-                    transform: translateY(-2px);
-                    box-shadow: var(--glow-primary);
-                    filter: brightness(1.1);
-                }
-                .restore-btn {
-                    background: transparent;
-                    color: var(--text-secondary);
-                    padding: var(--space-3) var(--space-5);
-                    border: 1px solid rgba(255,255,255,0.2);
-                    border-radius: var(--border-radius-small);
-                    cursor: pointer;
-                    font-size: 14px;
-                    transition: border-color 0.2s, color 0.2s;
-                }
-                .restore-btn:hover {
-                    border-color: rgba(255,255,255,0.5);
-                    color: var(--text-primary);
-                }
-                .premium-feature-list {
-                    list-style: none;
-                    padding: 0;
-                    margin: 0;
-                    text-align: left;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 10px;
-                }
-                .premium-feature-list li {
-                    color: var(--text-secondary);
-                    font-size: 0.95em;
-                    display: flex;
-                    align-items: center;
-                }
-                .web-only-note {
-                    color: var(--text-muted);
-                    font-size: 0.8em;
-                    margin-top: var(--space-3);
-                }
-            `}</style>
         </div>
     );
 };
