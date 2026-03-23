@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Preferences } from '@capacitor/preferences';
 import { useAds } from '@/lib/ad-context';
 import { useTheme } from '@/lib/theme-context';
@@ -11,6 +12,7 @@ import Modal from '@/components/Modal';
 import AnimatedButton from '@/components/AnimatedButton';
 
 const SettingsPage = () => {
+    const router = useRouter();
     const { adsRemoved, packages, purchasePackage, restorePurchases, loading: adsLoading } = useAds();
     const { theme, setTheme, cardArtPreference, setCardArtPreference } = useTheme();
     const isNativeApp = typeof window !== 'undefined' && Capacitor.isNativePlatform();
@@ -125,11 +127,12 @@ const SettingsPage = () => {
             title: 'RESET ALL DATA?',
             message: 'This will wipe all game progress, settings, and themes. This cannot be undone.',
             type: 'error',
-            onConfirm: () => {
+            onConfirm: async () => {
                 const tutorialSeen = localStorage.getItem('doomlingsTutorialSeen');
                 localStorage.clear();
                 if (tutorialSeen) localStorage.setItem('doomlingsTutorialSeen', tutorialSeen);
-                window.location.reload();
+                // Use router.push to home instead of hard reload to preserve router context
+                router.push('/');
             }
         });
     };

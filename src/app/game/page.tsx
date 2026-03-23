@@ -458,9 +458,10 @@ export default function GamePage() {
         title: 'Reset All Data?',
         message: 'This will wipe all game progress. This cannot be undone.',
         type: 'error',
-        onConfirm: () => {
+        onConfirm: async () => {
             resetGame();
-            window.location.reload();
+            // Use router.push to home instead of hard reload to preserve router context
+            router.push('/');
         }
     });
   };

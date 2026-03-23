@@ -222,7 +222,7 @@
 /* Enhanced Typography Scale */
 html {
   font-size: calc(16px * var(--ui-scale));
-  scroll-behavior: smooth;
+  /* scroll-behavior: smooth; */
 }
 
 * {

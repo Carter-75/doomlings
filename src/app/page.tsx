@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useIframe } from '@/lib/iframe-context';
 import { useRouter } from 'next/navigation';
@@ -12,6 +12,7 @@ export default function HomePage() {
   const { isIframe, isPortfolioEmbed } = useIframe();
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showModeModal, setShowModeModal] = useState(false);
+  const modeModalRef = useRef<HTMLDivElement>(null);
 
   const { adsRemoved, loading: adsLoading } = useAds();
   const [showPremiumPopup, setShowPremiumPopup] = useState(false);
@@ -41,6 +42,21 @@ export default function HomePage() {
 
     return () => clearTimeout(timer);
   }, [adsLoading, adsRemoved]);
+
+  // Scroll to mode modal when it becomes visible
+  useEffect(() => {
+    if (showModeModal && modeModalRef.current) {
+      // Enable smooth scroll temporarily for this action
+      document.documentElement.style.scrollBehavior = 'smooth';
+      setTimeout(() => {
+        modeModalRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Disable smooth scroll after action completes
+        setTimeout(() => {
+          document.documentElement.style.scrollBehavior = 'auto';
+        }, 500);
+      }, 100);
+    }
+  }, [showModeModal]);
 
   const handlePlayGameClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -76,7 +92,7 @@ export default function HomePage() {
 
             {/* Inline Mode Selection */}
             {showModeModal && (
-              <div className="mt-8 mb-8 animate-in fade-in duration-300">
+              <div ref={modeModalRef} className="mt-8 mb-8 animate-in fade-in duration-300">
                 <h2 className="text-center mb-1" style={{ color: 'var(--primary-orange)', fontSize: 'clamp(1.5rem, 5vw, 2.25rem)', fontWeight: 800 }}>Choose Game Mode</h2>
                 <p className="text-center mb-6" style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>How would you like to play today?</p>
 
