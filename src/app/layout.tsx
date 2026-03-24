@@ -5,7 +5,6 @@ import { IframeWrapper } from "@/components/iframe-wrapper";
 import { BackHandler } from "@/components/back-handler";
 import { AdProvider } from "@/lib/ad-context";
 import { ThemeProvider } from "@/lib/theme-context";
-import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import { NotificationProvider } from "@/lib/notification-context";
 import ScrollToTopOnRoute from "@/components/ScrollToTopOnRoute";
@@ -35,9 +34,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const adsenseClientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
-  const hasRealAdsense = adsenseClientId && !adsenseClientId.includes('XXXX');
-
   return (
     <html lang="en">
       <head>
@@ -49,17 +45,8 @@ export default function RootLayout({
           httpEquiv="Content-Security-Policy"
           content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' https: data: blob:; connect-src 'self' https: wss:; font-src 'self' https: data:;"
         />
-        {/* AdSense account verification — always present on web */}
-        <meta name="google-adsense-account" content="ca-pub-8347349621527130" />
-        {/* Google AdSense script — website only (native app uses AdMob) */}
-        {hasRealAdsense && (
-          <Script
-            async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseClientId}`}
-            crossOrigin="anonymous"
-            strategy="afterInteractive"
-          />
-        )}
+        {/* AdSense account verification */}
+        <meta name="google-adsense-account" content="ca-pub-7215953409871722" />
       </head>
       <body className={`${outfitFont.className} ${outfitFont.variable}`}>
         <ThemeProvider>

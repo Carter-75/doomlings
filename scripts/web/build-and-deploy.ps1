@@ -47,6 +47,27 @@ function Get-PropertiesFromFile {
     return $map
 }
 
+function Get-MaskedPropertyLine {
+    param(
+        [string]$Line
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Line) -or $Line.Trim().StartsWith("#") -or -not $Line.Contains("=")) {
+        return $null
+    }
+
+    $parts = $Line.Split('=', 2)
+    $key = $parts[0].Trim()
+    $value = $parts[1].Trim()
+    $sensitiveKeys = @('storePassword', 'keyPassword')
+
+    if ($sensitiveKeys -contains $key) {
+        return "  $key=********"
+    }
+
+    return "  $key=$value"
+}
+
 Write-Host "================================================" -ForegroundColor Cyan
 Write-Host "   Doomlings Companion - Build and Deploy" -ForegroundColor Cyan  
 Write-Host "================================================" -ForegroundColor Cyan
@@ -322,7 +343,6 @@ Write-Host "================================================" -ForegroundColor C
 Write-Status "Checking Android keystore configuration..." "INFO"
 
 $KeystorePropertiesFile = Join-Path $RootDir "android\keystore.properties"
-$KeystoreFile = Join-Path $RootDir "android\app\doomlings-companion-key.keystore"
 
 Write-Status "Looking for keystore config at: $KeystorePropertiesFile" "INFO"
 
@@ -334,8 +354,9 @@ if (-not (Test-Path $KeystorePropertiesFile)) {
 else {
     Write-Status "keystore.properties found" "SUCCESS"
     Get-Content $KeystorePropertiesFile | ForEach-Object { 
-        if (-not $_.StartsWith("#") -and $_.Contains("=")) {
-            Write-Host "  $_" -ForegroundColor Gray
+        $maskedLine = Get-MaskedPropertyLine $_
+        if ($null -ne $maskedLine) {
+            Write-Host $maskedLine -ForegroundColor Gray
         }
     }
 }
@@ -604,11 +625,11 @@ if ($canRunPepk -and -not [string]::IsNullOrWhiteSpace($KeystoreProps["storePass
 
         # Run the PEPK tool with automated passwords and RSA-AES encryption
         & java -jar android/signing/pepk.jar `
-            --keystore android/app/doomlings-companion-key.keystore `
-            --alias doomlings-companion `
+            --keystore $KeystoreStoreFile `
+            --alias $KeystoreProps["keyAlias"] `
             --output builds/signing/doomlings-companion-encrypted-private-key.zip `
-            --keystore-pass doomlings123 `
-            --key-pass doomlings123 `
+            --keystore-pass $KeystoreProps["storePassword"] `
+            --key-pass $KeystoreProps["keyPassword"] `
             --include-cert `
             --rsa-aes-encryption `
             --encryption-key-path android/signing/encryption_public_key.pem

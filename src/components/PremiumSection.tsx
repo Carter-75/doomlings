@@ -40,8 +40,8 @@ export const PremiumSection = () => {
             {!adsRemoved && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                     {[
-                        { identifier: 'remove_ads_monthly', title: 'Monthly', description: 'Ad-free for 1 month.', priceString: '$3.99/mo' },
-                        { identifier: 'remove_ads_yearly', title: 'Yearly', description: 'Ad-free for 1 year. Includes a 1-week free trial!', priceString: '$39.99/yr' },
+                        { identifier: 'remove_ads_monthly:monthly', title: 'Monthly', description: 'Ad-free for 1 month.', priceString: '$3.99/mo' },
+                        { identifier: 'remove_ads_yearly:yearly', title: 'Yearly', description: 'Ad-free for 1 year. Includes a 1-week free trial!', priceString: '$39.99/yr' },
                         { identifier: 'remove_ads_lifetime', title: 'Lifetime', description: 'Ad-free forever.', priceString: '$49.99' }
                     ].map((pkg) => (
                         <div key={pkg.identifier} className="card p-5 hover-scale border-primary/20 flex flex-col gap-2 bg-black/20">
