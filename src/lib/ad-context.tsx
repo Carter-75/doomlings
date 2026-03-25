@@ -13,6 +13,7 @@ const ENTITLEMENT_ID = 'DOOMlings Companion Pro';
 const ADS_REMOVED_KEY = 'adsRemoved';
 const SUBSCRIPTION_TYPE_KEY = 'subscriptionType';
 const SUBSCRIPTION_EXPIRY_KEY = 'subscriptionExpiry';
+const AD_TEST_UNTIL_KEY = 'adTestModeUntil';
 const REFRESH_INTERVAL = 5 * 60 * 1000; // Refresh every 5 minutes
 const RC_TIMEOUT_MS = 8000;
 const MONTHLY_PRODUCT_ID = 'remove_ads_monthly:monthly';
@@ -36,6 +37,10 @@ interface AdContextValue {
     setAdsSuppressed: (suppressed: boolean) => void;
     bannerVisible: boolean;
     recordClick: () => void;
+    adTestModeActive: boolean;
+    adTestModeRemainingMs: number;
+    enableAdTestMode: (minutes?: number) => Promise<void>;
+    disableAdTestMode: () => Promise<void>;
 }
 
 const AdContext = createContext<AdContextValue>({
@@ -51,6 +56,10 @@ const AdContext = createContext<AdContextValue>({
     setAdsSuppressed: () => { },
     bannerVisible: false,
     recordClick: () => { },
+    adTestModeActive: false,
+    adTestModeRemainingMs: 0,
+    enableAdTestMode: async () => { },
+    disableAdTestMode: async () => { },
 });
 
 export function useAds() {
@@ -163,10 +172,32 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
     const [bannerVisible, setBannerVisible] = useState(false);
     const [packages, setPackages] = useState<any[]>([]);
     const [clickCount, setClickCount] = useState(0);
+    const [adTestModeUntil, setAdTestModeUntil] = useState<number | null>(null);
+    const [adTestModeRemainingMs, setAdTestModeRemainingMs] = useState(0);
     const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
+    const adTestTimerRef = useRef<NodeJS.Timeout | null>(null);
     const rcConfiguredRef = useRef(false);
     const syncInFlightRef = useRef<Promise<void> | null>(null);
+    const actualSubscriptionRef = useRef<{ removed: boolean; type: SubscriptionType; expiry: Date | null }>({
+        removed: false,
+        type: null,
+        expiry: null,
+    });
     const AD_CLICK_THRESHOLD = 15;
+
+    const isAdTestModeActive = useCallback((until: number | null) => {
+        return typeof until === 'number' && until > Date.now();
+    }, []);
+
+    const adTestModeActive = isAdTestModeActive(adTestModeUntil);
+
+    const updateAdTestRemaining = useCallback((until: number | null) => {
+        if (!until) {
+            setAdTestModeRemainingMs(0);
+            return;
+        }
+        setAdTestModeRemainingMs(Math.max(0, until - Date.now()));
+    }, []);
 
     // ─── Persist subscription state
     const persistSubscriptionState = useCallback(async (
@@ -241,18 +272,70 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
         type: SubscriptionType,
         expiry: Date | null
     ) => {
-        setAdsRemoved(removed);
-        adsRemovedRef.current = removed;
-        setSubscriptionStatus(removed ? 'active' : 'free');
-        setSubscriptionType(type);
-        setSubscriptionExpiry(expiry);
+        actualSubscriptionRef.current = { removed, type, expiry };
+
+        const effectiveRemoved = removed && !isAdTestModeActive(adTestModeUntil);
+
+        setAdsRemoved(effectiveRemoved);
+        adsRemovedRef.current = effectiveRemoved;
+        setSubscriptionStatus(effectiveRemoved ? 'active' : 'free');
+        setSubscriptionType(effectiveRemoved ? type : null);
+        setSubscriptionExpiry(effectiveRemoved ? expiry : null);
 
         await persistSubscriptionState(removed, type, expiry);
 
         if (isNative()) {
             (removed || adsSuppressed) ? await hideBanner() : await showBanner();
         }
-    }, [persistSubscriptionState, adsSuppressed]);
+    }, [persistSubscriptionState, adsSuppressed, adTestModeUntil, isAdTestModeActive]);
+
+    const applyEffectiveStateFromActual = useCallback(async () => {
+        const current = actualSubscriptionRef.current;
+        const effectiveRemoved = current.removed && !isAdTestModeActive(adTestModeUntil);
+
+        setAdsRemoved(effectiveRemoved);
+        adsRemovedRef.current = effectiveRemoved;
+        setSubscriptionStatus(effectiveRemoved ? 'active' : 'free');
+        setSubscriptionType(effectiveRemoved ? current.type : null);
+        setSubscriptionExpiry(effectiveRemoved ? current.expiry : null);
+
+        if (isNative()) {
+            (effectiveRemoved || adsSuppressed) ? await hideBanner() : await showBanner();
+        }
+    }, [adsSuppressed, adTestModeUntil, isAdTestModeActive]);
+
+    const disableAdTestMode = useCallback(async () => {
+        setAdTestModeUntil(null);
+        updateAdTestRemaining(null);
+
+        try {
+            await Preferences.remove({ key: AD_TEST_UNTIL_KEY });
+        } catch {
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem(AD_TEST_UNTIL_KEY);
+            }
+        }
+
+        await applyEffectiveStateFromActual();
+    }, [applyEffectiveStateFromActual, updateAdTestRemaining]);
+
+    const enableAdTestMode = useCallback(async (minutes = 10) => {
+        const durationMs = Math.max(1, minutes) * 60 * 1000;
+        const until = Date.now() + durationMs;
+
+        setAdTestModeUntil(until);
+        updateAdTestRemaining(until);
+
+        try {
+            await Preferences.set({ key: AD_TEST_UNTIL_KEY, value: String(until) });
+        } catch {
+            if (typeof window !== 'undefined') {
+                localStorage.setItem(AD_TEST_UNTIL_KEY, String(until));
+            }
+        }
+
+        await applyEffectiveStateFromActual();
+    }, [applyEffectiveStateFromActual, updateAdTestRemaining]);
 
     const ensureRevenueCatConfigured = useCallback(async (): Promise<RevenueCatModule | null> => {
         if (!isNative() || !RC_API_KEY) return null;
@@ -346,11 +429,36 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
                 // Load cached state
                 const persisted = await loadPersistedState();
                 if (persisted.removed) {
-                    setAdsRemoved(true);
-                    adsRemovedRef.current = true;
-                    setSubscriptionType(persisted.type);
-                    setSubscriptionExpiry(persisted.expiry);
-                    setSubscriptionStatus('active');
+                    actualSubscriptionRef.current = {
+                        removed: persisted.removed,
+                        type: persisted.type,
+                        expiry: persisted.expiry,
+                    };
+                }
+
+                // Load persisted ad test mode timer
+                try {
+                    const { value } = await Preferences.get({ key: AD_TEST_UNTIL_KEY });
+                    if (value) {
+                        const parsed = Number(value);
+                        if (Number.isFinite(parsed) && parsed > Date.now()) {
+                            setAdTestModeUntil(parsed);
+                            updateAdTestRemaining(parsed);
+                        } else {
+                            await Preferences.remove({ key: AD_TEST_UNTIL_KEY });
+                        }
+                    }
+                } catch {
+                    if (typeof window !== 'undefined') {
+                        const saved = localStorage.getItem(AD_TEST_UNTIL_KEY);
+                        const parsed = saved ? Number(saved) : NaN;
+                        if (Number.isFinite(parsed) && parsed > Date.now()) {
+                            setAdTestModeUntil(parsed);
+                            updateAdTestRemaining(parsed);
+                        } else {
+                            localStorage.removeItem(AD_TEST_UNTIL_KEY);
+                        }
+                    }
                 }
 
                 // Initialize AdMob
@@ -387,7 +495,7 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
             if (refreshIntervalRef.current) clearInterval(refreshIntervalRef.current);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [updateAdTestRemaining, syncFromRevenueCat]);
 
     // Re-check subscription whenever app returns to foreground.
     useEffect(() => {
@@ -399,6 +507,10 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
             try {
                 listener = await App.addListener('appStateChange', ({ isActive }) => {
                     if (isActive) {
+                        updateAdTestRemaining(adTestModeUntil);
+                        if (adTestModeUntil && adTestModeUntil <= Date.now()) {
+                            disableAdTestMode();
+                        }
                         refreshSubscriptionStatus();
                     }
                 });
@@ -415,7 +527,36 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
                 listener = null;
             }
         };
-    }, [refreshSubscriptionStatus]);
+    }, [refreshSubscriptionStatus, adTestModeUntil, disableAdTestMode, updateAdTestRemaining]);
+
+    useEffect(() => {
+        if (adTestTimerRef.current) {
+            clearInterval(adTestTimerRef.current);
+            adTestTimerRef.current = null;
+        }
+
+        if (!adTestModeUntil) {
+            setAdTestModeRemainingMs(0);
+            return;
+        }
+
+        updateAdTestRemaining(adTestModeUntil);
+
+        adTestTimerRef.current = setInterval(() => {
+            if (adTestModeUntil <= Date.now()) {
+                disableAdTestMode();
+                return;
+            }
+            updateAdTestRemaining(adTestModeUntil);
+        }, 1000);
+
+        return () => {
+            if (adTestTimerRef.current) {
+                clearInterval(adTestTimerRef.current);
+                adTestTimerRef.current = null;
+            }
+        };
+    }, [adTestModeUntil, disableAdTestMode, updateAdTestRemaining]);
 
     // ─── Purchase Package
     const purchasePackage = useCallback(async (pkg: any) => {
@@ -622,7 +763,11 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
             restorePurchases,
             setAdsSuppressed,
             bannerVisible,
-            recordClick
+            recordClick,
+            adTestModeActive,
+            adTestModeRemainingMs,
+            enableAdTestMode,
+            disableAdTestMode,
         }}>
             {children}
         </AdContext.Provider>

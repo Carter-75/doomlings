@@ -21,15 +21,9 @@ const SettingsPage = () => {
     const [scale, setScale] = useState(100);
     const [modal, setModal] = useState<{ isOpen: boolean; title: string; message: string; type?: 'info' | 'warning' | 'error' | 'success'; onConfirm?: () => void } | null>(null);
 
-    // JSON Editor State
-    const [jsonFiles, setJsonFiles] = useState<string[]>([]);
-    const [editingFile, setEditingFile] = useState<string | null>(null);
-    const [fileContent, setFileContent] = useState('');
-
     // Game Files State
     const [fileName, setFileName] = useState('');
     const [savedFiles, setSavedFiles] = useState<string[]>([]);
-    const [message, setMessage] = useState('');
 
     // Preferences
     const [showScrollToTop, setShowScrollToTop] = useState(true);
@@ -49,23 +43,10 @@ const SettingsPage = () => {
             setShowTooltips(localStorage.getItem('showTooltips') !== 'false');
             setDeveloperMode(localStorage.getItem('developerMode') === 'true');
 
-            fetchJsonFiles();
             fetchSavedFiles();
         };
         loadPrefs();
     }, []);
-
-    const fetchJsonFiles = async () => {
-        try {
-            const response = await fetch('/api/list-files');
-            if (response.ok) {
-                const data = await response.json();
-                setJsonFiles(data);
-            }
-        } catch (e) {
-            console.warn('API routes not available in this environment');
-        }
-    };
 
     const fetchSavedFiles = async () => {
         try {
@@ -89,23 +70,6 @@ const SettingsPage = () => {
         });
     };
 
-    const handleSave = async (f: string) => {
-        try {
-            const response = await fetch('/api/save-file', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fileName: f, content: fileContent }),
-            });
-            if (response.ok) {
-                setModal({ isOpen: true, title: 'Saved', message: 'File saved successfully!', type: 'success' });
-                setEditingFile(null);
-            } else {
-                throw new Error('Failed to save');
-            }
-        } catch (e: any) {
-            setModal({ isOpen: true, title: 'Error', message: e.message, type: 'error' });
-        }
-    };
 
     const handleDeleteGame = (file: string) => {
         setModal({
@@ -129,8 +93,10 @@ const SettingsPage = () => {
             type: 'error',
             onConfirm: async () => {
                 const tutorialSeen = localStorage.getItem('doomlingsTutorialSeen');
+                const generatedCardsCache = localStorage.getItem('developer_generated_cards');
                 localStorage.clear();
                 if (tutorialSeen) localStorage.setItem('doomlingsTutorialSeen', tutorialSeen);
+                if (generatedCardsCache) localStorage.setItem('developer_generated_cards', generatedCardsCache);
                 // Use router.push to home instead of hard reload to preserve router context
                 router.push('/');
             }
@@ -346,6 +312,20 @@ const SettingsPage = () => {
                     ))}
                 </div>
             </section>
+
+            {/* Developer Tools */}
+            {developerMode && (
+                <section className="settings-section box bg-glass p-6 mb-6 border-primary/30">
+                    <h2 className="title is-4 text-primary">🛠 Developer Tools</h2>
+                    <p className="is-size-7 text-muted mb-4">
+                        Scan or upload card images, convert them to JSON with OpenAI, store pending cards locally, and export batches to GitHub.
+                    </p>
+                    <DeveloperSettings onCancel={() => {
+                        setDeveloperMode(false);
+                        localStorage.setItem('developerMode', 'false');
+                    }} />
+                </section>
+            )}
 
             {/* Danger Zone */}
             <section className="settings-section box bg-glass p-6 mb-6 border-error/30 bg-error/5">

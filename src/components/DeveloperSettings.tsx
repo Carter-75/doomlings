@@ -4,12 +4,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Preferences } from '@capacitor/preferences';
 import { OpenAIDeveloperService } from '../lib/openaiDeveloperService';
 import CardDataService from '@/lib/cardDataService';
+import { useAds } from '@/lib/ad-context';
 
 interface DeveloperSettingsProps {
     onCancel?: () => void;
 }
 
 export default function DeveloperSettings({ onCancel }: DeveloperSettingsProps) {
+    const { adTestModeActive, adTestModeRemainingMs, enableAdTestMode, disableAdTestMode } = useAds();
     const [openAiKey, setOpenAiKey] = useState('');
     const [githubToken, setGithubToken] = useState('');
     const [loading, setLoading] = useState(false);
@@ -17,6 +19,13 @@ export default function DeveloperSettings({ onCancel }: DeveloperSettingsProps) 
     const [savedCardsCount, setSavedCardsCount] = useState(0);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const formatRemaining = (ms: number) => {
+        const totalSeconds = Math.max(0, Math.ceil(ms / 1000));
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        return `${minutes}:${String(seconds).padStart(2, '0')}`;
+    };
 
     useEffect(() => {
         loadPreferences();
@@ -302,6 +311,32 @@ export default function DeveloperSettings({ onCancel }: DeveloperSettingsProps) 
                 <button className="btn btn-save" onClick={saveKeys} disabled={loading}>
                     💾 Save Keys
                 </button>
+            </div>
+
+            <div className="button-row">
+                {!adTestModeActive ? (
+                    <button
+                        className="btn btn-export"
+                        onClick={() => enableAdTestMode(10)}
+                        disabled={loading}
+                    >
+                        🧪 Force Ads For 10 Minutes
+                    </button>
+                ) : (
+                    <button
+                        className="btn btn-scan"
+                        onClick={() => disableAdTestMode()}
+                        disabled={loading}
+                    >
+                        ⏹ Stop Ad Test ({formatRemaining(adTestModeRemainingMs)})
+                    </button>
+                )}
+            </div>
+
+            <div className="stats">
+                {adTestModeActive
+                    ? `Ad test mode is ON. Subscription is temporarily ignored for ${formatRemaining(adTestModeRemainingMs)}.`
+                    : 'Ad test mode is OFF. Normal subscription behavior is active.'}
             </div>
 
             {status && (
