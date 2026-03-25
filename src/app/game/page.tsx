@@ -97,6 +97,11 @@ export default function GamePage() {
     }
   }, [tutorialStep]);
 
+  // Scroll to top when active section changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [activeSection]);
+
   // Game Data References
   const [allData, setAllData] = useState<{
     rules: any[], normalAges: any[], merchantAges: any[], catastropheAges: any[],
