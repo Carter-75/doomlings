@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { Capacitor } from '@capacitor/core';
+import { App } from '@capacitor/app';
 import { Preferences } from '@capacitor/preferences';
 import { initializeAdMob, showBanner, hideBanner, isNative, showInterstitial } from './admob-service';
 import { useNotification } from './notification-context';
@@ -13,6 +14,7 @@ const ADS_REMOVED_KEY = 'adsRemoved';
 const SUBSCRIPTION_TYPE_KEY = 'subscriptionType';
 const SUBSCRIPTION_EXPIRY_KEY = 'subscriptionExpiry';
 const REFRESH_INTERVAL = 5 * 60 * 1000; // Refresh every 5 minutes
+const RC_TIMEOUT_MS = 8000;
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Subscription type hierarchy: lifetime > yearly > monthly
@@ -61,7 +63,13 @@ async function getPurchases() {
 
 // ── Helper: check entitlement and extract type from customerInfo
 type CustomerInfo = {
-    entitlements: { active: Record<string, { expirationDate: string | null }> }
+    entitlements?: {
+        active?: Record<string, {
+            expirationDate: string | null;
+            productIdentifier?: string;
+        }>;
+    };
+    activeSubscriptions?: string[];
 };
 
 interface EntitlementInfo {
@@ -71,7 +79,9 @@ interface EntitlementInfo {
 }
 
 function getEntitlementInfo(info: CustomerInfo): EntitlementInfo {
-    const entitlement = info?.entitlements?.active?.[ENTITLEMENT_ID];
+    const activeEntitlements = info?.entitlements?.active ?? {};
+    const entitlement = activeEntitlements[ENTITLEMENT_ID] ?? Object.values(activeEntitlements)[0];
+
     if (!entitlement) {
         return { hasEntitlement: false, subscriptionType: null, expiry: null };
     }
@@ -81,12 +91,15 @@ function getEntitlementInfo(info: CustomerInfo): EntitlementInfo {
     // - far future date = lifetime was purchased
     // - near future date = monthly/yearly (inferred from product)
     const expiryStr = entitlement.expirationDate;
+    const productIdentifier = entitlement.productIdentifier || info?.activeSubscriptions?.[0] || '';
+    const inferredType = inferSubscriptionTypeFromProduct(productIdentifier);
+
     if (!expiryStr) {
-        return { hasEntitlement: true, subscriptionType: 'lifetime', expiry: null };
+        return { hasEntitlement: true, subscriptionType: inferredType || 'lifetime', expiry: null };
     }
 
     const expiry = new Date(expiryStr);
-    return { hasEntitlement: true, subscriptionType: null, expiry }; // Type set in purchase logic
+    return { hasEntitlement: true, subscriptionType: inferredType, expiry };
 }
 
 function inferSubscriptionTypeFromProduct(productIdentifier: string): SubscriptionType {
@@ -94,6 +107,17 @@ function inferSubscriptionTypeFromProduct(productIdentifier: string): Subscripti
     if (productIdentifier.includes('yearly')) return 'yearly';
     if (productIdentifier.includes('lifetime')) return 'lifetime';
     return null;
+}
+
+type RevenueCatModule = NonNullable<Awaited<ReturnType<typeof getPurchases>>>;
+
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
+    return await Promise.race([
+        promise,
+        new Promise<T>((_, reject) => {
+            setTimeout(() => reject(new Error(`${label} timed out after ${timeoutMs}ms`)), timeoutMs);
+        })
+    ]);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -110,6 +134,8 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
     const [packages, setPackages] = useState<any[]>([]);
     const [clickCount, setClickCount] = useState(0);
     const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
+    const rcConfiguredRef = useRef(false);
+    const syncInFlightRef = useRef<Promise<void> | null>(null);
     const AD_CLICK_THRESHOLD = 15;
 
     // ─── Persist subscription state
@@ -120,13 +146,31 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
     ) => {
         try {
             await Preferences.set({ key: ADS_REMOVED_KEY, value: removed ? 'true' : 'false' });
-            if (type) await Preferences.set({ key: SUBSCRIPTION_TYPE_KEY, value: type });
-            if (expiry) await Preferences.set({ key: SUBSCRIPTION_EXPIRY_KEY, value: expiry.toISOString() });
+            if (type) {
+                await Preferences.set({ key: SUBSCRIPTION_TYPE_KEY, value: type });
+            } else {
+                await Preferences.remove({ key: SUBSCRIPTION_TYPE_KEY });
+            }
+
+            if (expiry) {
+                await Preferences.set({ key: SUBSCRIPTION_EXPIRY_KEY, value: expiry.toISOString() });
+            } else {
+                await Preferences.remove({ key: SUBSCRIPTION_EXPIRY_KEY });
+            }
         } catch (e) {
             if (typeof window !== 'undefined') {
                 localStorage.setItem(ADS_REMOVED_KEY, removed ? 'true' : 'false');
-                if (type) localStorage.setItem(SUBSCRIPTION_TYPE_KEY, type);
-                if (expiry) localStorage.setItem(SUBSCRIPTION_EXPIRY_KEY, expiry.toISOString());
+                if (type) {
+                    localStorage.setItem(SUBSCRIPTION_TYPE_KEY, type);
+                } else {
+                    localStorage.removeItem(SUBSCRIPTION_TYPE_KEY);
+                }
+
+                if (expiry) {
+                    localStorage.setItem(SUBSCRIPTION_EXPIRY_KEY, expiry.toISOString());
+                } else {
+                    localStorage.removeItem(SUBSCRIPTION_EXPIRY_KEY);
+                }
             }
         }
     }, []);
@@ -180,24 +224,69 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
         }
     }, [persistSubscriptionState, adsSuppressed]);
 
-    // ─── Refresh subscription status from RevenueCat
-    const refreshSubscriptionStatus = useCallback(async () => {
-        if (!isNative() || !RC_API_KEY) return;
+    const ensureRevenueCatConfigured = useCallback(async (): Promise<RevenueCatModule | null> => {
+        if (!isNative() || !RC_API_KEY) return null;
 
-        try {
-            const rc = await getPurchases();
+        const rc = await withTimeout(getPurchases(), RC_TIMEOUT_MS, 'RevenueCat module load');
+        if (!rc) return null;
+
+        if (!rcConfiguredRef.current) {
+            await rc.Purchases.setLogLevel({ level: rc.LOG_LEVEL.DEBUG });
+            await withTimeout(rc.Purchases.configure({ apiKey: RC_API_KEY }), RC_TIMEOUT_MS, 'RevenueCat configure');
+            rcConfiguredRef.current = true;
+        }
+
+        return rc;
+    }, []);
+
+    const syncFromRevenueCat = useCallback(async ({ loadOfferings = false }: { loadOfferings?: boolean } = {}) => {
+        if (!isNative() || !RC_API_KEY) return;
+        if (syncInFlightRef.current) {
+            await syncInFlightRef.current;
+            return;
+        }
+
+        const syncPromise = (async () => {
+            const rc = await ensureRevenueCatConfigured();
             if (!rc) return;
 
-            const { customerInfo } = await rc.Purchases.getCustomerInfo();
-            const { hasEntitlement, subscriptionType: type, expiry } = getEntitlementInfo(customerInfo);
+            const { customerInfo } = await withTimeout(
+                rc.Purchases.getCustomerInfo(),
+                RC_TIMEOUT_MS,
+                'RevenueCat getCustomerInfo'
+            );
 
-            if (hasEntitlement) {
-                await applySubscriptionState(true, type, expiry);
+            const { hasEntitlement, subscriptionType: type, expiry } = getEntitlementInfo(customerInfo);
+            await applySubscriptionState(hasEntitlement, type, expiry);
+
+            if (loadOfferings) {
+                const offerings = await withTimeout(
+                    rc.Purchases.getOfferings(),
+                    RC_TIMEOUT_MS,
+                    'RevenueCat getOfferings'
+                );
+
+                if (offerings.current) {
+                    setPackages(offerings.current.availablePackages);
+                }
             }
+        })();
+
+        syncInFlightRef.current = syncPromise.finally(() => {
+            syncInFlightRef.current = null;
+        });
+
+        await syncInFlightRef.current;
+    }, [ensureRevenueCatConfigured, applySubscriptionState]);
+
+    // ─── Refresh subscription status from RevenueCat
+    const refreshSubscriptionStatus = useCallback(async () => {
+        try {
+            await syncFromRevenueCat();
         } catch (e) {
             console.warn('[RC] Failed to refresh subscription status:', e);
         }
-    }, [applySubscriptionState]);
+    }, [syncFromRevenueCat]);
 
     // ─── Handle banner visibility changes
     useEffect(() => {
@@ -232,32 +321,13 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
 
                 if (isNative() && RC_API_KEY && !cancelled) {
                     try {
-                        const rc = await getPurchases();
-                        if (rc) {
-                            const { Purchases, LOG_LEVEL } = rc;
-                            await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
-                            await Purchases.configure({ apiKey: RC_API_KEY });
+                        await syncFromRevenueCat({ loadOfferings: true });
 
-                            // Get subscription status from RevenueCat
-                            const { customerInfo } = await Purchases.getCustomerInfo();
-                            const { hasEntitlement, subscriptionType: type, expiry } = getEntitlementInfo(customerInfo);
-
-                            if (!cancelled) {
-                                await applySubscriptionState(hasEntitlement, type, expiry);
-                            }
-
-                            // Fetch packages
-                            const offerings = await Purchases.getOfferings();
-                            if (offerings.current !== null && !cancelled) {
-                                setPackages(offerings.current.availablePackages);
-                            }
-
-                            // Set up periodic refresh
-                            if (!cancelled) {
-                                refreshIntervalRef.current = setInterval(() => {
-                                    refreshSubscriptionStatus();
-                                }, REFRESH_INTERVAL);
-                            }
+                        // Set up periodic refresh
+                        if (!cancelled) {
+                            refreshIntervalRef.current = setInterval(() => {
+                                refreshSubscriptionStatus();
+                            }, REFRESH_INTERVAL);
                         }
                     } catch (e) {
                         console.warn('[RC] Init failed:', e);
@@ -269,10 +339,6 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
                     setSubscriptionStatus('free');
                 }
 
-                if (!cancelled && !adsRemovedRef.current && isNative()) {
-                    await showBanner().catch(e => console.warn('[AdMob] showBanner error:', e));
-                    setBannerVisible(true);
-                }
             } finally {
                 if (!cancelled) setLoading(false);
             }
@@ -286,6 +352,34 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    // Re-check subscription whenever app returns to foreground.
+    useEffect(() => {
+        if (!isNative() || !RC_API_KEY) return;
+
+        let listener: { remove: () => Promise<void> } | null = null;
+
+        async function wireAppStateListener() {
+            try {
+                listener = await App.addListener('appStateChange', ({ isActive }) => {
+                    if (isActive) {
+                        refreshSubscriptionStatus();
+                    }
+                });
+            } catch (e) {
+                console.warn('[RC] Failed to register app state listener:', e);
+            }
+        }
+
+        wireAppStateListener();
+
+        return () => {
+            if (listener) {
+                listener.remove();
+                listener = null;
+            }
+        };
+    }, [refreshSubscriptionStatus]);
+
     // ─── Purchase Package
     const purchasePackage = useCallback(async (pkg: any) => {
         if (!isNative()) {
@@ -298,7 +392,7 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
         }
 
         try {
-            const rc = await getPurchases();
+            const rc = await ensureRevenueCatConfigured();
             if (!rc) throw new Error('RC unavailable');
 
             const purchaseResult = await rc.Purchases.purchasePackage({ aPackage: pkg });
@@ -314,6 +408,8 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
                     message: '✅ Ads have been removed! Thank you for your support.',
                     type: 'success'
                 });
+
+                refreshSubscriptionStatus();
             }
         } catch (e: any) {
             console.error('[RC] Purchase error:', e);
@@ -328,7 +424,7 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
                 });
             }
         }
-    }, [applySubscriptionState, showNotification]);
+    }, [applySubscriptionState, ensureRevenueCatConfigured, refreshSubscriptionStatus, showNotification]);
 
     // ─── Purchase Product by ID
     const purchaseProduct = useCallback(async (productIdentifier: string) => {
@@ -342,7 +438,7 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
         }
 
         try {
-            const rc = await getPurchases();
+            const rc = await ensureRevenueCatConfigured();
             if (!rc) throw new Error('RC unavailable');
 
             const existingPackage = packages.find(
@@ -371,6 +467,8 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
                     message: '✅ Ads have been removed! Thank you for your support.',
                     type: 'success'
                 });
+
+                refreshSubscriptionStatus();
             }
         } catch (e: any) {
             console.error('[RC] Purchase error:', e);
@@ -385,7 +483,7 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
                 });
             }
         }
-    }, [packages, applySubscriptionState, showNotification]);
+    }, [packages, applySubscriptionState, ensureRevenueCatConfigured, refreshSubscriptionStatus, showNotification]);
 
     // ─── Restore Purchases
     const restorePurchases = useCallback(async () => {
@@ -399,10 +497,20 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
         }
 
         try {
-            const rc = await getPurchases();
+            const rc = await ensureRevenueCatConfigured();
             if (!rc) throw new Error('RC unavailable');
 
-            const { customerInfo } = await rc.Purchases.restorePurchases();
+            await withTimeout(
+                rc.Purchases.restorePurchases(),
+                RC_TIMEOUT_MS,
+                'RevenueCat restorePurchases'
+            );
+
+            const { customerInfo } = await withTimeout(
+                rc.Purchases.getCustomerInfo(),
+                RC_TIMEOUT_MS,
+                'RevenueCat getCustomerInfo after restore'
+            );
             const { hasEntitlement, subscriptionType: type, expiry } = getEntitlementInfo(customerInfo);
 
             await applySubscriptionState(hasEntitlement, type, expiry);
@@ -422,7 +530,7 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
                 type: 'error'
             });
         }
-    }, [applySubscriptionState, showNotification]);
+    }, [applySubscriptionState, ensureRevenueCatConfigured, showNotification]);
 
     // ─── Record Click
     const recordClick = useCallback(() => {
