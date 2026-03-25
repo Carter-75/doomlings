@@ -185,6 +185,9 @@ export default function HomePage() {
                   <Link href="/privacy" className="button is-ghost is-small opacity-70 hover:opacity-100">
                     ⚖️ Privacy Policy
                   </Link>
+                  <Link href="/subscription-policy" className="button is-ghost is-small opacity-70 hover:opacity-100">
+                    💳 Subscription Policy
+                  </Link>
                 </div>
               )}
             </div>

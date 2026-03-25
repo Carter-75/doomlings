@@ -62,8 +62,9 @@ const PrivacyPolicyPage = () => {
                         <Link href="/contact" className="button is-small is-ghost">Visit Contact Page</Link>
                     </div>
 
-                    <div className="text-center mt-12 pt-8 border-t border-white/10">
+                    <div className="text-center mt-12 pt-8 border-t border-white/10 flex gap-4 justify-center flex-wrap">
                         <Link href="/" className="button is-light">🏠 Home</Link>
+                        <Link href="/subscription-policy" className="button is-light">💳 Subscription Policy</Link>
                     </div>
                 </div>
             </div>
