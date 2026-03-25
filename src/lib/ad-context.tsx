@@ -15,6 +15,9 @@ const SUBSCRIPTION_TYPE_KEY = 'subscriptionType';
 const SUBSCRIPTION_EXPIRY_KEY = 'subscriptionExpiry';
 const REFRESH_INTERVAL = 5 * 60 * 1000; // Refresh every 5 minutes
 const RC_TIMEOUT_MS = 8000;
+const MONTHLY_PRODUCT_ID = 'remove_ads_monthly:monthly';
+const YEARLY_PRODUCT_ID = 'remove_ads_yearly:yearly';
+const LIFETIME_PRODUCT_ID = 'remove_ads_lifetime';
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Subscription type hierarchy: lifetime > yearly > monthly
@@ -70,6 +73,8 @@ type CustomerInfo = {
         }>;
     };
     activeSubscriptions?: string[];
+    allPurchasedProductIdentifiers?: string[];
+    latestExpirationDate?: string | null;
 };
 
 interface EntitlementInfo {
@@ -82,19 +87,36 @@ function getEntitlementInfo(info: CustomerInfo): EntitlementInfo {
     const activeEntitlements = info?.entitlements?.active ?? {};
     const entitlement = activeEntitlements[ENTITLEMENT_ID] ?? Object.values(activeEntitlements)[0];
 
-    if (!entitlement) {
+    const entitlementTypes = Object.values(activeEntitlements)
+        .map(entry => inferSubscriptionTypeFromProduct(entry.productIdentifier || ''))
+        .filter((value): value is Exclude<SubscriptionType, null> => value !== null);
+
+    const activeSubscriptionTypes = (info?.activeSubscriptions ?? [])
+        .map(inferSubscriptionTypeFromProduct)
+        .filter((value): value is Exclude<SubscriptionType, null> => value !== null);
+
+    const purchasedProducts = info?.allPurchasedProductIdentifiers ?? [];
+    const hasLifetimePurchase = purchasedProducts.includes(LIFETIME_PRODUCT_ID)
+        || purchasedProducts.some(id => id.toLowerCase().includes('lifetime'));
+
+    const derivedType = pickHighestTier([
+        ...entitlementTypes,
+        ...activeSubscriptionTypes,
+        hasLifetimePurchase ? 'lifetime' : null,
+    ].filter((value): value is Exclude<SubscriptionType, null> => value !== null));
+
+    const hasAnyActiveEntitlement = Object.keys(activeEntitlements).length > 0;
+    const hasAnyActiveSubscription = activeSubscriptionTypes.length > 0;
+    const hasEntitlement = hasAnyActiveEntitlement || hasAnyActiveSubscription || hasLifetimePurchase;
+
+    if (!hasEntitlement) {
         return { hasEntitlement: false, subscriptionType: null, expiry: null };
     }
 
-    // Determine type based on expirationDate
-    // - null/missing = lifetime
-    // - far future date = lifetime was purchased
-    // - near future date = monthly/yearly (inferred from product)
-    const expiryStr = entitlement.expirationDate;
-    const productIdentifier = entitlement.productIdentifier || info?.activeSubscriptions?.[0] || '';
-    const inferredType = inferSubscriptionTypeFromProduct(productIdentifier);
+    const expiryStr = entitlement?.expirationDate ?? info?.latestExpirationDate ?? null;
+    const inferredType = derivedType;
 
-    if (!expiryStr) {
+    if (!expiryStr || inferredType === 'lifetime') {
         return { hasEntitlement: true, subscriptionType: inferredType || 'lifetime', expiry: null };
     }
 
@@ -103,9 +125,17 @@ function getEntitlementInfo(info: CustomerInfo): EntitlementInfo {
 }
 
 function inferSubscriptionTypeFromProduct(productIdentifier: string): SubscriptionType {
-    if (productIdentifier.includes('monthly')) return 'monthly';
-    if (productIdentifier.includes('yearly')) return 'yearly';
-    if (productIdentifier.includes('lifetime')) return 'lifetime';
+    const id = productIdentifier.toLowerCase();
+    if (id.includes('lifetime')) return 'lifetime';
+    if (id.includes('yearly') || id.includes('annual')) return 'yearly';
+    if (id.includes('monthly') || id.includes('month')) return 'monthly';
+    return null;
+}
+
+function pickHighestTier(types: SubscriptionType[]): SubscriptionType {
+    if (types.includes('lifetime')) return 'lifetime';
+    if (types.includes('yearly')) return 'yearly';
+    if (types.includes('monthly')) return 'monthly';
     return null;
 }
 
@@ -255,6 +285,13 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
                 RC_TIMEOUT_MS,
                 'RevenueCat getCustomerInfo'
             );
+
+            console.info('[RC] customerInfo snapshot', {
+                activeEntitlementKeys: Object.keys(customerInfo?.entitlements?.active ?? {}),
+                activeSubscriptions: customerInfo?.activeSubscriptions ?? [],
+                allPurchasedProductIdentifiers: customerInfo?.allPurchasedProductIdentifiers ?? [],
+                latestExpirationDate: customerInfo?.latestExpirationDate ?? null,
+            });
 
             const { hasEntitlement, subscriptionType: type, expiry } = getEntitlementInfo(customerInfo);
             await applySubscriptionState(hasEntitlement, type, expiry);
@@ -511,6 +548,14 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
                 RC_TIMEOUT_MS,
                 'RevenueCat getCustomerInfo after restore'
             );
+
+            console.info('[RC] restore snapshot', {
+                activeEntitlementKeys: Object.keys(customerInfo?.entitlements?.active ?? {}),
+                activeSubscriptions: customerInfo?.activeSubscriptions ?? [],
+                allPurchasedProductIdentifiers: customerInfo?.allPurchasedProductIdentifiers ?? [],
+                latestExpirationDate: customerInfo?.latestExpirationDate ?? null,
+            });
+
             const { hasEntitlement, subscriptionType: type, expiry } = getEntitlementInfo(customerInfo);
 
             await applySubscriptionState(hasEntitlement, type, expiry);
