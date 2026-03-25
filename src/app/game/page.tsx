@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -59,6 +59,9 @@ type GameModalState = {
   cancelText?: string;
 };
 
+const SECTION_ROUTE_DELAY_MS = 500;
+const MOL_AUTO_CLOSE_DELAY_MS = 300;
+
 export default function GamePage() {
   const router = useRouter();
   const { setAdsSuppressed } = useAds();
@@ -80,6 +83,40 @@ export default function GamePage() {
   const [manualCatastropheOverride, setManualCatastropheOverride] = useState(false);
   const [dominantSearchTerm, setDominantSearchTerm] = useState('');
   const [dominantResetTrigger, setDominantResetTrigger] = useState(0);
+  const sectionRouteTimeoutRef = useRef<number | null>(null);
+  const molCloseTimeoutRef = useRef<number | null>(null);
+
+  const clearPendingSectionRoute = useCallback(() => {
+    if (sectionRouteTimeoutRef.current !== null) {
+      window.clearTimeout(sectionRouteTimeoutRef.current);
+      sectionRouteTimeoutRef.current = null;
+    }
+  }, []);
+
+  const navigateToSection = useCallback((section: string) => {
+    clearPendingSectionRoute();
+
+    sectionRouteTimeoutRef.current = window.setTimeout(() => {
+      setActiveSection(section);
+      sectionRouteTimeoutRef.current = null;
+    }, SECTION_ROUTE_DELAY_MS);
+  }, [clearPendingSectionRoute]);
+
+  const switchSectionImmediately = useCallback((section: string) => {
+    clearPendingSectionRoute();
+    setActiveSection(section);
+  }, [clearPendingSectionRoute]);
+
+  const scheduleMolAutoClose = useCallback((playerKey: string) => {
+    if (molCloseTimeoutRef.current !== null) {
+      window.clearTimeout(molCloseTimeoutRef.current);
+    }
+
+    molCloseTimeoutRef.current = window.setTimeout(() => {
+      setViewingPlayer(current => (current === playerKey ? null : current));
+      molCloseTimeoutRef.current = null;
+    }, MOL_AUTO_CLOSE_DELAY_MS);
+  }, []);
 
   const socketManager = GameSocketManager.getInstance();
   const room = socketManager.getCurrentRoom();
@@ -87,15 +124,24 @@ export default function GamePage() {
 
   const { playerId } = useSync(state, updateState, isHost);
 
+  useEffect(() => {
+    return () => {
+      clearPendingSectionRoute();
+      if (molCloseTimeoutRef.current !== null) {
+        window.clearTimeout(molCloseTimeoutRef.current);
+      }
+    };
+  }, [clearPendingSectionRoute]);
+
   // Sync tutorial steps with active sections
   useEffect(() => {
     if (tutorialStep !== null) {
       const step = TUTORIAL_STEPS[tutorialStep];
       if (step?.section) {
-        setActiveSection(step.section);
+        navigateToSection(step.section);
       }
     }
-  }, [tutorialStep]);
+  }, [tutorialStep, navigateToSection]);
 
   // Scroll to top when active section changes
   useEffect(() => {
@@ -145,7 +191,7 @@ export default function GamePage() {
   const startGuidedSetupFlow = () => {
     updateState({ isGameStarted: true });
     setGuidedSetupStep('ageDeck');
-    setActiveSection('ageSetup');
+    navigateToSection('ageSetup');
   };
 
   const createSyncRoomForNewGame = async () => {
@@ -258,7 +304,7 @@ export default function GamePage() {
 
     if (guidedSetupStep === 'ageDeck') {
       setGuidedSetupStep('mol');
-      setActiveSection('meaningOfLife');
+      navigateToSection('meaningOfLife');
     }
   };
 
@@ -352,7 +398,7 @@ export default function GamePage() {
 
         if (allPlayersSelectedOne) {
           setGuidedSetupStep('complete');
-          setActiveSection('gameDashboard');
+          navigateToSection('gameDashboard');
         }
       }
 
@@ -497,23 +543,23 @@ export default function GamePage() {
       <nav className="game-nav box">
         <div className="game-nav-wrap">
           <div className="game-nav-row main-row">
-            <AnimatedButton id="nav-setup" onClick={() => setActiveSection('setup')} className={activeSection === 'setup' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Setup</AnimatedButton>
-            <AnimatedButton id="nav-game-turn" onClick={() => setActiveSection('gameDashboard')} className={activeSection === 'gameDashboard' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Dashboard</AnimatedButton>
+            <AnimatedButton id="nav-setup" onClick={() => switchSectionImmediately('setup')} className={activeSection === 'setup' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Setup</AnimatedButton>
+            <AnimatedButton id="nav-game-turn" onClick={() => switchSectionImmediately('gameDashboard')} className={activeSection === 'gameDashboard' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Dashboard</AnimatedButton>
           </div>
 
           <div className="game-nav-row challenges-row">
-            <AnimatedButton id="nav-challenges" onClick={() => setActiveSection('challenges')} className={activeSection === 'challenges' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Challenges</AnimatedButton>
-            <AnimatedButton id="nav-dominants" onClick={() => setActiveSection('dominants')} className={activeSection === 'dominants' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Dominants</AnimatedButton>
+            <AnimatedButton id="nav-challenges" onClick={() => switchSectionImmediately('challenges')} className={activeSection === 'challenges' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Challenges</AnimatedButton>
+            <AnimatedButton id="nav-dominants" onClick={() => switchSectionImmediately('dominants')} className={activeSection === 'dominants' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Dominants</AnimatedButton>
           </div>
 
           <div className="game-nav-row setup-flow-row">
-            <AnimatedButton id="nav-age-setup" onClick={() => setActiveSection('ageSetup')} className={activeSection === 'ageSetup' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Age Deck</AnimatedButton>
-            <AnimatedButton id="nav-mol" onClick={() => setActiveSection('meaningOfLife')} className={activeSection === 'meaningOfLife' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>MoL</AnimatedButton>
-            <AnimatedButton id="nav-trinkets" onClick={() => setActiveSection('trinkets')} className={activeSection === 'trinkets' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Trinkets</AnimatedButton>
+            <AnimatedButton id="nav-age-setup" onClick={() => switchSectionImmediately('ageSetup')} className={activeSection === 'ageSetup' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Age Deck</AnimatedButton>
+            <AnimatedButton id="nav-mol" onClick={() => switchSectionImmediately('meaningOfLife')} className={activeSection === 'meaningOfLife' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>MoL</AnimatedButton>
+            <AnimatedButton id="nav-trinkets" onClick={() => switchSectionImmediately('trinkets')} className={activeSection === 'trinkets' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Trinkets</AnimatedButton>
           </div>
 
           <div className="game-nav-row secondary-row">
-            <AnimatedButton id="nav-multiplayer" onClick={() => setActiveSection('multiplayer')} className={activeSection === 'multiplayer' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Sync</AnimatedButton>
+            <AnimatedButton id="nav-multiplayer" onClick={() => switchSectionImmediately('multiplayer')} className={activeSection === 'multiplayer' ? 'is-primary nav-btn-active' : 'is-light nav-btn'}>Sync</AnimatedButton>
             <AnimatedButton onClick={() => setTutorialStep(0)} className="is-info nav-help-btn">Tutorial ?</AnimatedButton>
           </div>
         </div>
@@ -758,16 +804,21 @@ export default function GamePage() {
                 .slice(0, state.playerCount)
                 .map((name, index) => name.trim() || `Player ${index + 1}`);
               const nextSelected = { ...state.selectedMeanings, [p]: m };
+              const isFinalMolPick =
+                guidedSetupStep === 'mol' &&
+                activePlayers.length > 0 &&
+                activePlayers.every((playerKey) => Boolean(nextSelected[playerKey]));
 
               updateState({ selectedMeanings: nextSelected });
 
-              if (guidedSetupStep === 'mol') {
-                const everyoneSelected = activePlayers.length > 0 && activePlayers.every((playerKey) => Boolean(nextSelected[playerKey]));
-                if (everyoneSelected) {
-                  setGuidedSetupStep('trinkets');
-                  setActiveSection('trinkets');
-                }
+              // Start next-section routing immediately on final pick; do not wait for card close.
+              if (isFinalMolPick) {
+                setGuidedSetupStep('trinkets');
+                navigateToSection('trinkets');
               }
+
+              // Card close runs in parallel and is independent of section routing.
+              scheduleMolAutoClose(p);
             }}
             onToggleViewPlayer={p => setViewingPlayer(viewingPlayer === p ? null : p)}
             viewingPlayer={viewingPlayer}
