@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { MONETIZATION_DISABLED } from '@/lib/monetization-config';
 
 const PrivacyPolicyPage = () => {
     return (
@@ -15,7 +16,10 @@ const PrivacyPolicyPage = () => {
 
                     <div className="box p-6 bg-opacity-20 bg-info border-info mb-8">
                         <p className="mb-0">
-                            <strong>📱 About This App:</strong> The Doomlings Companion App stores all your game data locally on your device. The free version is ad-supported using Google AdMob. You can remove all ads with a subscription available in the app Settings. No personal accounts are required — everything is managed through your Google Play account.
+                            <strong>📱 About This App:</strong> The Doomlings Companion App stores all your game data locally on your device.
+                            {MONETIZATION_DISABLED
+                                ? ' No personal accounts are required.'
+                                : ' The free version is ad-supported using Google AdMob. You can remove all ads with a subscription available in the app Settings. No personal accounts are required — everything is managed through your Google Play account.'}
                         </p>
                     </div>
 
@@ -42,18 +46,20 @@ const PrivacyPolicyPage = () => {
                         </ul>
                     </section>
 
-                    <section className="mb-12">
-                        <h2 className="section-title is-small mb-6">📢 Advertising & Subscriptions</h2>
-                        <p className="text-muted mb-4">The free version of this app is supported by advertising via <strong>Google AdMob</strong>.</p>
-                        <div className="box p-6 hover-scale mb-6">
-                            <h3 className="section-title is-small is-secondary mb-4">Google AdMob</h3>
-                            <p className="text-sm text-muted mb-4">
-                                AdMob may collect device identifiers (Advertising ID), IP address, and app interaction data.
-                                <br />• <strong>Policy:</strong> <a href="https://policies.google.com/privacy" className="text-info font-bold">Google Privacy Policy</a>
-                                <br />• <strong>Opt-out:</strong> You can reset your Advertising ID in your device Settings or upgrade to Premium.
-                            </p>
-                        </div>
-                    </section>
+                    {!MONETIZATION_DISABLED && (
+                        <section className="mb-12">
+                            <h2 className="section-title is-small mb-6">📢 Advertising & Subscriptions</h2>
+                            <p className="text-muted mb-4">The free version of this app is supported by advertising via <strong>Google AdMob</strong>.</p>
+                            <div className="box p-6 hover-scale mb-6">
+                                <h3 className="section-title is-small is-secondary mb-4">Google AdMob</h3>
+                                <p className="text-sm text-muted mb-4">
+                                    AdMob may collect device identifiers (Advertising ID), IP address, and app interaction data.
+                                    <br />• <strong>Policy:</strong> <a href="https://policies.google.com/privacy" className="text-info font-bold">Google Privacy Policy</a>
+                                    <br />• <strong>Opt-out:</strong> You can reset your Advertising ID in your device Settings or upgrade to Premium.
+                                </p>
+                            </div>
+                        </section>
+                    )}
 
                     <div className="box p-6 bg-opacity-10 bg-success border-success text-center">
                         <h2 className="section-title is-small is-success mb-4">📧 Contact Us</h2>
@@ -64,7 +70,9 @@ const PrivacyPolicyPage = () => {
 
                     <div className="text-center mt-12 pt-8 border-t border-white/10 flex gap-4 justify-center flex-wrap">
                         <Link href="/" className="button is-light">🏠 Home</Link>
-                        <Link href="/subscription-policy" className="button is-light">💳 Subscription Policy</Link>
+                        {!MONETIZATION_DISABLED && (
+                            <Link href="/subscription-policy" className="button is-light">💳 Subscription Policy</Link>
+                        )}
                     </div>
                 </div>
             </div>

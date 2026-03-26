@@ -11,6 +11,7 @@ import { Capacitor } from '@capacitor/core';
 import DeveloperSettings from '@/components/DeveloperSettings';
 import Modal from '@/components/Modal';
 import AnimatedButton from '@/components/AnimatedButton';
+import { MONETIZATION_DISABLED } from '@/lib/monetization-config';
 
 const SettingsPage = () => {
     const router = useRouter();
@@ -112,6 +113,7 @@ const SettingsPage = () => {
             </header>
 
             {/* Premium Section */}
+            {!MONETIZATION_DISABLED && (
             <section className="settings-section box bg-glass p-6 mb-6">
                 <div className="is-flex is-justify-content-between is-align-items-start mb-4">
                     <h2 className="title is-4 text-warning mb-0">✨ Premium Status</h2>
@@ -167,6 +169,7 @@ const SettingsPage = () => {
                     <AnimatedButton className="is-light is-small" onClick={restorePurchases}>🔄 Restore Purchases</AnimatedButton>
                 </div>
             </section>
+            )}
 
             {/* UI Customization */}
             <section className="settings-section box bg-glass p-6 mb-6">

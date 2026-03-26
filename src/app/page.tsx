@@ -6,7 +6,7 @@ import { useIframe } from '@/lib/iframe-context';
 import { useRouter } from 'next/navigation';
 import { Preferences } from '@capacitor/preferences';
 import { useAds } from '@/lib/ad-context';
-import { PremiumSection } from '@/components/PremiumSection';
+import { MONETIZATION_DISABLED } from '@/lib/monetization-config';
 
 export default function HomePage() {
   const { isIframe, isPortfolioEmbed } = useIframe();
@@ -20,6 +20,8 @@ export default function HomePage() {
   const router = useRouter();
 
   useEffect(() => {
+    if (MONETIZATION_DISABLED) return;
+
     async function checkLaunches() {
       if (adsLoading || adsRemoved) return;
       if (sessionStorage.getItem('launch_counted')) return; // Check if already counted this session
@@ -133,7 +135,7 @@ export default function HomePage() {
               </div>
             )}
 
-            {!adsRemoved && (
+            {!MONETIZATION_DISABLED && !adsRemoved && (
               <div className="mt-8 mb-6">
                 <Link 
                   href="/premium" 
@@ -185,9 +187,11 @@ export default function HomePage() {
                   <Link href="/privacy" className="button is-ghost is-small opacity-70 hover:opacity-100">
                     ⚖️ Privacy Policy
                   </Link>
-                  <Link href="/subscription-policy" className="button is-ghost is-small opacity-70 hover:opacity-100">
-                    💳 Subscription Policy
-                  </Link>
+                  {!MONETIZATION_DISABLED && (
+                    <Link href="/subscription-policy" className="button is-ghost is-small opacity-70 hover:opacity-100">
+                      💳 Subscription Policy
+                    </Link>
+                  )}
                 </div>
               )}
             </div>
@@ -196,7 +200,7 @@ export default function HomePage() {
       </div>
 
       {/* Premium Popup */}
-      {showPremiumPopup && (
+      {!MONETIZATION_DISABLED && showPremiumPopup && (
         <div className="premium-popup-overlay">
           <div className="premium-popup-content pop-in">
             <button

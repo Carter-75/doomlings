@@ -5,6 +5,7 @@ import { Preferences } from '@capacitor/preferences';
 import { OpenAIDeveloperService } from '../lib/openaiDeveloperService';
 import CardDataService from '@/lib/cardDataService';
 import { useAds } from '@/lib/ad-context';
+import { MONETIZATION_DISABLED } from '@/lib/monetization-config';
 
 interface DeveloperSettingsProps {
     onCancel?: () => void;
@@ -333,31 +334,35 @@ export default function DeveloperSettings({ onCancel }: DeveloperSettingsProps) 
                 </button>
             </div>
 
-            <div className="button-row">
-                {!adTestModeActive ? (
-                    <button
-                        className="btn btn-export"
-                        onClick={() => enableAdTestMode(10)}
-                        disabled={loading}
-                    >
-                        🧪 Force Ads For 10 Minutes
-                    </button>
-                ) : (
-                    <button
-                        className="btn btn-scan"
-                        onClick={() => disableAdTestMode()}
-                        disabled={loading}
-                    >
-                        ⏹ Stop Ad Test ({formatRemaining(adTestModeRemainingMs)})
-                    </button>
-                )}
-            </div>
+            {!MONETIZATION_DISABLED && (
+                <>
+                    <div className="button-row">
+                        {!adTestModeActive ? (
+                            <button
+                                className="btn btn-export"
+                                onClick={() => enableAdTestMode(10)}
+                                disabled={loading}
+                            >
+                                🧪 Force Ads For 10 Minutes
+                            </button>
+                        ) : (
+                            <button
+                                className="btn btn-scan"
+                                onClick={() => disableAdTestMode()}
+                                disabled={loading}
+                            >
+                                ⏹ Stop Ad Test ({formatRemaining(adTestModeRemainingMs)})
+                            </button>
+                        )}
+                    </div>
 
-            <div className="stats">
-                {adTestModeActive
-                    ? `Ad test mode is ON. Subscription is temporarily ignored for ${formatRemaining(adTestModeRemainingMs)}.`
-                    : 'Ad test mode is OFF. Normal subscription behavior is active.'}
-            </div>
+                    <div className="stats">
+                        {adTestModeActive
+                            ? `Ad test mode is ON. Subscription is temporarily ignored for ${formatRemaining(adTestModeRemainingMs)}.`
+                            : 'Ad test mode is OFF. Normal subscription behavior is active.'}
+                    </div>
+                </>
+            )}
 
             {status && (
                 <div className={`status-msg status-${status.type}`}>

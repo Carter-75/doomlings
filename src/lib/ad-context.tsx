@@ -6,6 +6,7 @@ import { App } from '@capacitor/app';
 import { Preferences } from '@capacitor/preferences';
 import { initializeAdMob, showBanner, hideBanner, isNative, showInterstitial } from './admob-service';
 import { useNotification } from './notification-context';
+import { MONETIZATION_DISABLED } from './monetization-config';
 
 // ─── RevenueCat config ────────────────────────────────────────────────────────
 const RC_API_KEY = process.env.NEXT_PUBLIC_REVENUECAT_API_KEY ?? '';
@@ -19,8 +20,6 @@ const RC_TIMEOUT_MS = 8000;
 const MONTHLY_PRODUCT_ID = 'remove_ads_monthly:monthly';
 const YEARLY_PRODUCT_ID = 'remove_ads_yearly:yearly';
 const LIFETIME_PRODUCT_ID = 'remove_ads_lifetime';
-// Temporary release switch: keeps SDK wiring in codebase but disables monetization execution.
-const MONETIZATION_DISABLED = true;
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Subscription type hierarchy: lifetime > yearly > monthly
@@ -772,8 +771,7 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
             const next = prev + 1;
             if (next >= AD_CLICK_THRESHOLD) {
                 if (isNative()) {
-                    // Disabled while MONETIZATION_DISABLED is enabled.
-                    // showInterstitial().catch(e => console.warn('[AdMob] Interstitial error:', e));
+                    showInterstitial().catch(e => console.warn('[AdMob] Interstitial error:', e));
                 }
                 return 0;
             }

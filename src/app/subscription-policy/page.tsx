@@ -1,9 +1,23 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { MONETIZATION_DISABLED } from '@/lib/monetization-config';
 
 const SubscriptionPolicyPage = () => {
+    const router = useRouter();
+
+    useEffect(() => {
+        if (MONETIZATION_DISABLED) {
+            router.replace('/');
+        }
+    }, [router]);
+
+    if (MONETIZATION_DISABLED) {
+        return null;
+    }
+
     return (
         <div className="home-container" style={{ minHeight: '100vh', padding: '2rem 1rem' }}>
             <div className="container max-w-4xl">

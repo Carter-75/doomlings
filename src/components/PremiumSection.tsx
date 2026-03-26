@@ -3,8 +3,11 @@
 import React, { useState } from 'react';
 import { useAds } from '@/lib/ad-context';
 import { Capacitor } from '@capacitor/core';
+import { MONETIZATION_DISABLED } from '@/lib/monetization-config';
 
 export const PremiumSection = () => {
+    if (MONETIZATION_DISABLED) return null;
+
     const { adsRemoved, loading: adsLoading, packages, purchaseProduct, restorePurchases, subscriptionType, subscriptionExpiry } = useAds();
     const isNativeApp = typeof window !== 'undefined' && Capacitor.isNativePlatform();
     const [purchasingId, setPurchasingId] = useState<string | null>(null);
