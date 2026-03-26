@@ -97,17 +97,6 @@ const TrinketCard: React.FC<TrinketCardProps> = ({ trinket, onAdd, onRemove, onP
             </div>
           )}
 
-          {cardArtPreference === 'none' && (
-            <div style={{
-              width: '45px',
-              height: '63px',
-              borderRadius: 'var(--border-radius-small)',
-              backgroundColor: 'rgba(0,0,0,0.1)',
-              boxShadow: 'var(--shadow-secondary)'
-            }}>
-              {/* No Image */}
-            </div>
-          )}
           <h4 style={{ margin: 0, color: 'var(--primary-orange)', fontWeight: 'bold' }}>{trinket.name}</h4>
         </div>
         <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-2)' }}><strong style={{color: 'var(--text-primary)'}}>Power:</strong> {trinket.power}</p>

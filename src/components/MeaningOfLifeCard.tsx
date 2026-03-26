@@ -115,17 +115,6 @@ const MeaningOfLifeCard: React.FC<MeaningOfLifeCardProps> = ({
                 ?
               </div>
             )}
-            {cardArtPreference === 'none' && (
-              <div style={{
-                width: '45px',
-                height: '63px',
-                borderRadius: 'var(--border-radius-small)',
-                backgroundColor: 'rgba(0,0,0,0.1)',
-                boxShadow: 'var(--shadow-secondary)'
-              }}>
-                {/* No Art */}
-              </div>
-            )}
             {meaning.name}
             {isSelected && <span className="selection-badge">✓ SELECTED</span>}
           </h4>

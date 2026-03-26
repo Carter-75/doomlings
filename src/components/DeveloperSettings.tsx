@@ -205,14 +205,14 @@ export default function DeveloperSettings({ onCancel }: DeveloperSettingsProps) 
         <div className="developer-settings-container">
             <style jsx>{`
                 .developer-settings-container {
-                    background: rgba(0, 0, 0, 0.4);
-                    border: 1px solid rgba(255, 0, 128, 0.4);
-                    border-radius: 8px;
+                    background: linear-gradient(145deg, rgba(var(--primary-rgb), 0.08), rgba(0, 0, 0, 0.2));
+                    border: 1px solid rgba(var(--primary-rgb), 0.35);
+                    border-radius: var(--border-radius);
                     padding: 20px;
                     margin-top: 20px;
                 }
                 .dev-title {
-                    color: #ff0080;
+                    color: var(--primary-orange);
                     margin-bottom: 20px;
                     text-align: center;
                 }
@@ -221,31 +221,39 @@ export default function DeveloperSettings({ onCancel }: DeveloperSettingsProps) 
                 }
                 .input-group label {
                     display: block;
-                    color: #ccc;
+                    color: var(--text-secondary);
                     margin-bottom: 5px;
                     font-size: 14px;
                 }
                 .input-group input[type="password"] {
                     width: 100%;
                     padding: 10px;
-                    border-radius: 5px;
-                    border: 1px solid rgba(255, 255, 255, 0.2);
-                    background: rgba(0, 0, 0, 0.5);
-                    color: white;
+                    border-radius: var(--border-radius-small);
+                    border: 1px solid rgba(var(--secondary-rgb), 0.3);
+                    background: rgba(var(--secondary-rgb), 0.1);
+                    color: var(--text-primary);
                     box-sizing: border-box;
+                }
+                .input-group input[type="password"]::placeholder {
+                    color: var(--text-muted);
+                }
+                .input-group input[type="password"]:focus {
+                    outline: none;
+                    border-color: rgba(var(--primary-rgb), 0.65);
+                    box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2);
                 }
                 .status-msg {
                     padding: 10px;
-                    border-radius: 5px;
+                    border-radius: var(--border-radius-small);
                     margin: 10px 0;
                     text-align: center;
                     font-weight: bold;
                     white-space: pre-wrap;
                 }
-                .status-success { background: rgba(0, 255, 136, 0.2); color: #00ff88; border: 1px solid #00ff88; }
-                .status-error { background: rgba(255, 0, 0, 0.2); color: #ff4444; border: 1px solid #ff4444; }
-                .status-info { background: rgba(0, 157, 255, 0.2); color: #009dff; border: 1px solid #009dff; }
-                .status-warning { background: rgba(255, 193, 7, 0.2); color: #ffc107; border: 1px solid #ffc107; }
+                .status-success { background: rgba(var(--success-rgb), 0.2); color: var(--success); border: 1px solid rgba(var(--success-rgb), 0.45); }
+                .status-error { background: rgba(var(--error-rgb), 0.2); color: var(--error); border: 1px solid rgba(var(--error-rgb), 0.45); }
+                .status-info { background: rgba(var(--info-rgb), 0.2); color: var(--info); border: 1px solid rgba(var(--info-rgb), 0.45); }
+                .status-warning { background: rgba(var(--warning-rgb), 0.2); color: var(--warning); border: 1px solid rgba(var(--warning-rgb), 0.45); }
                 
                 .button-row {
                     display: flex;
@@ -256,8 +264,8 @@ export default function DeveloperSettings({ onCancel }: DeveloperSettingsProps) 
                 .btn {
                     flex: 1;
                     padding: 12px;
-                    border-radius: 5px;
-                    border: none;
+                    border-radius: var(--border-radius-small);
+                    border: 1px solid transparent;
                     font-weight: bold;
                     cursor: pointer;
                     text-align: center;
@@ -265,12 +273,24 @@ export default function DeveloperSettings({ onCancel }: DeveloperSettingsProps) 
                     min-width: 120px;
                 }
                 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-                .btn-save { background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255,255,255,0.3); }
-                .btn-save:hover:not(:disabled) { background: rgba(255, 255, 255, 0.2); }
-                .btn-scan { background: linear-gradient(135deg, #ff0080, #7928ca); color: white; }
-                .btn-scan:hover:not(:disabled) { box-shadow: 0 0 10px rgba(255, 0, 128, 0.6); }
-                .btn-export { background: linear-gradient(135deg, #00d2ff, #3a7bd5); color: white; }
-                .btn-export:hover:not(:disabled) { box-shadow: 0 0 10px rgba(0, 210, 255, 0.6); }
+                .btn-save {
+                    background: rgba(var(--secondary-rgb), 0.2);
+                    color: var(--text-primary);
+                    border-color: rgba(var(--secondary-rgb), 0.45);
+                }
+                .btn-save:hover:not(:disabled) { background: rgba(var(--secondary-rgb), 0.3); }
+                .btn-scan {
+                    background: linear-gradient(135deg, var(--primary-orange), var(--primary-dark));
+                    color: var(--text-primary);
+                    border-color: rgba(var(--primary-rgb), 0.6);
+                }
+                .btn-scan:hover:not(:disabled) { box-shadow: 0 0 10px rgba(var(--primary-rgb), 0.55); }
+                .btn-export {
+                    background: linear-gradient(135deg, var(--info), rgba(var(--info-rgb), 0.75));
+                    color: var(--text-primary);
+                    border-color: rgba(var(--info-rgb), 0.55);
+                }
+                .btn-export:hover:not(:disabled) { box-shadow: 0 0 10px rgba(var(--info-rgb), 0.5); }
                 
                 .camera-label {
                     display: inline-block;
@@ -280,7 +300,7 @@ export default function DeveloperSettings({ onCancel }: DeveloperSettingsProps) 
                 }
                 .stats {
                     text-align: center;
-                    color: #aaa;
+                    color: var(--text-muted);
                     margin-top: 15px;
                     font-size: 14px;
                 }

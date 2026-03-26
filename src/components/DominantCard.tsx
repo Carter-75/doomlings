@@ -213,17 +213,6 @@ const DominantCard: React.FC<DominantCardProps> = ({
                 ?
               </div>
             )}
-            {cardArtPreference === 'none' && (
-              <div style={{
-                width: '45px',
-                height: '63px',
-                borderRadius: 'var(--border-radius-small)',
-                backgroundColor: 'rgba(0,0,0,0.1)',
-                boxShadow: 'var(--shadow-secondary)'
-              }}>
-                {/* No Art */}
-              </div>
-            )}
           <span>
             {dominant.name}
             {hasMatchingDuplicates && <span className="match-indicator"> 🔍</span>}

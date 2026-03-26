@@ -221,7 +221,9 @@ const SettingsPage = () => {
                     <div className="flex flex-wrap gap-4 justify-center mb-6">
                         {[
                             { id: 'ai', icon: '✨', label: 'AI Art' },
-                            { id: 'official', icon: '🎨', label: 'Official Art' },
+                            // Keep official-art runtime support in code, but hide this option in Settings
+                            // until usage rights are finalized.
+                            // { id: 'official', icon: '🎨', label: 'Official Art' },
                             { id: 'none', icon: '🚫', label: 'No Image' },
                         ].map(style => (
                             <button 
@@ -237,7 +239,7 @@ const SettingsPage = () => {
                         {cardArtPreference === 'ai' 
                             ? "Shows the premium set of custom AI-generated art for each card type." 
                             : cardArtPreference === 'official'
-                            ? "Uses original Doomlings art. Shows a simple '?' if an image is missing."
+                            ? "Official art mode is temporarily hidden from Settings until rights are finalized."
                             : "Hides all card images for a clean, distraction-free experience."}
                     </p>
                 </div>
