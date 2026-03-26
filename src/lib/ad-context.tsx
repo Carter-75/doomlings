@@ -19,6 +19,8 @@ const RC_TIMEOUT_MS = 8000;
 const MONTHLY_PRODUCT_ID = 'remove_ads_monthly:monthly';
 const YEARLY_PRODUCT_ID = 'remove_ads_yearly:yearly';
 const LIFETIME_PRODUCT_ID = 'remove_ads_lifetime';
+// Temporary release switch: keeps SDK wiring in codebase but disables monetization execution.
+const MONETIZATION_DISABLED = true;
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Subscription type hierarchy: lifetime > yearly > monthly
@@ -338,6 +340,7 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
     }, [applyEffectiveStateFromActual, updateAdTestRemaining]);
 
     const ensureRevenueCatConfigured = useCallback(async (): Promise<RevenueCatModule | null> => {
+        if (MONETIZATION_DISABLED) return null;
         if (!isNative() || !RC_API_KEY) return null;
 
         const rc = await withTimeout(getPurchases(), RC_TIMEOUT_MS, 'RevenueCat module load');
@@ -353,6 +356,7 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     const syncFromRevenueCat = useCallback(async ({ loadOfferings = false }: { loadOfferings?: boolean } = {}) => {
+        if (MONETIZATION_DISABLED) return;
         if (!isNative() || !RC_API_KEY) return;
         if (syncInFlightRef.current) {
             await syncInFlightRef.current;
@@ -411,6 +415,13 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
     // ─── Handle banner visibility changes
     useEffect(() => {
         if (!isNative() || loading) return;
+
+        if (MONETIZATION_DISABLED) {
+            hideBanner();
+            setBannerVisible(false);
+            return;
+        }
+
         if (adsSuppressed || adsRemoved) {
             hideBanner();
             setBannerVisible(false);
@@ -461,27 +472,33 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
                     }
                 }
 
-                // Initialize AdMob
-                await initializeAdMob().catch(e => console.warn('[AdMob] Init error:', e));
-
-                if (isNative() && RC_API_KEY && !cancelled) {
-                    try {
-                        await syncFromRevenueCat({ loadOfferings: true });
-
-                        // Set up periodic refresh
-                        if (!cancelled) {
-                            refreshIntervalRef.current = setInterval(() => {
-                                refreshSubscriptionStatus();
-                            }, REFRESH_INTERVAL);
-                        }
-                    } catch (e) {
-                        console.warn('[RC] Init failed:', e);
-                        if (!cancelled && !persisted.removed) {
-                            setSubscriptionStatus('free');
-                        }
-                    }
-                } else if (!cancelled && !persisted.removed) {
+                if (MONETIZATION_DISABLED) {
+                    setPackages([]);
                     setSubscriptionStatus('free');
+                    await applySubscriptionState(false, null, null);
+                } else {
+                    // Initialize AdMob
+                    await initializeAdMob().catch(e => console.warn('[AdMob] Init error:', e));
+
+                    if (isNative() && RC_API_KEY && !cancelled) {
+                        try {
+                            await syncFromRevenueCat({ loadOfferings: true });
+
+                            // Set up periodic refresh
+                            if (!cancelled) {
+                                refreshIntervalRef.current = setInterval(() => {
+                                    refreshSubscriptionStatus();
+                                }, REFRESH_INTERVAL);
+                            }
+                        } catch (e) {
+                            console.warn('[RC] Init failed:', e);
+                            if (!cancelled && !persisted.removed) {
+                                setSubscriptionStatus('free');
+                            }
+                        }
+                    } else if (!cancelled && !persisted.removed) {
+                        setSubscriptionStatus('free');
+                    }
                 }
 
             } finally {
@@ -499,6 +516,7 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
 
     // Re-check subscription whenever app returns to foreground.
     useEffect(() => {
+        if (MONETIZATION_DISABLED) return;
         if (!isNative() || !RC_API_KEY) return;
 
         let listener: { remove: () => Promise<void> } | null = null;
@@ -560,6 +578,15 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
 
     // ─── Purchase Package
     const purchasePackage = useCallback(async (pkg: any) => {
+        if (MONETIZATION_DISABLED) {
+            showNotification({
+                title: 'Purchases Disabled',
+                message: 'Purchases are temporarily disabled in this build.',
+                type: 'info'
+            });
+            return;
+        }
+
         if (!isNative()) {
             showNotification({
                 title: 'Native App Required',
@@ -606,6 +633,15 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
 
     // ─── Purchase Product by ID
     const purchaseProduct = useCallback(async (productIdentifier: string) => {
+        if (MONETIZATION_DISABLED) {
+            showNotification({
+                title: 'Purchases Disabled',
+                message: 'Purchases are temporarily disabled in this build.',
+                type: 'info'
+            });
+            return;
+        }
+
         if (!isNative()) {
             showNotification({
                 title: 'Native App Required',
@@ -665,6 +701,15 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
 
     // ─── Restore Purchases
     const restorePurchases = useCallback(async () => {
+        if (MONETIZATION_DISABLED) {
+            showNotification({
+                title: 'Restore Disabled',
+                message: 'Restore purchases is temporarily disabled in this build.',
+                type: 'info'
+            });
+            return;
+        }
+
         if (!isNative()) {
             showNotification({
                 title: 'Native App Required',
@@ -720,13 +765,15 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
 
     // ─── Record Click
     const recordClick = useCallback(() => {
+        if (MONETIZATION_DISABLED) return;
         if (adsRemoved || adsSuppressed) return;
 
         setClickCount(prev => {
             const next = prev + 1;
             if (next >= AD_CLICK_THRESHOLD) {
                 if (isNative()) {
-                    showInterstitial().catch(e => console.warn('[AdMob] Interstitial error:', e));
+                    // Disabled while MONETIZATION_DISABLED is enabled.
+                    // showInterstitial().catch(e => console.warn('[AdMob] Interstitial error:', e));
                 }
                 return 0;
             }
