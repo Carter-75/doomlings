@@ -5,6 +5,7 @@ import { IframeWrapper } from "@/components/iframe-wrapper";
 import { BackHandler } from "@/components/back-handler";
 import { AdProvider } from "@/lib/ad-context";
 import { ThemeProvider } from "@/lib/theme-context";
+import { FeedbackProvider } from "@/lib/feedback-context";
 import { Analytics } from "@vercel/analytics/next";
 import { NotificationProvider } from "@/lib/notification-context";
 import ScrollToTopOnRoute from "@/components/ScrollToTopOnRoute";
@@ -50,18 +51,20 @@ export default function RootLayout({
       </head>
       <body className={`${outfitFont.className} ${outfitFont.variable}`}>
         <ThemeProvider>
-          <NotificationProvider>
-            <IframeProvider>
-              <AdProvider>
-                <IframeWrapper>
-                  <ScrollToTopOnRoute />
-                  <BackHandler />
-                  {children}
-                  <div className="ad-space-placeholder" style={{ width: '100%', height: 'var(--ad-banner-height)', display: 'block', flexShrink: 0, pointerEvents: 'none' }} />
-                </IframeWrapper>
-              </AdProvider>
-            </IframeProvider>
-          </NotificationProvider>
+          <FeedbackProvider>
+            <NotificationProvider>
+              <IframeProvider>
+                <AdProvider>
+                  <IframeWrapper>
+                    <ScrollToTopOnRoute />
+                    <BackHandler />
+                    {children}
+                    <div className="ad-space-placeholder" style={{ width: '100%', height: 'var(--ad-banner-height)', display: 'block', flexShrink: 0, pointerEvents: 'none' }} />
+                  </IframeWrapper>
+                </AdProvider>
+              </IframeProvider>
+            </NotificationProvider>
+          </FeedbackProvider>
         </ThemeProvider>
         <Analytics />
       </body>

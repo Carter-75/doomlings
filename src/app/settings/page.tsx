@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Preferences } from '@capacitor/preferences';
 import { useAds } from '@/lib/ad-context';
+import { useFeedback, FeedbackMode } from '@/lib/feedback-context';
 import { useTheme } from '@/lib/theme-context';
 import { Capacitor } from '@capacitor/core';
 import DeveloperSettings from '@/components/DeveloperSettings';
@@ -14,6 +15,7 @@ import AnimatedButton from '@/components/AnimatedButton';
 const SettingsPage = () => {
     const router = useRouter();
     const { adsRemoved, packages, purchasePackage, restorePurchases, loading: adsLoading } = useAds();
+    const { mode: feedbackMode, setMode: setFeedbackMode } = useFeedback();
     const { theme, setTheme, cardArtPreference, setCardArtPreference } = useTheme();
     const isNativeApp = typeof window !== 'undefined' && Capacitor.isNativePlatform();
 
@@ -287,6 +289,31 @@ const SettingsPage = () => {
             {/* General Preferences */}
             <section className="settings-section box bg-glass p-6 mb-6">
                 <h2 className="title is-4 text-primary">⚙️ Preferences</h2>
+
+                <div className="mb-6 p-4 rounded bg-black/10 border border-white/5">
+                    <div className="has-text-weight-bold mb-1">Feedback Mode</div>
+                    <div className="is-size-7 text-muted mb-3">Choose how taps and gameplay events respond.</div>
+                    <div className="flex flex-wrap gap-3">
+                        {[
+                            { id: 'quiet', label: 'Quiet', note: 'No sound, no vibration' },
+                            { id: 'haptics-only', label: 'Pulse', note: 'Vibration only' },
+                            { id: 'immersive', label: 'Immersive', note: 'Sound + vibration (default)' },
+                            { id: 'audio-only', label: 'Audio', note: 'Sound only' },
+                        ].map((opt) => (
+                            <button
+                                key={opt.id}
+                                className={`p-3 rounded-xl border transition-all text-left ${feedbackMode === opt.id ? 'selected-ring' : 'muted-btn'}`}
+                                style={{ minWidth: '170px' }}
+                                onClick={() => setFeedbackMode(opt.id as FeedbackMode)}
+                                type="button"
+                            >
+                                <div className="text-xs font-bold uppercase tracking-wide">{opt.label}</div>
+                                <div className="is-size-7 text-muted mt-1">{opt.note}</div>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
                 <div className="space-y-4">
                     {[
                         { id: 'showScrollToTop', label: 'Scroll to Top Button', value: showScrollToTop, set: setShowScrollToTop, note: 'Floating button for long pages' },

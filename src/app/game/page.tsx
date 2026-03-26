@@ -20,6 +20,7 @@ import GameDashboard from './sections/GameDashboard';
 
 // Hooks & Lib
 import { useAds } from '@/lib/ad-context';
+import { useFeedback } from '@/lib/feedback-context';
 import { useGameState } from '@/hooks/useGameState';
 import { useSync } from '@/hooks/useSync';
 import GameSocketManager from '@/lib/gameSocketManager';
@@ -65,6 +66,7 @@ const MOL_AUTO_CLOSE_DELAY_MS = 300;
 export default function GamePage() {
   const router = useRouter();
   const { setAdsSuppressed } = useAds();
+  const { playFeedback } = useFeedback();
   const { state, updateState, resetGame, isLoading: stateLoading } = useGameState();
   
   const [activeSection, setActiveSection] = useState('setup');
@@ -465,12 +467,15 @@ export default function GamePage() {
   const handleNextTurn = () => {
     // Check for unpocketed trinkets warning if needed
     if (state.currentAgeIndex < state.ageDeck.length - 1) {
+        const nextAge = state.ageDeck[state.currentAgeIndex + 1];
+
         const challengePool = state.rules.length > 0 ? state.rules : allData.rules;
         if (challengePool.length === 0) {
           updateState(prev => ({
             currentAgeIndex: prev.currentAgeIndex + 1,
             ...advancePocketedTrinketsToNextAge(prev)
           }));
+          playFeedback(nextAge?.isCatastrophe ? 'catastrophe' : 'age-advance');
           setManualCatastropheOverride(false);
           return;
         }
@@ -494,8 +499,41 @@ export default function GamePage() {
             assignedChallenges: challengeKey && assignedPlayer ? { [challengeKey]: assignedPlayer } : {},
           ...advancePocketedTrinketsToNextAge(prev)
         }));
+        playFeedback(nextAge?.isCatastrophe ? 'catastrophe' : 'age-advance');
         setManualCatastropheOverride(false);
     }
+  };
+
+  const handleNextAgeWithFeedback = () => {
+    if (state.currentAgeIndex >= state.ageDeck.length - 1) {
+      return;
+    }
+
+    const nextAge = state.ageDeck[state.currentAgeIndex + 1];
+    updateState(p => ({
+      currentAgeIndex: Math.min(p.ageDeck.length - 1, p.currentAgeIndex + 1)
+    }));
+
+    playFeedback(nextAge?.isCatastrophe ? 'catastrophe' : 'age-advance');
+  };
+
+  const handleNextAgeFromDashboard = () => {
+    if (state.currentAgeIndex >= state.ageDeck.length - 1) {
+      return;
+    }
+
+    const nextAge = state.ageDeck[state.currentAgeIndex + 1];
+    playFeedback(nextAge?.isCatastrophe ? 'catastrophe' : 'age-advance');
+
+    updateState(p => {
+      const nextIndex = Math.min(p.ageDeck.length - 1, p.currentAgeIndex + 1);
+      return {
+        currentAgeIndex: nextIndex,
+        ...(nextIndex !== p.currentAgeIndex
+          ? advancePocketedTrinketsToNextAge(p)
+          : { trinketsPocketedThisTurn: p.trinketsPocketedThisTurn })
+      };
+    });
   };
 
   const currentAge = state.ageDeck[state.currentAgeIndex] || null;
@@ -693,15 +731,7 @@ export default function GamePage() {
             trinketState={state.trinketState}
             trinketsPocketedThisTurn={state.trinketsPocketedThisTurn}
             onNextTurn={handleNextTurn}
-            onNextAge={() => updateState(p => {
-              const nextIndex = Math.min(p.ageDeck.length - 1, p.currentAgeIndex + 1);
-              return {
-                currentAgeIndex: nextIndex,
-                ...(nextIndex !== p.currentAgeIndex
-                  ? advancePocketedTrinketsToNextAge(p)
-                  : { trinketsPocketedThisTurn: p.trinketsPocketedThisTurn })
-              };
-            })}
+            onNextAge={handleNextAgeFromDashboard}
             onPrevAge={() => updateState(p => ({ currentAgeIndex: Math.max(0, p.currentAgeIndex - 1) }))}
             isCatastrophe={state.ageDeck[state.currentAgeIndex]?.isCatastrophe || false}
             onTrinketPocket={handleTrinketPocket}
@@ -761,7 +791,7 @@ export default function GamePage() {
               includeFinalCatastrophe: finalCatastropheMode,
             })}
             onPrevAge={() => updateState(p => ({ currentAgeIndex: Math.max(0, p.currentAgeIndex - 1) }))}
-            onNextAge={() => updateState(p => ({ currentAgeIndex: Math.min(p.ageDeck.length - 1, p.currentAgeIndex + 1) }))}
+            onNextAge={handleNextAgeWithFeedback}
             onToggleCatastropheList={() => setShowCatastropheList(v => !v)}
             calculateScalingMultiplier={calculateScalingMultiplier}
           />

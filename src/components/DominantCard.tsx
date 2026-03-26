@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCardImage } from '../hooks/useCardImage';
 import { useTheme } from '@/lib/theme-context';
+import { useFeedback } from '@/lib/feedback-context';
 import { useNotification } from '../lib/notification-context';
 import ThemedSelect from './ThemedSelect';
 
@@ -39,6 +40,7 @@ const DominantCard: React.FC<DominantCardProps> = ({
   resetTrigger = 0
 }) => {
   const { theme, cardArtPreference } = useTheme();
+  const { playFeedback } = useFeedback();
   const { showNotification } = useNotification();
   const { getCardImage } = useCardImage();
   const cardArtUrl = getCardImage(dominant.name);
@@ -92,6 +94,7 @@ const DominantCard: React.FC<DominantCardProps> = ({
     const tierKeys = Object.keys(dominant.tiers);
     const randomTierKey = tierKeys[Math.floor(Math.random() * tierKeys.length)];
     onChange({ selectedTier: randomTierKey || null });
+    playFeedback('dominant-roll');
   };
 
   const duplicateCard = () => {
@@ -118,6 +121,7 @@ const DominantCard: React.FC<DominantCardProps> = ({
     const tierKeys = Object.keys(dominant.tiers);
     const randomTierKey = tierKeys[Math.floor(Math.random() * tierKeys.length)];
     updateCopy(copyId, { selectedTier: randomTierKey });
+    playFeedback('dominant-roll');
   };
 
   const clearAllCopies = () => {
