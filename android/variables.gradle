@@ -26,11 +26,11 @@ ext {
     cordovaAndroidVersion = '10.1.1'
     
     // Build tools versions
-    gradlePluginVersion = '8.11.0'
+    gradlePluginVersion = '8.2.1'
     googleServicesVersion = '4.4.0'
     
-    // Kotlin version (for future compatibility)
-    kotlinVersion = '1.9.20'
+    // Kotlin version
+    kotlinVersion = '1.9.24'
     
     // Java version
     javaVersion = JavaVersion.VERSION_17

@@ -405,7 +405,7 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
     // ─── Refresh subscription status from RevenueCat
     const refreshSubscriptionStatus = useCallback(async () => {
         try {
-            await syncFromRevenueCat();
+            await syncFromRevenueCat().catch(e => console.warn('[RC] Sync error:', e));
         } catch (e) {
             console.warn('[RC] Failed to refresh subscription status:', e);
         }
@@ -522,15 +522,19 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
 
         async function wireAppStateListener() {
             try {
-                listener = await App.addListener('appStateChange', ({ isActive }) => {
-                    if (isActive) {
-                        updateAdTestRemaining(adTestModeUntil);
-                        if (adTestModeUntil && adTestModeUntil <= Date.now()) {
-                            disableAdTestMode();
+                // Check if App plugin is actually available before adding listener
+                const { App } = await import('@capacitor/app');
+                if (App && typeof App.addListener === 'function') {
+                    listener = await App.addListener('appStateChange', ({ isActive }) => {
+                        if (isActive) {
+                            updateAdTestRemaining(adTestModeUntil);
+                            if (adTestModeUntil && adTestModeUntil <= Date.now()) {
+                                disableAdTestMode();
+                            }
+                            refreshSubscriptionStatus();
                         }
-                        refreshSubscriptionStatus();
-                    }
-                });
+                    });
+                }
             } catch (e) {
                 console.warn('[RC] Failed to register app state listener:', e);
             }
@@ -781,6 +785,8 @@ export function AdProvider({ children }: { children: React.ReactNode }) {
 
     // ─── Global Click Listener
     useEffect(() => {
+        if (MONETIZATION_DISABLED) return;
+
         const handleGlobalClick = (e: MouseEvent) => {
             const target = e.target as HTMLElement;
             const isClickable = target.closest('button, a, .clickable, [role="button"]') ||

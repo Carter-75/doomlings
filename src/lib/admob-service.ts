@@ -7,6 +7,7 @@
  */
 
 import { Capacitor } from '@capacitor/core';
+import { MONETIZATION_DISABLED } from './monetization-config';
 
 // Dynamically imported so Next.js doesn't try to resolve during SSR
 let AdMob: typeof import('@capacitor-community/admob').AdMob | null = null;
@@ -23,7 +24,7 @@ const INTERSTITIAL_ID = process.env.NEXT_PUBLIC_ADMOB_INTERSTITIAL_ID ?? 'ca-app
 export const isNative = () => Capacitor.isNativePlatform();
 
 async function loadAdMob() {
-    if (!isNative()) return false;
+    if (MONETIZATION_DISABLED || !isNative()) return false;
     if (AdMob) return true;
     try {
         const mod = await import('@capacitor-community/admob');
