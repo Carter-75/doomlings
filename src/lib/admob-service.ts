@@ -41,11 +41,20 @@ export async function initializeAdMob(): Promise<void> {
     const ok = await loadAdMob();
     if (!ok || !AdMob) return;
 
-    await AdMob.initialize({
-        requestTrackingAuthorization: false,
-        // initializeForTesting: true  ← uncomment this line to force test ads in production builds during QA
-    } as any);
-    initialized = true;
+    try {
+        // Race initialization against a 3-second timeout to prevent startup hangs
+        await Promise.race([
+            AdMob.initialize({
+                requestTrackingAuthorization: false,
+            } as any),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('AdMob init timeout')), 3000))
+        ]);
+        initialized = true;
+    } catch (e) {
+        console.warn('[AdMob] Initialization failed or timed out:', e);
+        // We still mark as initialized to prevent repeated attempts that might also hang
+        initialized = true; 
+    }
 }
 
 export async function showBanner(): Promise<void> {

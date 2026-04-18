@@ -27,22 +27,30 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         // Load saved theme and card art preference
         const loadSettings = async () => {
+            const timeoutPromise = new Promise(resolve => setTimeout(resolve, 1500));
+            
             try {
-                const { value: appTheme } = await Preferences.get({ key: 'appTheme' });
-                if (appTheme) {
-                    setThemeState(appTheme);
-                    document.documentElement.setAttribute('data-theme', appTheme);
-                }
+                // Race the native settings loading against a 1.5s timeout
+                await Promise.race([
+                    (async () => {
+                        const { value: appTheme } = await Preferences.get({ key: 'appTheme' }).catch(() => ({ value: null }));
+                        if (appTheme) {
+                            setThemeState(appTheme);
+                            document.documentElement.setAttribute('data-theme', appTheme);
+                        }
 
-                const { value: artPref } = await Preferences.get({ key: 'cardArtPreference' });
-                if (artPref === 'ai' || artPref === 'official' || artPref === 'none') {
-                    setCardArtPreferenceState(artPref);
-                } else if (artPref === 'custom') {
-                    // Migrate old 'custom' to 'ai'
-                    setCardArtPreferenceState('ai');
-                    await Preferences.set({ key: 'cardArtPreference', value: 'ai' });
-                }
+                        const { value: artPref } = await Preferences.get({ key: 'cardArtPreference' }).catch(() => ({ value: null }));
+                        if (artPref === 'ai' || artPref === 'official' || artPref === 'none') {
+                            setCardArtPreferenceState(artPref);
+                        } else if (artPref === 'custom') {
+                            setCardArtPreferenceState('ai');
+                            await Preferences.set({ key: 'cardArtPreference', value: 'ai' }).catch(() => {});
+                        }
+                    })(),
+                    timeoutPromise
+                ]);
             } catch (error) {
+                console.warn('[Theme] Native settings error, falling back to local storage:', error);
                 // Fallback for web
                 const savedTheme = localStorage.getItem('appTheme');
                 if (savedTheme) {
@@ -57,8 +65,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
                     setCardArtPreferenceState('ai');
                     localStorage.setItem('cardArtPreference', 'ai');
                 }
+            } finally {
+                setMounted(true);
             }
-            setMounted(true);
         };
         loadSettings();
     }, []);
@@ -82,10 +91,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    // Prevent hydration mismatch by not rendering until theme is loaded
-    if (!mounted) {
-        return <div style={{ visibility: 'hidden' }}>{children}</div>;
-    }
+    // We no longer block rendering with visibility: hidden. 
+    // Next.js will hydrate the UI naturally. 
+    // 'mounted' can still be used for client-only UI if needed.
 
     return (
         <ThemeContext.Provider value={{ theme, setTheme, cardArtPreference, setCardArtPreference }}>

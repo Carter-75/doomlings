@@ -34,9 +34,6 @@ const config: CapacitorConfig = {
     captureInput: false,
     webContentsDebuggingEnabled: false,
   },
-  
-  // Improve loading performance
-  bundledWebRuntime: false,
 };
 
 export default config;
