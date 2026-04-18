@@ -14,8 +14,8 @@ android {
         applicationId "com.doomlings.companion"
         minSdkVersion 24
         targetSdkVersion 35
-        versionCode 135
-        versionName "4.1.0"
+        versionCode 136
+        versionName "4.1.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         
         // Vector drawable support
