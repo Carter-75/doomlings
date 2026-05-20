@@ -18,6 +18,7 @@ interface ChallengesSectionProps {
   manualCatastropheOverride: boolean;
   isCatastrophe: boolean;
   currentAge: any | null;
+  isGuest?: boolean;
 }
 
 export default function ChallengesSection({
@@ -31,6 +32,7 @@ export default function ChallengesSection({
   manualCatastropheOverride,
   isCatastrophe,
   currentAge,
+  isGuest,
 }: ChallengesSectionProps) {
   const activePlayers = playerNames.slice(0, playerCount).filter(n => n.trim());
   const parsedChallenge = React.useMemo(() => {
@@ -74,11 +76,14 @@ export default function ChallengesSection({
             )}
           </div>
           <div
-            onClick={() => onCatastropheToggle(!catastropheMode)}
+            onClick={() => {
+              if (!isGuest) onCatastropheToggle(!catastropheMode);
+            }}
             style={{
-              width: 48, height: 26, borderRadius: 13, cursor: 'pointer',
+              width: 48, height: 26, borderRadius: 13, cursor: isGuest ? 'not-allowed' : 'pointer',
               background: catastropheMode ? 'var(--error)' : 'rgba(255,255,255,0.1)',
               position: 'relative', transition: 'background 0.3s', flexShrink: 0,
+              opacity: isGuest ? 0.5 : 1
             }}
           >
             <div style={{
@@ -123,6 +128,7 @@ export default function ChallengesSection({
           id="roll-challenge-btn"
           className={`is-fullwidth button-premium py-6 ${catastropheMode ? 'is-danger' : 'is-primary'}`}
           onClick={onRollChallenge}
+          disabled={isGuest}
         >
           🎲 Roll New Challenge
         </AnimatedButton>

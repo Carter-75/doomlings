@@ -15,6 +15,9 @@ interface TrinketsSectionProps {
   onTrinketAdd: (playerName: string, trinket: any) => void;
   onTrinketRemove: (playerName: string, trinket: any) => void;
   onTrinketPocket: (playerName: string, trinket: any) => void;
+  onTrinketKeep?: (playerName: string, trinket: any) => void;
+  isGuest?: boolean;
+  guestIdentity?: string | null;
 }
 
 export default function TrinketsSection({
@@ -26,14 +29,22 @@ export default function TrinketsSection({
   onAssignTrinkets,
   onTrinketAdd,
   onTrinketRemove,
-  onTrinketPocket
+  onTrinketPocket,
+  onTrinketKeep,
+  isGuest,
+  guestIdentity
 }: TrinketsSectionProps) {
   return (
     <div className="trinkets-section animate-fade-in">
       <h2 className="section-title">Trinkets</h2>
       
       <div className="player-control box glass p-6 mt-6 has-text-centered shadow-lg">
-        <AnimatedButton id="assign-trinkets-btn" className="is-primary is-fullwidth button-premium py-6" onClick={onAssignTrinkets}>
+        <AnimatedButton 
+          id="assign-trinkets-btn" 
+          className="is-primary is-fullwidth button-premium py-6" 
+          onClick={onAssignTrinkets}
+          disabled={isGuest}
+        >
           💎 Assign Trinkets
         </AnimatedButton>
         <p className="has-text-centered mt-4 is-size-7 text-muted italic">
@@ -67,6 +78,9 @@ export default function TrinketsSection({
                           onRemove={() => onTrinketRemove(pName, trinket)}
                           onPocket={() => onTrinketPocket(pName, trinket)}
                           isPocketDisabled={isPocketDisabledForAge(currentTrinkets.length, Boolean(trinketsPocketedThisTurn[pName]))}
+                          isSetupPhase={currentTrinkets.length > 1}
+                          onKeep={() => onTrinketKeep && onTrinketKeep(pName, trinket)}
+                          isGuest={isGuest && pName !== guestIdentity}
                         />
                       </div>
                     ))}

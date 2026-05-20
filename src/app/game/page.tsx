@@ -123,8 +123,34 @@ export default function GamePage() {
   const socketManager = GameSocketManager.getInstance();
   const room = socketManager.getCurrentRoom();
   const isHost = room ? room.hostId === socketManager.getPlayerId() : true;
+  const isGuest = !isHost;
+
+  const [guestIdentity, setGuestIdentity] = useState<string | null>(null);
 
   const { playerId } = useSync(state, updateState, isHost);
+
+  const handlersRef = useRef({
+    handleTrinketPocket: (p: string, t: any) => {},
+    handleTrinketKeep: (p: string, t: any) => {},
+    handleTrinketAdd: (p: string) => {},
+    handleTrinketRemove: (p: string, t: any) => {},
+    handleChooseMeaning: (p: string, m: string) => {},
+  });
+
+  useEffect(() => {
+    if (!isHost) return;
+    const handleGuestAction = (data: any) => {
+      const { actionType, payload } = data;
+      const { handleTrinketPocket, handleTrinketKeep, handleTrinketAdd, handleTrinketRemove, handleChooseMeaning } = handlersRef.current;
+      if (actionType === 'TRINKET_POCKET') handleTrinketPocket(payload.playerName, payload.trinket);
+      if (actionType === 'TRINKET_KEEP') handleTrinketKeep(payload.playerName, payload.trinket);
+      if (actionType === 'TRINKET_ADD') handleTrinketAdd(payload.playerName);
+      if (actionType === 'TRINKET_REMOVE') handleTrinketRemove(payload.playerName, payload.trinket);
+      if (actionType === 'MEANING_CHOOSE') handleChooseMeaning(payload.playerName, payload.meaning);
+    };
+    socketManager.onGuestAction(handleGuestAction);
+    return () => socketManager.off('guest-action', handleGuestAction);
+  }, [isHost, socketManager]);
 
   useEffect(() => {
     return () => {
@@ -342,6 +368,10 @@ export default function GamePage() {
   };
 
   const handleTrinketAdd = (playerName: string) => {
+    if (isGuest && room) {
+      socketManager.sendGuestAction(room.id, 'TRINKET_ADD', { playerName });
+      return;
+    }
     updateState(prev => {
       const deck = prev.trinketState.deck || [];
       if (deck.length === 0) {
@@ -364,6 +394,10 @@ export default function GamePage() {
   };
 
   const handleTrinketRemove = (playerName: string, trinket: any) => {
+    if (isGuest && room) {
+      socketManager.sendGuestAction(room.id, 'TRINKET_REMOVE', { playerName, trinket });
+      return;
+    }
     updateState(prev => {
       const current = prev.trinketState.playerTrinkets[playerName] || [];
       const removeIndex = current.findIndex((item: any) => item?.name === trinket?.name);
@@ -408,6 +442,45 @@ export default function GamePage() {
     });
   };
 
+  const handleTrinketKeep = (playerName: string, trinket: any) => {
+    if (isGuest && room) {
+      socketManager.sendGuestAction(room.id, 'TRINKET_KEEP', { playerName, trinket });
+      return;
+    }
+    updateState(prev => {
+      const current = prev.trinketState.playerTrinkets[playerName] || [];
+      const updatedCurrent = current.filter((item: any) => item?.name === trinket?.name);
+      const returnedToDeck = current.filter((item: any) => item?.name !== trinket?.name);
+
+      const newState = {
+        trinketState: {
+          deck: [...prev.trinketState.deck, ...returnedToDeck],
+          playerTrinkets: {
+            ...prev.trinketState.playerTrinkets,
+            [playerName]: updatedCurrent
+          }
+        }
+      };
+
+      if (guidedSetupStep === 'trinkets') {
+        const activePlayers = state.playerNames
+          .slice(0, state.playerCount)
+          .map((name, index) => name.trim() || `Player ${index + 1}`);
+        
+        const allPlayersSelectedOne = activePlayers.every((pKey) => {
+          const playerTrinkets = newState.trinketState.playerTrinkets[pKey] || [];
+          return playerTrinkets.length === 1;
+        });
+
+        if (allPlayersSelectedOne) {
+          setGuidedSetupStep('complete');
+          navigateToSection('gameDashboard');
+        }
+      }
+      return newState;
+    });
+  };
+
   const advancePocketedTrinketsToNextAge = (prev: any) => {
     const deck = [...(prev.trinketState.deck || [])];
     const updatedPlayerTrinkets = { ...prev.trinketState.playerTrinkets };
@@ -439,6 +512,10 @@ export default function GamePage() {
   };
 
   const handleTrinketPocket = (playerName: string, trinket: any) => {
+    if (isGuest && room) {
+      socketManager.sendGuestAction(room.id, 'TRINKET_POCKET', { playerName, trinket });
+      return;
+    }
     updateState(prev => {
       if (prev.trinketsPocketedThisTurn[playerName]) {
         return {};
@@ -462,6 +539,43 @@ export default function GamePage() {
         }
       };
     });
+  };
+
+  const handleChooseMeaning = (p: string, m: string) => {
+    if (isGuest && room) {
+      socketManager.sendGuestAction(room.id, 'MEANING_CHOOSE', { playerName: p, meaning: m });
+      scheduleMolAutoClose(p);
+      return;
+    }
+
+    updateState(prev => {
+      const activePlayers = state.playerNames
+        .slice(0, state.playerCount)
+        .map((name, index) => name.trim() || `Player ${index + 1}`);
+        
+      const nextSelected = { ...prev.selectedMeanings, [p]: m };
+      const isFinalMolPick =
+        guidedSetupStep === 'mol' &&
+        activePlayers.length > 0 &&
+        activePlayers.every((playerKey) => Boolean(nextSelected[playerKey]));
+
+      if (isFinalMolPick) {
+        setGuidedSetupStep('trinkets');
+        navigateToSection('trinkets');
+      }
+      
+      return { selectedMeanings: nextSelected };
+    });
+
+    scheduleMolAutoClose(p);
+  };
+
+  handlersRef.current = {
+    handleTrinketPocket,
+    handleTrinketKeep,
+    handleTrinketAdd,
+    handleTrinketRemove,
+    handleChooseMeaning
   };
 
   const handleNextTurn = () => {
@@ -518,6 +632,7 @@ export default function GamePage() {
   };
 
   const handleNextAgeFromDashboard = () => {
+    if (isGuest) return;
     if (state.currentAgeIndex >= state.ageDeck.length - 1) {
       return;
     }
@@ -537,6 +652,7 @@ export default function GamePage() {
   };
 
   const currentAge = state.ageDeck[state.currentAgeIndex] || null;
+  const isFirstAge = state.currentAgeIndex === 0;
   const isCatastropheFromAge = Boolean(currentAge?.isCatastrophe);
   const effectiveCatastropheMode = manualCatastropheOverride ? catastropheMode : isCatastropheFromAge;
   const rulesSource = state.rules.length > 0 ? state.rules : allData.rules;
@@ -738,6 +854,8 @@ export default function GamePage() {
             onTrinketAdd={(p, _t) => handleTrinketAdd(p)}
             onTrinketRemove={handleTrinketRemove}
             onResetAll={handleResetAll}
+            isGuest={isGuest}
+            isFirstAge={isFirstAge}
           />
         )}
 
@@ -760,6 +878,7 @@ export default function GamePage() {
             manualCatastropheOverride={manualCatastropheOverride}
             isCatastrophe={isCatastropheFromAge}
             currentAge={currentAge}
+            isGuest={isGuest}
           />
         )}
 
@@ -830,28 +949,12 @@ export default function GamePage() {
                 updateState({ revealedMeanings: revealed });
             }}
             onChooseMeaning={(p, m) => {
-              const activePlayers = state.playerNames
-                .slice(0, state.playerCount)
-                .map((name, index) => name.trim() || `Player ${index + 1}`);
-              const nextSelected = { ...state.selectedMeanings, [p]: m };
-              const isFinalMolPick =
-                guidedSetupStep === 'mol' &&
-                activePlayers.length > 0 &&
-                activePlayers.every((playerKey) => Boolean(nextSelected[playerKey]));
-
-              updateState({ selectedMeanings: nextSelected });
-
-              // Start next-section routing immediately on final pick; do not wait for card close.
-              if (isFinalMolPick) {
-                setGuidedSetupStep('trinkets');
-                navigateToSection('trinkets');
-              }
-
-              // Card close runs in parallel and is independent of section routing.
-              scheduleMolAutoClose(p);
+              handleChooseMeaning(p, m);
             }}
             onToggleViewPlayer={p => setViewingPlayer(viewingPlayer === p ? null : p)}
             viewingPlayer={viewingPlayer}
+            guestIdentity={guestIdentity}
+            isGuest={isGuest}
                       ageMultiplier={calculateScalingMultiplier()}
           />
         )}
@@ -879,6 +982,9 @@ export default function GamePage() {
             onTrinketPocket={handleTrinketPocket}
             onTrinketAdd={(p, _t) => handleTrinketAdd(p)}
             onTrinketRemove={handleTrinketRemove}
+            onTrinketKeep={handleTrinketKeep}
+            isGuest={isGuest}
+            guestIdentity={guestIdentity}
           />
         )}
 
@@ -948,6 +1054,38 @@ export default function GamePage() {
           onBack={() => setTutorialStep(s => (s !== null && s > 0 ? s - 1 : 0))}
           onSkip={() => setTutorialStep(null)}
         />
+      )}
+
+      {/* Guest Identity Modal */}
+      {isGuest && !guestIdentity && state.playerNames.length > 0 && (
+        <Modal
+          isOpen={true}
+          onClose={() => {}}
+          title="📡 Joined Synced Game"
+          type="info"
+          actions={
+            <AnimatedButton onClick={() => setGuestIdentity('Spectator')} className="is-light">Just Spectate</AnimatedButton>
+          }
+        >
+          <div className="has-text-centered mb-4">
+            <p>You have joined the host's game! Please select which player you are:</p>
+          </div>
+          <div className="columns is-multiline is-mobile">
+            {state.playerNames.slice(0, state.playerCount).map((name, index) => {
+              const pName = name.trim() || `Player ${index + 1}`;
+              return (
+                <div key={index} className="column is-half">
+                  <AnimatedButton 
+                    onClick={() => setGuestIdentity(pName)} 
+                    className="is-primary is-fullwidth"
+                  >
+                    {pName}
+                  </AnimatedButton>
+                </div>
+              );
+            })}
+          </div>
+        </Modal>
       )}
 
       <footer className="game-footer mt-16 pb-12 animate-fade-in">

@@ -24,6 +24,9 @@ interface GameDashboardProps {
   onTrinketAdd: (playerName: string, trinket: any) => void;
   onTrinketRemove: (playerName: string, trinket: any) => void;
   onResetAll: () => void;
+  isGuest?: boolean;
+  guestIdentity?: string | null;
+  isFirstAge?: boolean;
 }
 
 export default function GameDashboard({
@@ -46,7 +49,10 @@ export default function GameDashboard({
   onTrinketPocket,
   onTrinketAdd,
   onTrinketRemove,
-  onResetAll
+  onResetAll,
+  isGuest,
+  guestIdentity,
+  isFirstAge
 }: GameDashboardProps) {
   const currentAge = ageDeck[currentAgeIndex];
   const currentRule = rules[currentRuleIndex];
@@ -78,6 +84,9 @@ export default function GameDashboard({
             onResetAll={onResetAll}
             isCatastrophe={isCatastrophe}
             isLastAge={currentAgeIndex === ageDeck.length - 1}
+            isGuest={isGuest}
+            guestIdentity={guestIdentity}
+            isFirstAge={isFirstAge}
           />
         </div>
       </div>

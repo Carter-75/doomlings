@@ -16,9 +16,12 @@ interface TrinketCardProps {
   onPocket: () => void;
   isPocketDisabled: boolean;
   isFogged?: boolean;
+  isSetupPhase?: boolean;
+  onKeep?: () => void;
+  isGuest?: boolean;
 }
 
-const TrinketCard: React.FC<TrinketCardProps> = ({ trinket, onAdd, onRemove, onPocket, isPocketDisabled, isFogged }) => {
+const TrinketCard: React.FC<TrinketCardProps> = ({ trinket, onAdd, onRemove, onPocket, isPocketDisabled, isFogged, isSetupPhase, onKeep, isGuest }) => {
   const { cardArtPreference } = useTheme();
   const { getCardImage } = useCardImage();
   const cardArtUrl = getCardImage(trinket.name);
@@ -106,9 +109,15 @@ const TrinketCard: React.FC<TrinketCardProps> = ({ trinket, onAdd, onRemove, onP
         </div>
       </div>
       <footer style={{ display: 'flex', gap: 'var(--space-2)', marginTop: 'var(--space-4)' }}>
-        <button className="button button-outline" onClick={onAdd}>Add</button>
-        <button className="button button-outline" onClick={onRemove}>Remove</button>
-        <button className="button button-primary" onClick={onPocket} disabled={isPocketDisabled}>Pocket</button>
+        {isSetupPhase ? (
+          <button className="button button-primary" style={{ width: '100%' }} onClick={onKeep} disabled={isGuest}>Keep</button>
+        ) : (
+          <>
+            <button className="button button-outline" onClick={onAdd} disabled={isGuest}>Add</button>
+            <button className="button button-outline" onClick={onRemove} disabled={isGuest}>Remove</button>
+            <button className="button button-primary" onClick={onPocket} disabled={isPocketDisabled || isGuest}>Pocket</button>
+          </>
+        )}
       </footer>
     </div>
   );

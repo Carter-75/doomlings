@@ -16,6 +16,8 @@ interface MeaningOfLifeSectionProps {
   onToggleViewPlayer: (playerName: string) => void;
   viewingPlayer: string | null;
   ageMultiplier?: number;
+  isGuest?: boolean;
+  guestIdentity?: string | null;
 }
 
 export default function MeaningOfLifeSection({
@@ -29,7 +31,9 @@ export default function MeaningOfLifeSection({
   onChooseMeaning,
   onToggleViewPlayer,
   viewingPlayer,
-  ageMultiplier = 1
+  ageMultiplier = 1,
+  isGuest,
+  guestIdentity
 }: MeaningOfLifeSectionProps) {
   const activePlayerKeys = playerNames
     .slice(0, playerCount)
@@ -51,7 +55,12 @@ export default function MeaningOfLifeSection({
       <h2 className="section-title">Meaning of Life</h2>
       
       <div className="player-control box glass p-6 mt-6 has-text-centered shadow-lg">
-        <AnimatedButton id="assign-mol-btn" className="is-primary is-fullwidth button-premium py-6" onClick={onAssignMeanings}>
+        <AnimatedButton 
+          id="assign-mol-btn" 
+          className="is-primary is-fullwidth button-premium py-6" 
+          onClick={onAssignMeanings}
+          disabled={isGuest}
+        >
           🎴 Assign Meaning of Life Cards
         </AnimatedButton>
         <p className="mt-4 text-muted is-size-7 italic">Each player will receive 2 secret objectives to choose from.</p>
@@ -76,6 +85,7 @@ export default function MeaningOfLifeSection({
                       <AnimatedButton 
                         className={`is-small is-fullwidth ${isViewing ? 'mol-view-toggle-active' : 'mol-view-toggle'}`}
                         onClick={() => onToggleViewPlayer(pName)}
+                        disabled={isGuest && pName !== guestIdentity}
                       >
                         {isViewing ? '🙈 Hide Cards' : '👁️ View Cards'}
                       </AnimatedButton>
@@ -90,9 +100,11 @@ export default function MeaningOfLifeSection({
                               }}
                               isSelected={selectedMeanings[pName] === card.name}
                               isRevealed={isRevealed || false}
-                              onChoose={() => onChooseMeaning(pName, card.name)}
+                              onChoose={() => {
+                                if (!isGuest || pName === guestIdentity) onChooseMeaning(pName, card.name);
+                              }}
                               isViewing={isViewing}
-                              canSelect={!isRevealed}
+                              canSelect={!isRevealed && (!isGuest || pName === guestIdentity)}
                             />
                           </div>
                         ))}
@@ -114,7 +126,11 @@ export default function MeaningOfLifeSection({
       </div>
 
       <div className="reveal-control-container box glass mt-8 p-4 border-dashed border-2 border-warning/30">
-        <AnimatedButton className="is-warning is-fullwidth py-4 font-bold" onClick={onRevealAll}>
+        <AnimatedButton 
+          className="is-warning is-fullwidth py-4 font-bold" 
+          onClick={onRevealAll}
+          disabled={isGuest}
+        >
           {anyRevealed ? '🙈 Hide All Final Meanings' : '⚠️ Reveal All Final Meanings'}
         </AnimatedButton>
       </div>

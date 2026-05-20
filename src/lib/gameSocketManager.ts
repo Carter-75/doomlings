@@ -1,13 +1,13 @@
-// Simple wrapper that uses Vercel API for multiplayer sync
-import VercelGameManager from './vercelGameManager';
+import { io, Socket } from 'socket.io-client';
 
 class GameSocketManager {
   private static instance: GameSocketManager;
-  private vercelManager: VercelGameManager;
+  private socket: Socket | null = null;
+  private playerId: string | null = null;
+  private playerName: string | null = null;
+  private currentRoom: any = null;
 
-  private constructor() {
-    this.vercelManager = new VercelGameManager();
-  }
+  private constructor() {}
 
   static getInstance(): GameSocketManager {
     if (!GameSocketManager.instance) {
@@ -16,118 +16,199 @@ class GameSocketManager {
     return GameSocketManager.instance;
   }
 
-  async connect(): Promise<VercelGameManager> {
-    await this.vercelManager.connect();
-    console.log('✅ Connected to multiplayer service!');
-    return this.vercelManager;
+  async connect(): Promise<any> {
+    if (this.socket?.connected) return this;
+
+    return new Promise((resolve, reject) => {
+      // Connect to the backend (allows overriding for native mobile apps where origin is localhost)
+      const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+      this.socket = io(socketUrl, {
+        transports: ['websocket', 'polling']
+      });
+
+      this.socket.on('connect', () => {
+        console.log('✅ Connected to real-time multiplayer socket!');
+        
+        // Auto-reconnect logic
+        if (typeof window !== 'undefined') {
+          const savedPlayerId = localStorage.getItem('doomlings_playerId');
+          const savedPlayerName = localStorage.getItem('doomlings_playerName');
+          
+          if (savedPlayerId) {
+             this.socket?.emit('register', { playerId: savedPlayerId, playerName: savedPlayerName }, (res: any) => {
+               if (res.success) {
+                  this.playerId = res.playerId;
+                  this.playerName = res.playerName;
+               }
+             });
+          }
+        }
+        resolve(this);
+      });
+
+      this.socket.on('connect_error', (err) => {
+        console.error('Socket connection error:', err);
+        reject(err);
+      });
+      
+      this.socket.on('room-updated', (room) => {
+          this.currentRoom = room;
+      });
+      
+      this.socket.on('game-started', (room) => {
+          this.currentRoom = room;
+      });
+    });
   }
 
   async registerPlayer(playerName: string): Promise<string> {
-    return this.vercelManager.registerPlayer(playerName);
+    return new Promise((resolve, reject) => {
+      if (!this.socket) return reject('No socket');
+      const savedPlayerId = typeof window !== 'undefined' ? localStorage.getItem('doomlings_playerId') : null;
+      
+      this.socket.emit('register', { playerId: savedPlayerId, playerName }, (res: any) => {
+        if (res.success) {
+          this.playerId = res.playerId;
+          this.playerName = res.playerName;
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('doomlings_playerId', res.playerId);
+            localStorage.setItem('doomlings_playerName', res.playerName);
+          }
+          resolve(res.playerId);
+        } else {
+          reject(res.error);
+        }
+      });
+    });
   }
 
-  async createRoom(data: any) {
-    return this.vercelManager.createRoom(data);
+  async createRoom(data: any): Promise<{success: boolean, room?: any, error?: string}> {
+    return new Promise((resolve, reject) => {
+      if (!this.socket) return reject('No socket');
+      this.socket.emit('create-room', data, (res: any) => {
+        if (res.success) {
+          this.currentRoom = res.room;
+          resolve(res);
+        } else {
+          reject(res.error);
+        }
+      });
+    });
   }
 
-  async joinRoom(roomId: string, password?: string) {
-    return this.vercelManager.joinRoom(roomId, password);
-  }
-
-  async quickMatch(maxPlayers: number) {
-    return this.vercelManager.quickMatch(maxPlayers);
+  async joinRoom(roomId: string, password?: string): Promise<{success: boolean, room?: any, error?: string}> {
+    return new Promise((resolve, reject) => {
+      if (!this.socket) return reject('No socket');
+      this.socket.emit('join-room', { roomId, password }, (res: any) => {
+        if (res.success) {
+          this.currentRoom = res.room;
+          resolve(res);
+        } else {
+          reject(res.error);
+        }
+      });
+    });
   }
 
   async setPlayerReady(roomId: string, ready: boolean) {
-    return this.vercelManager.setPlayerReady(roomId, ready);
-  }
-
-  async playCard(roomId: string, cardId: string) {
-    return this.vercelManager.playCard(roomId, cardId);
-  }
-
-  async sendChatMessage(roomId: string, message: string) {
-    return this.vercelManager.sendChatMessage(roomId, message);
+    return new Promise((resolve, reject) => {
+      if (!this.socket) return reject('No socket');
+      this.socket.emit('set-ready', { roomId, ready }, (res: any) => {
+        if (res.success) resolve(res);
+        else reject(res.error);
+      });
+    });
   }
 
   async syncGameState(roomId: string, payload: any) {
-    return this.vercelManager.syncGameState(roomId, payload);
+    if (!this.socket) return;
+    this.socket.emit('sync-game-state', { roomId, payload });
   }
 
-  async getPublicRooms() {
-    return this.vercelManager.getPublicRooms();
-  }
-
-  async getLocalRooms() {
-    return this.vercelManager.getLocalRooms();
+  async sendGuestAction(roomId: string, actionType: string, payload: any) {
+    if (!this.socket) return;
+    this.socket.emit('guest-action', { roomId, actionType, payload });
   }
 
   onRoomUpdated(callback: (...args: any[]) => void) {
-    this.vercelManager.onRoomUpdated(callback);
-  }
-
-  onGameStarted(callback: (...args: any[]) => void) {
-    this.vercelManager.onGameStarted(callback);
+    this.socket?.on('room-updated', callback);
   }
 
   onRoomJoined(callback: (...args: any[]) => void) {
-    this.vercelManager.onRoomJoined(callback);
+    this.socket?.on('room-joined', callback);
   }
 
   onRoomLeft(callback: (...args: any[]) => void) {
-    this.vercelManager.onRoomLeft(callback);
+    this.socket?.on('room-left', callback);
   }
 
   onError(callback: (...args: any[]) => void) {
-    this.vercelManager.onError(callback);
-  }
-
-  onGameUpdated(callback: (...args: any[]) => void) {
-    this.vercelManager.onGameUpdated(callback);
-  }
-
-  onSyncGameState(callback: (...args: any[]) => void) {
-    this.vercelManager.onSyncGameState(callback);
-  }
-
-  onChatMessage(callback: (...args: any[]) => void) {
-    this.vercelManager.onChatMessage(callback);
+    this.socket?.on('error', callback);
   }
 
   onRoomListUpdated(callback: (...args: any[]) => void) {
-    this.vercelManager.onRoomListUpdated(callback);
+    this.socket?.on('room-list-updated', callback);
+  }
+
+  onGameStarted(callback: (...args: any[]) => void) {
+    this.socket?.on('game-started', callback);
+  }
+
+  onSyncGameState(callback: (...args: any[]) => void) {
+    this.socket?.on('sync-game-state', callback);
+  }
+
+  onGuestAction(callback: (...args: any[]) => void) {
+    this.socket?.on('guest-action', callback);
   }
 
   off(event: string, callback: (...args: any[]) => void) {
-    this.vercelManager.off(event, callback);
+    this.socket?.off(event, callback);
   }
 
   isConnected(): boolean {
-    return this.vercelManager.isConnected();
+    return this.socket?.connected || false;
   }
 
   getPlayerId(): string | null {
-    return this.vercelManager.getPlayerId();
-  }
-
-  getPlayerName(): string | null {
-    return this.vercelManager.getPlayerName();
+    return this.playerId;
   }
 
   getCurrentRoom(): any {
-    return this.vercelManager.getCurrentRoom();
+    return this.currentRoom;
   }
 
-  offAllListeners() {
-    this.vercelManager.offAllListeners();
+  async getPublicRooms(): Promise<any[]> {
+    return new Promise((resolve) => {
+      if (!this.socket) return resolve([]);
+      this.socket.emit('get-public-rooms', null, (res: any) => {
+        resolve(res.rooms || []);
+      });
+    });
+  }
+
+  async getLocalRooms(): Promise<any[]> {
+    return new Promise((resolve) => {
+      if (!this.socket) return resolve([]);
+      this.socket.emit('get-local-rooms', null, (res: any) => {
+        resolve(res.rooms || []);
+      });
+    });
   }
 
   async leaveRoom() {
-    this.vercelManager.leaveRoom();
+    return new Promise((resolve, reject) => {
+      if (!this.socket) return resolve(null);
+      this.socket.emit('leave-room', { roomId: this.currentRoom?.id }, (res: any) => {
+        this.currentRoom = null;
+        resolve(res);
+      });
+    });
   }
 
   async disconnect() {
-    this.vercelManager.disconnect();
+    this.socket?.disconnect();
+    this.socket = null;
   }
 }
 

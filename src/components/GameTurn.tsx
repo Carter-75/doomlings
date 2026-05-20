@@ -26,6 +26,9 @@ interface GameTurnProps {
   onTrinketRemove: (playerName: string, trinket: any) => void;
   onTrinketPocket: (playerName: string, trinket: any) => void;
   onResetAll: () => void;
+  isGuest?: boolean;
+  guestIdentity?: string | null;
+  isFirstAge?: boolean;
 }
 
 const GameTurn: React.FC<GameTurnProps> = ({
@@ -47,7 +50,10 @@ const GameTurn: React.FC<GameTurnProps> = ({
   onTrinketAdd,
   onTrinketRemove,
   onTrinketPocket,
-  onResetAll
+  onResetAll,
+  isGuest,
+  guestIdentity,
+  isFirstAge
 }) => {
   const { cardArtPreference } = useTheme();
   const { getCardImage } = useCardImage();
@@ -85,15 +91,29 @@ const GameTurn: React.FC<GameTurnProps> = ({
       <h1 className="title is-2 has-text-centered page-title mb-6">Game Turn</h1>
       
       <div className="player-control box glass p-6 mb-8 shadow-lg has-text-centered">
-        <AnimatedButton className="is-primary is-large is-fullwidth button-premium py-6" onClick={onNextTurn}>
+        <AnimatedButton 
+          className="is-primary is-large is-fullwidth button-premium py-6" 
+          onClick={onNextTurn}
+          disabled={isGuest}
+        >
           🚀 Start Next Turn (New Age & Challenge)
         </AnimatedButton>
       </div>
 
       <div className="columns is-variable is-4-desktop is-stretch">
         <div className="column">
-          <div className="age-config box glass h-full p-6 border-1 border-white/5 shadow-xl">
+          <div className="age-config box glass h-full p-6 border-1 border-white/5 shadow-xl relative">
             <h2 className="title is-4 has-text-centered text-secondary mb-6 pl-2 border-b border-white/10 pb-3">⚡ Current Challenge</h2>
+            
+            {isFirstAge && (
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none">
+                <div className="tag is-warning is-large font-bold px-6 py-4 shadow-xl text-center" style={{ backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.2)' }}>
+                  <span className="is-size-3 mb-2 block">⏳</span>
+                  Challenge reveals on Next Turn
+                </div>
+              </div>
+            )}
+            
             <div className={`challenge-display mt-4 p-6 has-text-centered rounded-xl glass-light transition-all ${isCatastrophe ? 'catastrophe-mode' : ''}`}
                  style={{ 
                    minHeight: '200px', 
@@ -101,7 +121,10 @@ const GameTurn: React.FC<GameTurnProps> = ({
                    flexDirection: 'column', 
                    justifyContent: 'center',
                    border: isCatastrophe ? '2px solid var(--error)' : '2px dashed rgba(255, 255, 255, 0.1)',
-                   background: isCatastrophe ? 'rgba(230, 57, 70, 0.05)' : 'rgba(255, 255, 255, 0.02)'
+                   background: isCatastrophe ? 'rgba(230, 57, 70, 0.05)' : 'rgba(255, 255, 255, 0.02)',
+                   filter: isFirstAge ? 'blur(8px)' : 'none',
+                   opacity: isFirstAge ? 0.6 : 1,
+                   pointerEvents: isFirstAge ? 'none' : 'auto'
                  }}>
               {parsedChallenge ? (
                 <div className="animate-fade-in">
@@ -262,6 +285,7 @@ const GameTurn: React.FC<GameTurnProps> = ({
                         onRemove={() => onTrinketRemove(pName, trinket)}
                         onPocket={() => onTrinketPocket(pName, trinket)}
                         isPocketDisabled={isPocketDisabledForAge(currentTrinkets.length, Boolean(trinketsPocketedThisTurn[pName]))}
+                        isGuest={isGuest && pName !== guestIdentity}
                       />
                     ))}
                     {currentTrinkets.length === 0 && (
