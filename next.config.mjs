@@ -4,13 +4,14 @@ import { PHASE_DEVELOPMENT_SERVER } from 'next/constants.js';
 const createConfig = (phase) => {
   const isDev = phase === PHASE_DEVELOPMENT_SERVER;
   const isVercel = process.env.VERCEL === '1';
+  const isRender = process.env.RENDER === 'true';
 
   return {
-    output: (isVercel || isDev) ? undefined : 'export',
+    output: (isVercel || isRender || isDev) ? undefined : 'export',
     trailingSlash: false,
 
     // When doing a static Capacitor export, ignore API route files (.ts)
-    pageExtensions: (isVercel || isDev) ? ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'] : ['tsx', 'jsx', 'js'],
+    pageExtensions: (isVercel || isRender || isDev) ? ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'] : ['tsx', 'jsx', 'js'],
 
     images: {
       unoptimized: true,
