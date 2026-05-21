@@ -70,6 +70,7 @@ app.prepare().then(() => {
       socket.join(roomId);
       
       console.log(`[Socket.io] Room ${roomId} created by ${player.name}`);
+      io.emit('room-list-updated');
       if (callback) callback({ success: true, roomId, room: roomState });
     });
 
@@ -104,6 +105,7 @@ app.prepare().then(() => {
 
       socket.join(data.roomId);
       io.to(data.roomId).emit('room-updated', roomState);
+      io.emit('room-list-updated');
       
       console.log(`[Socket.io] ${player.name} joined ${data.roomId}`);
       if (callback) callback({ success: true, room: roomState });
@@ -125,6 +127,7 @@ app.prepare().then(() => {
         if (roomState.players.every(p => p.ready)) {
             roomState.status = 'playing';
             io.to(data.roomId).emit('game-started', roomState);
+            io.emit('room-list-updated');
         } else {
             io.to(data.roomId).emit('room-updated', roomState);
         }
@@ -184,6 +187,7 @@ app.prepare().then(() => {
               if (room.hostId === player.id) room.hostId = room.players[0].id;
               io.to(data.roomId).emit('room-updated', room);
             }
+            io.emit('room-list-updated');
           }
         }
       }
@@ -208,6 +212,7 @@ app.prepare().then(() => {
                if (room.hostId === player.id) room.hostId = room.players[0].id; // Reassign host
                io.to(roomId).emit('room-updated', room);
             }
+            io.emit('room-list-updated');
           }
         }
       }
