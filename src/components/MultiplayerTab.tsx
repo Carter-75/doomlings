@@ -28,8 +28,13 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
     const hostName = playerNames[0] || 'Player 1';
 
     useEffect(() => {
-        // Since GameSocketManager connects globally in page.tsx, we just load rooms
-        loadLocalRooms();
+        // Ensure connection before loading rooms, as user might have skipped initial setup
+        socketManager.connect().then(() => {
+            loadLocalRooms();
+        }).catch(err => {
+            console.error('Socket connection error in MultiplayerTab:', err);
+            setError('Failed to connect to multiplayer server.');
+        });
 
         const handleRoomJoined = (room: any) => {
             setCurrentRoom(room);
@@ -84,6 +89,8 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
         setIsConnecting(true);
         setError('');
         try {
+            await socketManager.connect();
+            
             const roomSettings = {
                 roomName: roomName.trim() || `${hostName}'s Sync Room`,
                 password: roomPassword.trim() || undefined,
@@ -97,7 +104,8 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
             if (res && res.room) setCurrentRoom(res.room);
             setIsConnecting(false);
         } catch (err: any) {
-            setError(err.message || 'Failed to create local room');
+            console.error('Create room error:', err);
+            setError(err.message || (typeof err === 'string' ? err : 'Failed to create local room'));
             setIsConnecting(false);
         }
     };
@@ -117,11 +125,14 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
         setIsConnecting(true);
         setError('');
         try {
+            await socketManager.connect();
+            
             await socketManager.registerPlayer(hostName);
             await socketManager.joinRoom(roomId, password);
             setShowPasswordModal(false);
         } catch (err: any) {
-            setError(err.message || 'Failed to join local room');
+            console.error('Join room error:', err);
+            setError(err.message || (typeof err === 'string' ? err : 'Failed to join local room'));
             setIsConnecting(false);
         }
     };

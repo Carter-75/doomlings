@@ -6,6 +6,7 @@ class GameSocketManager {
   private playerId: string | null = null;
   private playerName: string | null = null;
   private currentRoom: any = null;
+  private connectionPromise: Promise<any> | null = null;
 
   private constructor() {}
 
@@ -18,8 +19,9 @@ class GameSocketManager {
 
   async connect(): Promise<any> {
     if (this.socket?.connected) return this;
+    if (this.connectionPromise) return this.connectionPromise;
 
-    return new Promise((resolve, reject) => {
+    this.connectionPromise = new Promise((resolve, reject) => {
       // Connect to the backend (allows overriding for native mobile apps where origin is localhost)
       const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
       this.socket = io(socketUrl, {
@@ -48,6 +50,7 @@ class GameSocketManager {
 
       this.socket.on('connect_error', (err) => {
         console.error('Socket connection error:', err);
+        this.connectionPromise = null;
         reject(err);
       });
       
@@ -59,6 +62,8 @@ class GameSocketManager {
           this.currentRoom = room;
       });
     });
+
+    return this.connectionPromise;
   }
 
   async registerPlayer(playerName: string): Promise<string> {
@@ -209,6 +214,7 @@ class GameSocketManager {
   async disconnect() {
     this.socket?.disconnect();
     this.socket = null;
+    this.connectionPromise = null;
   }
 }
 
