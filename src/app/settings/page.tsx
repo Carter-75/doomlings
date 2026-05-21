@@ -12,7 +12,7 @@ import DeveloperSettings from '@/components/DeveloperSettings';
 import Modal from '@/components/Modal';
 import AnimatedButton from '@/components/AnimatedButton';
 import { MONETIZATION_DISABLED } from '@/lib/monetization-config';
-import { GameSocketManager } from '@/lib/gameSocketManager';
+import GameSocketManager from '@/lib/gameSocketManager';
 
 const SettingsPage = () => {
     const router = useRouter();

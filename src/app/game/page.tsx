@@ -72,7 +72,7 @@ export default function GamePage() {
   const isHost = room ? room.hostId === socketManager.getPlayerId() : true;
   const isGuest = !isHost;
 
-  const { state, updateState, resetGame, restoreLocalState } = useGameState(isGuest);
+  const { state, updateState, resetGame, restoreLocalState, isLoading: stateLoading } = useGameState(isGuest);
   
   const [activeSection, setActiveSection] = useState<'setup'|'rules'|'mol'|'trinkets'|'play'>('setup');
   const [viewingPlayer, setViewingPlayer] = useState<string | null>(null);
