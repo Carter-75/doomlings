@@ -24,7 +24,12 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
     const [pendingJoinRoomId, setPendingJoinRoomId] = useState<string | null>(null);
     const [joinPassword, setJoinPassword] = useState('');
 
-    // Use the primary player's name as the host name
+    // State for player selection
+    const [showPlayerSelectModal, setShowPlayerSelectModal] = useState(false);
+    const [pendingAction, setPendingAction] = useState<{type: 'create' | 'join', roomId?: string, placeholders?: any[]} | null>(null);
+    const [selectedPlayerName, setSelectedPlayerName] = useState(playerNames[0] || 'Player 1');
+
+    // Default fallback name
     const hostName = playerNames[0] || 'Player 1';
 
     useEffect(() => {
@@ -86,20 +91,32 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
     };
 
     const handleCreateRoom = async () => {
+        if (playerNames.length > 1) {
+            setPendingAction({ type: 'create' });
+            setSelectedPlayerName(playerNames[0] || hostName);
+            setShowPlayerSelectModal(true);
+            return;
+        }
+        executeCreateRoom(hostName);
+    };
+
+    const executeCreateRoom = async (playerName: string) => {
         setIsConnecting(true);
         setError('');
         try {
             await socketManager.connect();
             
             const roomSettings = {
-                roomName: roomName.trim() || `${hostName}'s Sync Room`,
+                roomName: roomName.trim() || `${playerName}'s Sync Room`,
                 password: roomPassword.trim() || undefined,
                 maxPlayers: 6,
                 isPrivate: true, // It's private from the global public list
-                isLocal: true
+                isLocal: true,
+                hostName: playerName,
+                placeholderNames: playerNames.filter(n => n !== playerName)
             };
 
-            await socketManager.registerPlayer(hostName);
+            await socketManager.registerPlayer(playerName);
             const res = await socketManager.createRoom(roomSettings);
             if (res && res.room) setCurrentRoom(res.room);
             setIsConnecting(false);
@@ -110,7 +127,21 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
         }
     };
 
-    const handleJoinRoom = async (roomId: string, requiresPassword?: boolean) => {
+    const handleJoinRoom = async (room: any) => {
+        const roomId = room.id;
+        const requiresPassword = !!room.password;
+        const placeholders = room.players?.filter((p: any) => p.isPlaceholder) || [];
+
+        if (placeholders.length > 0) {
+            setPendingAction({ type: 'join', roomId, placeholders });
+            setSelectedPlayerName(placeholders[0].name);
+            if (requiresPassword) {
+                setPendingJoinRoomId(roomId);
+            }
+            setShowPlayerSelectModal(true);
+            return;
+        }
+        
         if (requiresPassword) {
             setPendingJoinRoomId(roomId);
             setShowPasswordModal(true);
@@ -118,17 +149,17 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
             return;
         }
 
-        executeJoinRoom(roomId);
+        executeJoinRoom(roomId, hostName);
     };
 
-    const executeJoinRoom = async (roomId: string, password?: string) => {
+    const executeJoinRoom = async (roomId: string, playerName: string, password?: string) => {
         setIsConnecting(true);
         setError('');
         try {
             await socketManager.connect();
             
-            await socketManager.registerPlayer(hostName);
-            await socketManager.joinRoom(roomId, password);
+            await socketManager.registerPlayer(playerName);
+            await socketManager.joinRoom(roomId, password, playerName);
             setShowPasswordModal(false);
         } catch (err: any) {
             console.error('Join room error:', err);
@@ -184,9 +215,19 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
                                                 <div className={`status-dot mr-3 ${p.id === currentRoom.hostId ? 'bg-primary' : 'bg-success'}`} style={{ width: 8, height: 8, borderRadius: '50%' }}></div>
                                                 <span className="font-bold">{p.name} {p.id === socketManager.getPlayerId() && <span className="text-muted font-normal ml-1">(You)</span>}</span>
                                             </div>
-                                            {p.id === currentRoom.hostId && (
+                                            {p.id === currentRoom.hostId ? (
                                                 <span className="tag is-primary is-small font-black">HOST</span>
-                                            )}
+                                            ) : isHost ? (
+                                                <AnimatedButton 
+                                                    className="is-danger is-small is-light px-2 py-0" 
+                                                    onClick={() => {
+                                                        if (confirm(`Are you sure you want to kick ${p.name}? Their game progress will be fully reset.`)) {
+                                                            socketManager.kickPlayer(currentRoom.id, p.id);
+                                                        }
+                                                    }}>
+                                                    Kick
+                                                </AnimatedButton>
+                                            ) : null}
                                         </div>
                                     ))}
                                 </div>
@@ -284,7 +325,7 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
                                             </p>
                                         </div>
                                         <AnimatedButton
-                                            onClick={() => handleJoinRoom(room.id, !!room.password)}
+                                            onClick={() => handleJoinRoom(room)}
                                             disabled={isConnecting}
                                             className="is-info is-small px-4 font-bold"
                                         >
@@ -307,7 +348,7 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
                     <>
                         <AnimatedButton onClick={() => setShowPasswordModal(false)} className="is-light">Cancel</AnimatedButton>
                         <AnimatedButton 
-                            onClick={() => pendingJoinRoomId && executeJoinRoom(pendingJoinRoomId, joinPassword)} 
+                            onClick={() => pendingJoinRoomId && executeJoinRoom(pendingJoinRoomId, selectedPlayerName || hostName, joinPassword)} 
                             className="is-primary"
                             disabled={!joinPassword}
                         >
@@ -327,6 +368,64 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
                             placeholder="Password"
                             autoFocus
                         />
+                    </div>
+                </div>
+            </Modal>
+
+            {/* Player Selection Modal */}
+            <Modal
+                isOpen={showPlayerSelectModal}
+                onClose={() => {
+                    setShowPlayerSelectModal(false);
+                    setPendingAction(null);
+                }}
+                title="👤 Select Your Player"
+                actions={
+                    <>
+                        <AnimatedButton onClick={() => {
+                            setShowPlayerSelectModal(false);
+                            setPendingAction(null);
+                        }} className="is-light">Cancel</AnimatedButton>
+                        <AnimatedButton 
+                            onClick={() => {
+                                setShowPlayerSelectModal(false);
+                                if (pendingAction?.type === 'create') {
+                                    executeCreateRoom(selectedPlayerName);
+                                } else if (pendingAction?.type === 'join' && pendingAction.roomId) {
+                                    if (pendingJoinRoomId) {
+                                        setShowPasswordModal(true);
+                                    } else {
+                                        executeJoinRoom(pendingAction.roomId, selectedPlayerName);
+                                    }
+                                }
+                            }} 
+                            className="is-primary"
+                        >
+                            Continue
+                        </AnimatedButton>
+                    </>
+                }
+            >
+                <div className="field">
+                    <label className="label">Who are you playing as?</label>
+                    <div className="control">
+                        <div className="select is-fullwidth">
+                            <select 
+                                value={selectedPlayerName} 
+                                onChange={(e) => setSelectedPlayerName(e.target.value)}
+                                className="premium-input"
+                                style={{ height: 'auto', padding: '12px' }}
+                            >
+                                {pendingAction?.type === 'join' 
+                                    ? pendingAction.placeholders?.map((p: any, idx: number) => (
+                                        <option key={idx} value={p.name}>{p.name}</option>
+                                    ))
+                                    : playerNames.map((name, idx) => (
+                                        <option key={idx} value={name}>{name}</option>
+                                    ))
+                                }
+                            </select>
+                        </div>
                     </div>
                 </div>
             </Modal>

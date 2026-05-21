@@ -48,10 +48,13 @@ const INITIAL_STATE: GameState = {
   isGameStarted: false,
 };
 
-export function useGameState() {
+export function useGameState(isGuest: boolean = false) {
   const [state, setState] = useState<GameState>(INITIAL_STATE);
   const [isLoading, setIsLoading] = useState(true);
   const isLoadedRef = useRef(false);
+
+  const isGuestRef = useRef(isGuest);
+  isGuestRef.current = isGuest;
 
   // Load state from localStorage on mount
   useEffect(() => {
@@ -68,16 +71,32 @@ export function useGameState() {
     isLoadedRef.current = true;
   }, []);
 
-  // Save state to localStorage whenever it changes
-  useEffect(() => {
-    if (!isLoadedRef.current || isLoading) return;
-    localStorage.setItem('gameState', JSON.stringify(state));
-  }, [state, isLoading]);
+  // Save state to localStorage whenever it changes is now handled in updateState!
+  
+  const restoreLocalState = () => {
+    const savedState = localStorage.getItem('gameState');
+    if (savedState) {
+      try {
+        const parsed = JSON.parse(savedState);
+        setState({ ...INITIAL_STATE, ...parsed });
+      } catch (e) {
+        console.error('Failed to parse saved game state', e);
+      }
+    } else {
+      setState(INITIAL_STATE);
+    }
+  };
 
   const updateState = (updates: Partial<GameState> | ((prev: GameState) => Partial<GameState>)) => {
     setState(prev => {
       const next = typeof updates === 'function' ? updates(prev) : updates;
-      return { ...prev, ...next };
+      const newState = { ...prev, ...next };
+      
+      if (!isGuestRef.current && isLoadedRef.current) {
+        localStorage.setItem('gameState', JSON.stringify(newState));
+      }
+      
+      return newState;
     });
   };
 
@@ -90,6 +109,7 @@ export function useGameState() {
     state,
     updateState,
     resetGame,
+    restoreLocalState,
     isLoading
   };
 }

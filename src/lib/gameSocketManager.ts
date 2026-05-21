@@ -41,6 +41,17 @@ class GameSocketManager {
                if (res.success) {
                   this.playerId = res.playerId;
                   this.playerName = res.playerName;
+                  
+                  // Auto-rejoin room if we have a saved roomId
+                  const savedRoomId = localStorage.getItem('doomlings_roomId');
+                  const savedClaimName = localStorage.getItem('doomlings_claimName');
+                  if (savedRoomId) {
+                      this.joinRoom(savedRoomId, undefined, savedClaimName || undefined).catch(e => {
+                          console.log("Could not auto-rejoin persistent room:", e);
+                          localStorage.removeItem('doomlings_roomId');
+                          localStorage.removeItem('doomlings_claimName');
+                      });
+                  }
                }
              });
           }
@@ -60,6 +71,18 @@ class GameSocketManager {
       
       this.socket.on('game-started', (room) => {
           this.currentRoom = room;
+      });
+
+      this.socket.on('kicked', () => {
+          if (typeof window !== 'undefined') {
+              localStorage.removeItem('doomlings_roomId');
+              localStorage.removeItem('doomlings_claimName');
+          }
+          this.leaveRoom();
+          // Notify listeners
+          if (this.socket) {
+              this.socket.emit('internal-local-kicked');
+          }
       });
     });
 
@@ -90,9 +113,13 @@ class GameSocketManager {
   async createRoom(data: any): Promise<{success: boolean, room?: any, error?: string}> {
     return new Promise((resolve, reject) => {
       if (!this.socket) return reject('No socket');
+      if (this.currentRoom) return reject('Already in a room');
       this.socket.emit('create-room', data, (res: any) => {
         if (res.success) {
           this.currentRoom = res.room;
+          if (typeof window !== 'undefined') {
+              localStorage.setItem('doomlings_roomId', res.room.id);
+          }
           resolve(res);
         } else {
           reject(res.error);
@@ -101,12 +128,31 @@ class GameSocketManager {
     });
   }
 
-  async joinRoom(roomId: string, password?: string): Promise<{success: boolean, room?: any, error?: string}> {
+  async renamePlayerInRoom(roomId: string, oldName: string, newName: string): Promise<void> {
+    return new Promise((resolve) => {
+      if (!this.socket) return resolve();
+      // Update our local tracking if we are renaming ourselves
+      if (this.playerName === oldName) {
+        this.playerName = newName;
+      }
+      this.socket.emit('rename-player-in-room', { roomId, oldName, newName }, () => {
+        resolve();
+      });
+    });
+  }
+
+  async joinRoom(roomId: string, password?: string, claimName?: string): Promise<{success: boolean, room?: any, error?: string}> {
     return new Promise((resolve, reject) => {
       if (!this.socket) return reject('No socket');
-      this.socket.emit('join-room', { roomId, password }, (res: any) => {
+      if (this.currentRoom && this.currentRoom.id !== roomId) return reject('Already in a room');
+      
+      this.socket.emit('join-room', { roomId, password, claimName }, (res: any) => {
         if (res.success) {
           this.currentRoom = res.room;
+          if (typeof window !== 'undefined') {
+              localStorage.setItem('doomlings_roomId', res.room.id);
+              if (claimName) localStorage.setItem('doomlings_claimName', claimName);
+          }
           resolve(res);
         } else {
           reject(res.error);
@@ -176,7 +222,11 @@ class GameSocketManager {
   }
 
   getPlayerId(): string | null {
-    return this.playerId;
+    return this.socket ? this.socket.id : null;
+  }
+
+  getPlayerName(): string | null {
+    return this.playerName;
   }
 
   getCurrentRoom(): any {
@@ -202,19 +252,33 @@ class GameSocketManager {
   }
 
   async leaveRoom() {
-    return new Promise((resolve, reject) => {
-      if (!this.socket) return resolve(null);
-      this.socket.emit('leave-room', { roomId: this.currentRoom?.id }, (res: any) => {
-        this.currentRoom = null;
-        resolve(res);
-      });
-    });
+    if (!this.socket || !this.currentRoom) return;
+    this.socket.emit('leave-room', { roomId: this.currentRoom.id });
+    this.currentRoom = null;
+    if (typeof window !== 'undefined') {
+        localStorage.removeItem('doomlings_roomId');
+        localStorage.removeItem('doomlings_claimName');
+    }
   }
 
   async disconnect() {
     this.socket?.disconnect();
     this.socket = null;
     this.connectionPromise = null;
+  }
+  onKicked(callback: () => void) {
+      if (!this.socket) return;
+      this.socket.on('internal-local-kicked', callback);
+  }
+
+  offKicked(callback: () => void) {
+      if (!this.socket) return;
+      this.socket.off('internal-local-kicked', callback);
+  }
+
+  kickPlayer(roomId: string, playerId: string) {
+      if (!this.socket) return;
+      this.socket.emit('kick-player', { roomId, playerId });
   }
 }
 

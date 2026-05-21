@@ -49,15 +49,27 @@ app.prepare().then(() => {
         name: data.roomName || `${player.name}'s Room`,
         password: data.password || null,
         hostId: player.id,
-        players: [{
-          id: player.id,
-          name: player.name,
-          ready: false,
-          hand: [],
-          traitPile: [],
-          genePool: 8,
-          score: 0
-        }],
+        players: [
+          {
+            id: player.id,
+            name: data.hostName || player.name,
+            ready: false,
+            hand: [],
+            traitPile: [],
+            genePool: 8,
+            score: 0
+          },
+          ...(data.placeholderNames || []).map(name => ({
+            id: `placeholder-${name}-${Math.random().toString(36).substr(2, 9)}`,
+            name: name,
+            isPlaceholder: true,
+            ready: false,
+            hand: [],
+            traitPile: [],
+            genePool: 8,
+            score: 0
+          }))
+        ],
         maxPlayers: data.maxPlayers || 6,
         isPrivate: !!data.isPrivate,
         status: 'waiting',
@@ -90,11 +102,16 @@ app.prepare().then(() => {
         return callback({ success: false, error: 'Room is full' });
       }
 
-      // Add player if not exists
-      if (!roomState.players.find(p => p.id === player.id)) {
+      // Find if they are claiming a placeholder
+      const placeholder = data.claimName ? roomState.players.find(p => p.isPlaceholder && p.name === data.claimName) : null;
+      
+      if (placeholder) {
+        placeholder.id = player.id;
+        placeholder.isPlaceholder = false;
+      } else if (!roomState.players.find(p => p.id === player.id)) {
         roomState.players.push({
           id: player.id,
-          name: player.name,
+          name: data.claimName || player.name,
           ready: false,
           hand: [],
           traitPile: [],
@@ -150,6 +167,22 @@ app.prepare().then(() => {
     });
 
     // Handle guest RPC actions relayed to the host
+    socket.on('rename-player-in-room', (data, callback) => {
+      const { roomId, oldName, newName } = data;
+      const roomState = rooms.get(roomId);
+      
+      if (!roomState) return callback({ success: false, error: 'Room not found' });
+      // Only host can rename players for the whole room list? Or anyone? Let's allow host or the player themselves
+      
+      const playerInRoom = roomState.players.find(p => p.name === oldName);
+      if (playerInRoom) {
+        playerInRoom.name = newName;
+        io.to(roomId).emit('room-updated', { room: roomState });
+        io.emit('room-list-updated');
+      }
+      if (callback) callback({ success: true });
+    });
+
     socket.on('guest-action', (data) => {
       const player = playerSockets.get(socket.id);
       if (!player || !data.roomId) return;
@@ -160,7 +193,13 @@ app.prepare().then(() => {
     socket.on('get-public-rooms', (_, callback) => {
       const publicRooms = Array.from(rooms.values())
         .filter(r => !r.isPrivate && r.status === 'waiting')
-        .map(r => ({ id: r.id, name: r.name, currentPlayers: r.players.length, maxPlayers: r.maxPlayers }));
+        .map(r => ({ 
+          id: r.id, 
+          name: r.name, 
+          currentPlayers: r.players.filter(p => !p.isPlaceholder).length, 
+          maxPlayers: r.maxPlayers,
+          players: r.players.map(p => ({ name: p.name, isPlaceholder: p.isPlaceholder }))
+        }));
       if (callback) callback({ success: true, rooms: publicRooms });
     });
 
@@ -168,8 +207,54 @@ app.prepare().then(() => {
       // Stub local rooms to just public rooms since IP matching is harder over basic sockets
       const localRooms = Array.from(rooms.values())
         .filter(r => r.status === 'waiting')
-        .map(r => ({ id: r.id, name: r.name, currentPlayers: r.players.length, maxPlayers: r.maxPlayers, password: r.password }));
+        .map(r => ({ 
+          id: r.id, 
+          name: r.name, 
+          currentPlayers: r.players.filter(p => !p.isPlaceholder).length, 
+          maxPlayers: r.maxPlayers, 
+          password: r.password,
+          players: r.players.map(p => ({ name: p.name, isPlaceholder: p.isPlaceholder }))
+        }));
       if (callback) callback({ success: true, rooms: localRooms });
+    });
+
+    socket.on('kick-player', (data) => {
+      const host = playerSockets.get(socket.id);
+      if (!host || !data.roomId || !data.playerId) return;
+
+      const room = rooms.get(data.roomId);
+      if (!room || room.hostId !== host.id) return; // Only host can kick
+
+      const targetPlayerIndex = room.players.findIndex(p => p.id === data.playerId);
+      if (targetPlayerIndex !== -1) {
+        const targetPlayer = room.players[targetPlayerIndex];
+        const oldName = targetPlayer.name;
+        
+        // Find target socket
+        let targetSocketId = null;
+        for (const [sid, p] of playerSockets.entries()) {
+          if (p.id === data.playerId) {
+            targetSocketId = sid;
+            break;
+          }
+        }
+
+        if (targetSocketId) {
+          io.to(targetSocketId).emit('kicked');
+          const targetSocket = io.sockets.sockets.get(targetSocketId);
+          if (targetSocket) targetSocket.leave(data.roomId);
+        }
+
+        // Remove slot entirely
+        room.players.splice(targetPlayerIndex, 1);
+
+        io.to(data.roomId).emit('room-updated', room);
+        io.emit('room-list-updated');
+        
+        io.to(data.roomId).emit('player-kicked-from-room', {
+          playerName: oldName
+        });
+      }
     });
 
     socket.on('leave-room', (data, callback) => {

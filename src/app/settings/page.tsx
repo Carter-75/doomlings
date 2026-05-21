@@ -12,6 +12,7 @@ import DeveloperSettings from '@/components/DeveloperSettings';
 import Modal from '@/components/Modal';
 import AnimatedButton from '@/components/AnimatedButton';
 import { MONETIZATION_DISABLED } from '@/lib/monetization-config';
+import { GameSocketManager } from '@/lib/gameSocketManager';
 
 const SettingsPage = () => {
     const router = useRouter();
@@ -19,6 +20,10 @@ const SettingsPage = () => {
     const { mode: feedbackMode, setMode: setFeedbackMode } = useFeedback();
     const { theme, setTheme, cardArtPreference, setCardArtPreference } = useTheme();
     const isNativeApp = typeof window !== 'undefined' && Capacitor.isNativePlatform();
+
+    const socketManager = GameSocketManager.getInstance();
+    const room = socketManager.getCurrentRoom();
+    const isGuest = room ? room.hostId !== socketManager.getPlayerId() : false;
 
     // UI States
     const [scale, setScale] = useState(100);
@@ -253,40 +258,48 @@ const SettingsPage = () => {
             {/* Game Saves */}
             <section className="settings-section box bg-glass p-6 mb-6">
                 <h2 className="title is-4 text-primary">💾 Saved Games</h2>
-                <div className="field has-addons mb-6">
-                    <div className="control is-expanded">
-                        <input className="input" type="text" placeholder="New save name..." value={fileName} onChange={e => setFileName(e.target.value)} />
+                {isGuest ? (
+                    <div className="notification is-warning is-light">
+                        Saving and loading games is disabled while playing as a Guest in a synced room. Your personal local save data is safe!
                     </div>
-                    <div className="control">
-                        <AnimatedButton className="is-primary" onClick={async () => {
-                            const state = localStorage.getItem('gameState');
-                            if (state && fileName) {
-                                await Preferences.set({ key: `gameState_${fileName}`, value: state });
-                                fetchSavedFiles();
-                                setFileName('');
-                            }
-                        }}>Save Current</AnimatedButton>
-                    </div>
-                </div>
-
-                <div className="saves-list space-y-2">
-                    {savedFiles.map(file => (
-                        <div key={file} className="is-flex is-justify-content-between is-align-items-center p-3 bg-black/20 rounded border border-white/5">
-                            <span className="has-text-weight-medium">{file}</span>
-                            <div className="buttons are-small mb-0">
-                                <AnimatedButton className="is-success" onClick={async () => {
-                                    const { value } = await Preferences.get({ key: `gameState_${file}` });
-                                    if (value) {
-                                        localStorage.setItem('gameState', value);
-                                        setModal({ isOpen: true, title: 'Loaded', message: `Game "${file}" loaded.`, type: 'success' });
+                ) : (
+                    <>
+                        <div className="field has-addons mb-6">
+                            <div className="control is-expanded">
+                                <input className="input" type="text" placeholder="New save name..." value={fileName} onChange={e => setFileName(e.target.value)} />
+                            </div>
+                            <div className="control">
+                                <AnimatedButton className="is-primary" onClick={async () => {
+                                    const state = localStorage.getItem('gameState');
+                                    if (state && fileName) {
+                                        await Preferences.set({ key: `gameState_${fileName}`, value: state });
+                                        fetchSavedFiles();
+                                        setFileName('');
                                     }
-                                }}>Load</AnimatedButton>
-                                <AnimatedButton className="is-danger is-light" onClick={() => handleDeleteGame(file)}>Delete</AnimatedButton>
+                                }}>Save Current</AnimatedButton>
                             </div>
                         </div>
-                    ))}
-                    {savedFiles.length === 0 && <p className="text-muted text-center py-4">No saved games found.</p>}
-                </div>
+
+                        <div className="saves-list space-y-2">
+                            {savedFiles.map(file => (
+                                <div key={file} className="is-flex is-justify-content-between is-align-items-center p-3 bg-black/20 rounded border border-white/5">
+                                    <span className="has-text-weight-medium">{file}</span>
+                                    <div className="buttons are-small mb-0">
+                                        <AnimatedButton className="is-success" onClick={async () => {
+                                            const { value } = await Preferences.get({ key: `gameState_${file}` });
+                                            if (value) {
+                                                localStorage.setItem('gameState', value);
+                                                setModal({ isOpen: true, title: 'Loaded', message: `Game "${file}" loaded.`, type: 'success' });
+                                            }
+                                        }}>Load</AnimatedButton>
+                                        <AnimatedButton className="is-danger is-light" onClick={() => handleDeleteGame(file)}>Delete</AnimatedButton>
+                                    </div>
+                                </div>
+                            ))}
+                            {savedFiles.length === 0 && <p className="text-muted text-center py-4">No saved games found.</p>}
+                        </div>
+                    </>
+                )}
             </section>
 
             {/* General Preferences */}

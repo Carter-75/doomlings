@@ -56,6 +56,8 @@ export function useSync(
       pocketedTrinkets: state.pocketedTrinkets,
       trinketsPocketedThisTurn: state.trinketsPocketedThisTurn,
       dominantState: state.dominantState,
+      playerNames: state.playerNames,
+      playerCount: state.playerCount,
     };
 
     socketManager.syncGameState(room.id, syncPayload);

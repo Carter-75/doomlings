@@ -67,9 +67,14 @@ export default function GamePage() {
   const router = useRouter();
   const { setAdsSuppressed } = useAds();
   const { playFeedback } = useFeedback();
-  const { state, updateState, resetGame, isLoading: stateLoading } = useGameState();
+  const socketManager = GameSocketManager.getInstance();
+  const room = socketManager.getCurrentRoom();
+  const isHost = room ? room.hostId === socketManager.getPlayerId() : true;
+  const isGuest = !isHost;
+
+  const { state, updateState, resetGame, restoreLocalState } = useGameState(isGuest);
   
-  const [activeSection, setActiveSection] = useState('setup');
+  const [activeSection, setActiveSection] = useState<'setup'|'rules'|'mol'|'trinkets'|'play'>('setup');
   const [viewingPlayer, setViewingPlayer] = useState<string | null>(null);
   const [tutorialStep, setTutorialStep] = useState<number | null>(null);
   const [modal, setModal] = useState<GameModalState | null>(null);
@@ -120,14 +125,122 @@ export default function GamePage() {
     }, MOL_AUTO_CLOSE_DELAY_MS);
   }, []);
 
-  const socketManager = GameSocketManager.getInstance();
-  const room = socketManager.getCurrentRoom();
-  const isHost = room ? room.hostId === socketManager.getPlayerId() : true;
-  const isGuest = !isHost;
+  const [guestIndex, setGuestIndex] = useState<number | null>(null);
 
-  const [guestIdentity, setGuestIdentity] = useState<string | null>(null);
+  useEffect(() => {
+    if (isGuest && guestIndex === null) {
+      const name = socketManager.getPlayerName();
+      const idx = state.playerNames.findIndex(n => n === name);
+      if (idx !== -1) {
+        setGuestIndex(idx);
+      }
+    }
+  }, [isGuest, state.playerNames, socketManager.getPlayerName()]);
+
+  const guestIdentity = guestIndex !== null ? state.playerNames[guestIndex] : null;
+
+  const kickAndResetPlayer = useCallback((playerName: string) => {
+    updateState(prev => {
+      const newPlayerNames = [...prev.playerNames];
+      const idx = newPlayerNames.indexOf(playerName);
+      let newPlayerCount = prev.playerCount;
+      if (idx !== -1) {
+        newPlayerNames.splice(idx, 1);
+        newPlayerCount = Math.max(1, newPlayerCount - 1);
+      }
+
+      // 1. Return Trinkets to deck
+      const playerTrinkets = prev.trinketState.playerTrinkets[playerName] || [];
+      const newDeck = [...prev.trinketState.deck, ...playerTrinkets];
+      const newPlayerTrinketsMap = { ...prev.trinketState.playerTrinkets };
+      delete newPlayerTrinketsMap[playerName];
+
+      // 2. Remove Meaning of Life
+      const newPlayerMeanings = { ...prev.playerMeanings };
+      delete newPlayerMeanings[playerName];
+      const newSelectedMeanings = { ...prev.selectedMeanings };
+      delete newSelectedMeanings[playerName];
+      const newRevealedMeanings = { ...prev.revealedMeanings };
+      delete newRevealedMeanings[playerName];
+
+      // 3. Remove Pocketed Trinkets
+      const newPocketedTrinkets = { ...prev.pocketedTrinkets };
+      delete newPocketedTrinkets[playerName];
+
+      // 4. Remove assigned Challenges
+      const newAssignedChallenges = { ...prev.assignedChallenges };
+      for (const key in newAssignedChallenges) {
+        if (newAssignedChallenges[key] === playerName) {
+          delete newAssignedChallenges[key];
+        }
+      }
+
+      // 5. Remove Dominant assignment
+      const newDominantState = { ...prev.dominantState };
+      for (const key in newDominantState) {
+        if (newDominantState[key].assignedTo === playerName) {
+          newDominantState[key] = { ...newDominantState[key], assignedTo: '' };
+        }
+      }
+
+      return {
+        playerCount: newPlayerCount,
+        playerNames: newPlayerNames,
+        playerMeanings: newPlayerMeanings,
+        selectedMeanings: newSelectedMeanings,
+        revealedMeanings: newRevealedMeanings,
+        trinketState: {
+          ...prev.trinketState,
+          deck: newDeck,
+          playerTrinkets: newPlayerTrinketsMap
+        },
+        pocketedTrinkets: newPocketedTrinkets,
+        assignedChallenges: newAssignedChallenges,
+        dominantState: newDominantState
+      };
+    });
+  }, [updateState]);
+
+  useEffect(() => {
+    const handleKicked = () => {
+      setModal({
+        isOpen: true,
+        title: 'Disconnected',
+        message: 'You have been kicked from the room.',
+        type: 'error',
+        confirmText: 'Okay'
+      });
+    };
+    socketManager.onKicked(handleKicked);
+
+    const socket = socketManager['socket'];
+    const handlePlayerKickedFromRoom = (data: any) => {
+        if (isHost && data.playerName) {
+            kickAndResetPlayer(data.playerName);
+        }
+    };
+    if (socket) {
+        socket.on('player-kicked-from-room', handlePlayerKickedFromRoom);
+    }
+
+    return () => {
+      socketManager.offKicked(handleKicked);
+      if (socket) {
+          socket.off('player-kicked-from-room', handlePlayerKickedFromRoom);
+      }
+    };
+  }, [socketManager, isHost, kickAndResetPlayer]);
 
   const { playerId } = useSync(state, updateState, isHost);
+
+  const wasGuestRef = useRef(isGuest);
+
+  useEffect(() => {
+    if (wasGuestRef.current && !isGuest) {
+      restoreLocalState();
+    }
+    wasGuestRef.current = isGuest;
+  }, [isGuest, restoreLocalState]);
 
   const handlersRef = useRef({
     handleTrinketPocket: (p: string, t: any) => {},
@@ -135,18 +248,23 @@ export default function GamePage() {
     handleTrinketAdd: (p: string) => {},
     handleTrinketRemove: (p: string, t: any) => {},
     handleChooseMeaning: (p: string, m: string) => {},
+    renamePlayer: (oldName: string, newName: string) => {},
   });
 
   useEffect(() => {
     if (!isHost) return;
     const handleGuestAction = (data: any) => {
       const { actionType, payload } = data;
-      const { handleTrinketPocket, handleTrinketKeep, handleTrinketAdd, handleTrinketRemove, handleChooseMeaning } = handlersRef.current;
+      const { handleTrinketPocket, handleTrinketKeep, handleTrinketAdd, handleTrinketRemove, handleChooseMeaning, renamePlayer } = handlersRef.current;
       if (actionType === 'TRINKET_POCKET') handleTrinketPocket(payload.playerName, payload.trinket);
       if (actionType === 'TRINKET_KEEP') handleTrinketKeep(payload.playerName, payload.trinket);
       if (actionType === 'TRINKET_ADD') handleTrinketAdd(payload.playerName);
       if (actionType === 'TRINKET_REMOVE') handleTrinketRemove(payload.playerName, payload.trinket);
       if (actionType === 'MEANING_CHOOSE') handleChooseMeaning(payload.playerName, payload.meaning);
+      if (actionType === 'RENAME_PLAYER') {
+        renamePlayer(payload.oldName, payload.newName);
+        if (room) socketManager.renamePlayerInRoom(room.id, payload.oldName, payload.newName);
+      }
     };
     socketManager.onGuestAction(handleGuestAction);
     return () => socketManager.off('guest-action', handleGuestAction);
@@ -570,12 +688,86 @@ export default function GamePage() {
     scheduleMolAutoClose(p);
   };
 
+  const renamePlayer = (oldName: string, newName: string) => {
+    if (oldName === newName || !newName.trim()) return;
+    
+    updateState(prev => {
+      const newPlayerNames = prev.playerNames.map(n => n === oldName ? newName : n);
+  
+      const newPlayerMeanings = { ...prev.playerMeanings };
+      if (newPlayerMeanings[oldName]) {
+        newPlayerMeanings[newName] = newPlayerMeanings[oldName];
+        delete newPlayerMeanings[oldName];
+      }
+  
+      const newSelectedMeanings = { ...prev.selectedMeanings };
+      if (newSelectedMeanings[oldName]) {
+        newSelectedMeanings[newName] = newSelectedMeanings[oldName];
+        delete newSelectedMeanings[oldName];
+      }
+  
+      const newRevealedMeanings = { ...prev.revealedMeanings };
+      if (newRevealedMeanings[oldName] !== undefined) {
+        newRevealedMeanings[newName] = newRevealedMeanings[oldName];
+        delete newRevealedMeanings[oldName];
+      }
+  
+      const newPlayerTrinkets = { ...prev.trinketState.playerTrinkets };
+      if (newPlayerTrinkets[oldName]) {
+        newPlayerTrinkets[newName] = newPlayerTrinkets[oldName];
+        delete newPlayerTrinkets[oldName];
+      }
+  
+      const newPocketedTrinkets = { ...prev.pocketedTrinkets };
+      if (newPocketedTrinkets[oldName]) {
+        newPocketedTrinkets[newName] = newPocketedTrinkets[oldName];
+        delete newPocketedTrinkets[oldName];
+      }
+  
+      const newTrinketsPocketedThisTurn = { ...prev.trinketsPocketedThisTurn };
+      if (newTrinketsPocketedThisTurn[oldName]) {
+        newTrinketsPocketedThisTurn[newName] = newTrinketsPocketedThisTurn[oldName];
+        delete newTrinketsPocketedThisTurn[oldName];
+      }
+  
+      const newAssignedChallenges = { ...prev.assignedChallenges };
+      for (const key in newAssignedChallenges) {
+        if (newAssignedChallenges[key] === oldName) {
+          newAssignedChallenges[key] = newName;
+        }
+      }
+  
+      const newDominantState = { ...prev.dominantState };
+      for (const key in newDominantState) {
+        if (newDominantState[key].assignedTo === oldName) {
+          newDominantState[key] = { ...newDominantState[key], assignedTo: newName };
+        }
+      }
+  
+      return {
+        playerNames: newPlayerNames,
+        playerMeanings: newPlayerMeanings,
+        selectedMeanings: newSelectedMeanings,
+        revealedMeanings: newRevealedMeanings,
+        trinketState: {
+          ...prev.trinketState,
+          playerTrinkets: newPlayerTrinkets
+        },
+        pocketedTrinkets: newPocketedTrinkets,
+        trinketsPocketedThisTurn: newTrinketsPocketedThisTurn,
+        assignedChallenges: newAssignedChallenges,
+        dominantState: newDominantState
+      };
+    });
+  };
+
   handlersRef.current = {
     handleTrinketPocket,
     handleTrinketKeep,
     handleTrinketAdd,
     handleTrinketRemove,
-    handleChooseMeaning
+    handleChooseMeaning,
+    renamePlayer
   };
 
   const handleNextTurn = () => {
@@ -823,9 +1015,16 @@ export default function GamePage() {
             playerNames={state.playerNames}
             onPlayerCountChange={n => updateState({ playerCount: n })}
             onPlayerNameChange={(i, n) => {
-                const names = [...state.playerNames];
-                names[i] = n;
-                updateState({ playerNames: names });
+                const oldName = state.playerNames[i];
+                if (oldName && oldName !== n) {
+                    if (isGuest && room) {
+                        socketManager.sendGuestAction(room.id, 'RENAME_PLAYER', { oldName, newName: n });
+                    }
+                    if (room) {
+                        socketManager.renamePlayerInRoom(room.id, oldName, n);
+                    }
+                    handlersRef.current.renamePlayer(oldName, n);
+                }
             }}
             onStartGame={handleStartGame}
             isGameStarted={state.isGameStarted}
@@ -1054,38 +1253,6 @@ export default function GamePage() {
           onBack={() => setTutorialStep(s => (s !== null && s > 0 ? s - 1 : 0))}
           onSkip={() => setTutorialStep(null)}
         />
-      )}
-
-      {/* Guest Identity Modal */}
-      {isGuest && !guestIdentity && state.playerNames.length > 0 && (
-        <Modal
-          isOpen={true}
-          onClose={() => {}}
-          title="📡 Joined Synced Game"
-          type="info"
-          actions={
-            <AnimatedButton onClick={() => setGuestIdentity('Spectator')} className="is-light">Just Spectate</AnimatedButton>
-          }
-        >
-          <div className="has-text-centered mb-4">
-            <p>You have joined the host's game! Please select which player you are:</p>
-          </div>
-          <div className="columns is-multiline is-mobile">
-            {state.playerNames.slice(0, state.playerCount).map((name, index) => {
-              const pName = name.trim() || `Player ${index + 1}`;
-              return (
-                <div key={index} className="column is-half">
-                  <AnimatedButton 
-                    onClick={() => setGuestIdentity(pName)} 
-                    className="is-primary is-fullwidth"
-                  >
-                    {pName}
-                  </AnimatedButton>
-                </div>
-              );
-            })}
-          </div>
-        </Modal>
       )}
 
       <footer className="game-footer mt-16 pb-12 animate-fade-in">
