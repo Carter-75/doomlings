@@ -207,9 +207,9 @@ export default function MultiplayerTab({ playerNames, playerCount }: Multiplayer
 
                         <div className="column is-12-mobile is-7-tablet">
                             <div className="box glass-light p-5 h-full border-white/5">
-                                <p className="text-muted is-size-7 uppercase letter-spacing-1 mb-4">Connected Devices ({currentRoom.players.length})</p>
+                                <p className="text-muted is-size-7 uppercase letter-spacing-1 mb-4">Connected Devices ({currentRoom.players.filter((p: any) => !p.isPlaceholder).length})</p>
                                 <div className="devices-list">
-                                    {currentRoom.players.map((p: any) => (
+                                    {currentRoom.players.filter((p: any) => !p.isPlaceholder).map((p: any) => (
                                         <div key={p.id} className="device-item is-flex is-justify-content-between is-align-items-center mb-3 p-3 rounded-lg border-1 border-white/5 hover:bg-white/5 transition-all">
                                             <div className="is-flex is-align-items-center">
                                                 <div className={`status-dot mr-3 ${p.id === currentRoom.hostId ? 'bg-primary' : 'bg-success'}`} style={{ width: 8, height: 8, borderRadius: '50%' }}></div>

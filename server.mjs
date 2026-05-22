@@ -98,13 +98,13 @@ app.prepare().then(() => {
         return callback({ success: false, error: 'Incorrect password' });
       }
       
-      if (roomState.players.length >= roomState.maxPlayers) {
-        return callback({ success: false, error: 'Room is full' });
-      }
-
       // Find if they are claiming a placeholder
       const placeholder = data.claimName ? roomState.players.find(p => p.isPlaceholder && p.name === data.claimName) : null;
       
+      if (!placeholder && roomState.players.length >= roomState.maxPlayers) {
+        return callback({ success: false, error: 'Room is full' });
+      }
+
       if (placeholder) {
         placeholder.id = player.id;
         placeholder.isPlaceholder = false;
@@ -266,10 +266,12 @@ app.prepare().then(() => {
           if (index !== -1) {
             room.players.splice(index, 1);
             socket.leave(data.roomId);
-            if (room.players.length === 0) {
+            
+            const realPlayersLeft = room.players.filter(p => !p.isPlaceholder);
+            if (realPlayersLeft.length === 0) {
               rooms.delete(data.roomId);
             } else {
-              if (room.hostId === player.id) room.hostId = room.players[0].id;
+              if (room.hostId === player.id) room.hostId = realPlayersLeft[0].id;
               io.to(data.roomId).emit('room-updated', room);
             }
             io.emit('room-list-updated');
@@ -291,10 +293,12 @@ app.prepare().then(() => {
           const index = room.players.findIndex(p => p.id === player.id);
           if (index !== -1) {
             room.players.splice(index, 1);
-            if (room.players.length === 0) {
+            
+            const realPlayersLeft = room.players.filter(p => !p.isPlaceholder);
+            if (realPlayersLeft.length === 0) {
               rooms.delete(roomId);
             } else {
-               if (room.hostId === player.id) room.hostId = room.players[0].id; // Reassign host
+               if (room.hostId === player.id) room.hostId = realPlayersLeft[0].id; // Reassign host
                io.to(roomId).emit('room-updated', room);
             }
             io.emit('room-list-updated');
