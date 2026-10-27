@@ -62,3 +62,6 @@ doomlings-companion-key.keystore
 
 #ads and payment info
 ads
+
+# TypeScript incremental build info
+*.tsbuildinfo

@@ -49,6 +49,8 @@ const TUTORIAL_STEPS: TutorialStep[] = [
 
 type GuidedSetupStep = 'none' | 'ageDeck' | 'mol' | 'trinkets' | 'complete';
 
+type GameSection = 'setup' | 'rules' | 'gameDashboard' | 'challenges' | 'ageSetup' | 'meaningOfLife' | 'trinkets' | 'dominants' | 'multiplayer';
+
 type GameModalState = {
   isOpen: boolean;
   title: string;
@@ -74,7 +76,7 @@ export default function GamePage() {
 
   const { state, updateState, resetGame, restoreLocalState, isLoading: stateLoading } = useGameState(isGuest);
   
-  const [activeSection, setActiveSection] = useState<'setup'|'rules'|'mol'|'trinkets'|'play'>('setup');
+  const [activeSection, setActiveSection] = useState<GameSection>('setup');
   const [viewingPlayer, setViewingPlayer] = useState<string | null>(null);
   const [tutorialStep, setTutorialStep] = useState<number | null>(null);
   const [modal, setModal] = useState<GameModalState | null>(null);
@@ -100,7 +102,7 @@ export default function GamePage() {
     }
   }, []);
 
-  const navigateToSection = useCallback((section: string) => {
+  const navigateToSection = useCallback((section: GameSection) => {
     clearPendingSectionRoute();
 
     sectionRouteTimeoutRef.current = window.setTimeout(() => {
@@ -109,7 +111,7 @@ export default function GamePage() {
     }, SECTION_ROUTE_DELAY_MS);
   }, [clearPendingSectionRoute]);
 
-  const switchSectionImmediately = useCallback((section: string) => {
+  const switchSectionImmediately = useCallback((section: GameSection) => {
     clearPendingSectionRoute();
     setActiveSection(section);
   }, [clearPendingSectionRoute]);
@@ -284,7 +286,7 @@ export default function GamePage() {
     if (tutorialStep !== null) {
       const step = TUTORIAL_STEPS[tutorialStep];
       if (step?.section) {
-        navigateToSection(step.section);
+        navigateToSection(step.section as GameSection);
       }
     }
   }, [tutorialStep, navigateToSection]);

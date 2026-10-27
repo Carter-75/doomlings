@@ -22,7 +22,8 @@ const createConfig = (phase) => {
     },
 
     typescript: {
-      ignoreBuildErrors: true,
+      // Type errors fail the build. `npm run type-check` currently passes clean.
+      ignoreBuildErrors: false,
     },
 
     poweredByHeader: false,

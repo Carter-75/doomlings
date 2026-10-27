@@ -1,17 +1,44 @@
 # Doomlings Companion
 
-Commercial companion app for the Doomlings board game. The project ships a responsive Next.js experience, Capacitor-based Android build, and groundwork for a dedicated Socket.IO multiplayer gateway.
+A personal project: a digital companion app for the Doomlings card game. It tracks a physical game in progress (players, age deck, challenges, dominants, trinkets, and Meaning of Life scoring) and ships as a responsive Next.js web app plus a Capacitor-based Android build.
 
-## Getting Started
+Live web version: https://doomlings.vercel.app
+
+## What the app does
+
+- Guided game setup for 2-6 players with custom names
+- Age deck builder: mix normal ages, merchant ages, and catastrophes, with an optional final catastrophe
+- Challenge roller that assigns a random challenge to a random player each age
+- Dominant tracking with the 5-tier progression system and card search by name or effect
+- Trinket assignment and tracking, including pocketed trinkets
+- Meaning of Life assignment and end-game scoring with sM scaling based on game length
+- Game state persistence (localStorage on web, Capacitor Preferences on native) plus named save slots in Settings
+- Themes and UI scaling in Settings
+- Optional device-to-device Sync of the host's game state (see Multiplayer status below)
+- A full digital version of the game is not included yet; the home screen labels it "Coming Soon"
+
+## Card data
+
+All card data lives as JSON in `public/data/` and is loaded by the game screen at runtime. Verified counts:
+
+- Dominants: 70 (`dominantData.json`)
+- Ages: 82 (`ageData.json`), plus 11 merchant ages (`merchantAgeData.json`)
+- Catastrophes: 43 (`catastropheData.json`)
+- Meaning of Life: 48 (`meaningOfLifeData.json`)
+- Trinkets: 40 (`trinketData.json`)
+- Rules: 7 normal + 7 catastrophe (`normalRules.json`, `catastropheRules.json`)
+- Expansion extras (treasures and expansion traits/ages/catastrophes): `extendedCards.json`
+- Card artwork lookup data scraped from the official compendium: `scrapedCards.json`, `missingCardsFoundFromScrape.json`
+
+## Getting started
 
 ### Prerequisites
 
 - Node.js 18.17+ (LTS recommended)
 - npm 9+
-- Git configured with access to this repository
 - Android Studio or Android SDK + Java 17 for native builds
 
-### Install & Run (Web)
+### Install and run (web)
 
 ```bash
 git clone https://github.com/Carter-75/doomlings.git
@@ -20,379 +47,75 @@ npm install
 npm run dev
 ```
 
-The development server runs on http://localhost:3000.
+`npm run dev` starts the custom server (`server.mjs`, Next.js plus the Socket.IO sync server) on http://localhost:3000.
 
-## Build Workflows
+Other scripts:
+
+```bash
+npm run build        # Production build (static export when not on Vercel/Render)
+npm run start        # Production run of server.mjs
+npm run type-check   # tsc --noEmit (currently passes clean)
+npm run lint         # ESLint (known pre-existing style debt, mostly explicit any)
+npm run clean        # Remove .next, out, and node_modules/.cache
+```
+
+## Build workflows
 
 Comprehensive instructions live in docs:
 
-- docs/build/overview.md – consolidated automation + manual build guide
-- docs/android/release-guide.md – Play Store release checklist
-- docs/android/keystore-setup.md – creating and backing up signing keys
+- docs/build/overview.md: consolidated automation and manual build guide
+- docs/android/release-guide.md: Play Store release checklist
+- docs/android/keystore-setup.md: creating and backing up signing keys
+- docs/deployment/socket-deployment.md: Socket.IO deployment notes
+- docs/integration/iframe-embedding.md: embedding the web app in an iframe
 
-### Windows Automation
-
-Automation scripts now reside in scripts/web/:
+### Windows automation
 
 ```powershell
 ./scripts/web/build-and-deploy.ps1 [-Force] [-SkipGit]
 ```
+
 ```cmd
 scripts\web\build-and-deploy.bat
 ```
 
-Both scripts produce signed AAB/APK artifacts in builds/. Generated bundles are ignored by Git after this cleanup—store them externally.
-They also write the Google Play signing payloads to `builds/signing/` using the helpers stored under `android/signing/` (the PEPK jar, encryption public key, and upload certificate templates).
+Both produce signed AAB/APK artifacts in `builds/`. Generated bundles are ignored by Git; store them externally.
 
-### Manual Cross-Platform Flow
+### Manual flow
 
-Refer to docs/build/overview.md for the step-by-step sequence (npm run clean, npm run build, npx cap sync android, Gradle release tasks).
+See docs/build/overview.md for the step-by-step sequence (npm run clean, npm run build, npx cap sync android, Gradle release tasks). Release bundles (`*.aab`, `*.apk`) and keystore files must stay out of version control.
 
-## Project Structure
+## Project structure
 
 ```
 android/                 Capacitor wrapper and Gradle project
-builds/                  Output directory for generated release bundles
-docs/
-  android/               Android-specific guides (release, keystore)
-  build/                 Build automation and manual workflow docs
-  deployment/            Backend/socket deployment notes
-  integration/           Embedding and third-party integration guides
-  product/               Feature deep-dives and enhancement summaries
-  testing/               QA reports and testing summaries
-public/                  Static assets and game data JSON
+builds/                  Output directory for generated release bundles (gitignored)
+docs/                    Build, Android, deployment, integration, and product docs
+icons/                   App icons at multiple sizes
+public/                  Static assets and game data JSON (public/data)
 resources/               Additional art/assets used by the app
-scripts/web/             Windows automation entry points
-src/                     Next.js application (app router, modules, lib)
-server-with-socket.js    WIP Socket.IO gateway for multiplayer
-standalone-socket-server.js  Standalone deployment script for Socket.IO
+scripts/                 One-off data scraping helpers (scripts/web holds build automation)
+server.mjs               Custom Node server: Next.js plus Socket.IO sync
+src/
+  app/                   App router pages (home, game, settings, contact, privacy, premium)
+  app/api/game/          REST room backend scaffold backed by Upstash Redis (see below)
+  components/            UI components
+  hooks/                 Game state, sync, and card image hooks
+  lib/                   Services: card data, socket manager, ads, themes, notifications
+  modules/doomlings/     Experimental full-game engine (types, rules engine, decks)
 ```
 
-## Multiplayer Status
+## Multiplayer status
 
-Frontend flows for multiplayer are implemented; the production Socket.IO service is still being hardened. See docs/deployment/socket-deployment.md for Railway/Render bootstrap notes.
+Sync is implemented against the Socket.IO server in `server.mjs`, which runs alongside Next.js when you use `npm run dev` or `npm run start` on your own host. The Vercel web deployment does not run `server.mjs`, so Sync cannot connect there unless `NEXT_PUBLIC_SOCKET_URL` points at a separately deployed socket server.
 
-## Testing & QA
+A REST room backend also exists at `src/app/api/game` (Upstash Redis) with a client in `src/lib/vercelGameManager.ts`. The current UI does not use that client, and the API needs `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` set in the deployment environment to answer anything except error responses.
 
-- docs/testing/backend-test-report.md – backend validation history
-- docs/testing/testing-summary.md – condensed QA overview
+Ads and premium purchases are currently disabled in code (`MONETIZATION_DISABLED` in `src/lib/monetization-config.ts`); the premium page redirects home while that flag is on.
 
-## License & Distribution
+## License and distribution
 
 This repository is distributed under the Doomlings Companion Proprietary License (see LICENSE). Source code, assets, and generated builds may only be used via authorized deployments (https://doomlings.vercel.app) or approved tester programs. Do not redistribute or fork without written permission.
 
 ---
-_Last updated: 2026-01-07_<<<<<<< HEAD
-# 🎲 DOOMlings Companion App
-
-A comprehensive digital companion for the **DOOMlings** board game, featuring card management, game tracking, and multiplayer functionality.
-
-![Version](https://img.shields.io/badge/version-2.2.0-blue.svg)
-![Platform](https://img.shields.io/badge/platform-Android%20%7C%20Web-green.svg)
-![Built with](https://img.shields.io/badge/built%20with-Next.js%20%7C%20Capacitor-orange.svg)
-
-## 🚀 Quick Start
-
-### Option 1: One-Click Build (Windows) ⚡
-1. **Clone/Pull the repository:**
-   ```bash
-   git clone https://github.com/Carter-75/doomlings.git
-   cd doomlings
-   ```
-
-2. **Double-click the build file:**
-   ```
-   build-and-deploy.bat
-   ```
-
-3. **Click "Y" to confirm** and wait for completion
-
-4. **Get your files:**
-   - AAB file: `builds/app-release.aab` (for Google Play Store)
-   - APK file: `builds/app-release.apk` (for direct installation)
-=======
-# Doomlings Companion
-
-Commercial-grade companion app for the Doomlings card game. Multiplayer support is planned, with frontend flows scaffolded already; the authoritative backend is still under construction.
-
-## Highlights
-
-- Multiplayer mode (coming soon) with a dedicated Socket.IO gateway migrated into TypeScript modules.
-- Hybrid deployment: Vercel for the web app, Capacitor/Gradle for Android bundles.
-- Modular TypeScript codebase with feature-driven structure (`src/app`, `src/modules`).
-- Centralized documentation under `docs/` for roadmap, deployment, testing, and Android release steps.
-
-## Project Structure
-
-```
-android/                 Native wrapper generated by Capacitor
-docs/                    Project documentation (roadmap, deployment, testing, release guides)
-public/                  Static assets served by Next.js
-resources/               Game data, art, and configuration assets
-src/                     Next.js application (routes, components, lib, modules)
-server-with-socket.js    Multiplayer Socket.IO gateway
-socket-server-package.json / Procfile   Standalone deployment bundle for the socket server
-```
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js ≥ 18.17 (Vercel will pin to 24.x because of the `engines` range).
-- npm (ships with Node).
-- Optional: Java 17+ and Android SDK for building native bundles.
-
-### Install Dependencies
-
-```bash
-npm install
-```
-
-### Run the Web App Locally
->>>>>>> dff5b78 (fixing)
-
-### Option 2: Manual Setup 🛠️
-
-#### Prerequisites
-- **Node.js** 18+ 
-- **npm** 9+
-- **Android SDK** (for mobile builds)
-- **Git**
-
-#### Installation Steps
-```bash
-# 1. Clone the repository
-git clone https://github.com/Carter-75/doomlings.git
-cd doomlings
-
-# 2. Install dependencies
-npm install
-
-# 3. Run development server
-npm run dev
-```
-
-<<<<<<< HEAD
-Open [http://localhost:3000](http://localhost:3000) to see the app.
-
-#### Building for Android
-```bash
-# Build web app
-npm run build
-
-# Sync with Capacitor
-npx cap sync android
-
-# Build Android files
-cd android
-./gradlew bundleRelease    # Creates AAB for Play Store
-./gradlew assembleRelease  # Creates APK for direct install
-```
-
-## 📱 Features
-
-### 🎯 **Core Functionality**
-- ✅ **Complete Card Database** - 77+ dominants, 40+ trinkets, 48 meanings, ages & catastrophes
-- ✅ **5-Tier Dominant System** - Full progression tracking for all dominant cards
-- ✅ **Game State Management** - Track players, turns, and game progress
-- ✅ **Smart Reset System** - Clear dominants with proper UI updates
-- ✅ **Multiplayer Support** - Socket.io-based real-time gameplay
-- ✅ **Offline Capability** - Full functionality without internet
-
-### 🃏 **Card Management**
-- **Dominant Cards** (77) - 5-tier progression systems with scaling effects
-- **Trinket Cards** (40) - Power, objectives, and point values
-- **Meaning of Life** (48) - Complete with sM scaling notation
-- **Age Effects** (77) - Organized gameplay modifiers
-- **Catastrophe Cards** (41) - With worldsEnd effects
-- **Merchant Ages** (11) - Special merchant interactions
-- **Rules** (7+7) - Normal and catastrophe gameplay rules
-
-### 🎮 **Game Features**
-- **Turn Management** - Track current player and age progression
-- **Age Deck Builder** - Customize your game experience
-- **Player Setup** - 2-6 player support with custom names
-- **Catastrophe Mode** - Special rules for intense gameplay
-- **Card Search** - Find cards quickly by name or effect
-- **State Persistence** - Resume games where you left off
-
-## 📁 Project Structure
-
-```
-doomlings/
-├── 📄 build-and-deploy.bat      # One-click build automation
-├── 📄 BUILD-INSTRUCTIONS.md    # Detailed build guide
-├── 📄 README.md                # This file
-├── 📁 src/                     # Source code
-│   ├── 📁 app/                 # Next.js app pages
-│   ├── 📁 components/          # React components
-│   └── 📁 lib/                 # Utilities and services
-├── 📁 public/                  # Static assets
-│   └── 📁 data/               # JSON game data
-│       ├── dominantData.json  # 77 dominant cards
-│       ├── trinketData.json   # 40 trinket cards
-│       ├── ageData.json       # 77 age effects
-│       └── ...               # Other game data
-├── 📁 android/                 # Capacitor Android project
-├── 📁 builds/                  # Build outputs (created after build)
-│   ├── app-release.aab        # Android App Bundle
-│   ├── app-release.apk        # Android Package
-│   └── 📁 backup/             # Previous builds backup
-└── 📁 icons/                   # App icons (multiple sizes)
-```
-
-## 🔧 Development
-
-### Available Scripts
-```bash
-npm run dev        # Start development server (with Turbopack)
-npm run build      # Build production app
-npm run start      # Start production server
-npm run lint       # Run ESLint
-npm run clean      # Clean build caches
-```
-
-### Key Technologies
-- **Frontend**: Next.js 15, React 18, TypeScript
-- **Mobile**: Capacitor 6 for native Android
-- **Styling**: Tailwind CSS
-- **Data**: JSON-based card database
-- **Multiplayer**: Socket.io (optional)
-- **Build**: Gradle for Android builds
-
-## 📦 Deployment
-
-### Google Play Store (Recommended)
-1. Build AAB: Run `build-and-deploy.bat` or manual build
-2. Upload `builds/app-release.aab` to Google Play Console
-3. Follow Play Store review process
-
-### Direct Installation
-1. Build APK: Run `build-and-deploy.bat` or manual build
-2. Enable "Unknown Sources" on Android device
-3. Install `builds/app-release.apk` directly
-
-### Web Deployment
-```bash
-npm run build  # Creates static export in 'out' directory
-# Deploy 'out' directory to any static hosting service
-```
-
-## 🎯 What's New in v2.2.0
-
-### ✨ **Latest Updates**
-- 🔄 **Complete Data Overhaul** - All card data updated with latest expansions
-- ⚡ **5-Tier Dominants** - Full progression systems for all dominant cards
-- 🛠️ **Automated Build System** - One-click Windows batch file builds
-- 🗂️ **Reorganized Data** - Clean separation of ages, catastrophes, and rules
-- 🔧 **Bug Fixes** - Dominant reset system fully functional
-- 📱 **Enhanced UI** - Improved card displays and interactions
-
-### 📊 **Data Statistics**
-- **77 Dominant Cards** with comprehensive 5-tier progression
-- **40 Trinket Cards** with complete power/objective/points
-- **48 Meaning of Life Cards** with sM scaling mechanics  
-- **77 Age Effects** properly categorized and organized
-- **41 Catastrophe Cards** with worldsEnd effects
-- **11 Merchant Ages** for expanded gameplay
-- **14 Total Rules** (7 normal + 7 catastrophe)
-
-## 🆘 Troubleshooting
-
-### Common Issues
-
-**Build fails:**
-- Ensure Node.js 18+ and Android SDK are installed
-- Run `npm run clean` before building
-- Check Android SDK path in `android/local.properties`
-
-**App won't start:**
-- Clear browser cache for web version
-- Reinstall APK for Android version
-- Check console for error messages
-
-**Cards not loading:**
-- Verify JSON files in `public/data/` directory
-- Check browser network tab for failed requests
-- Ensure file paths match component imports
-
-### Getting Help
-1. Check the **BUILD-INSTRUCTIONS.md** for detailed build steps
-2. Review console logs for error messages
-3. Verify all prerequisites are properly installed
-4. Try manual build commands if batch file fails
-
-## 📋 Requirements
-
-### Development
-- **Node.js** 18.17.0+
-- **npm** 9.0.0+
-- **Git** (for version control)
-
-### Android Building
-- **Android SDK** with API level 34+
-- **Gradle** (included in Android SDK)
-- **Java** 11+ (for Gradle)
-
-### Recommended Tools
-- **Android Studio** (for advanced Android development)
-- **VS Code** (for web development)
-- **Chrome DevTools** (for debugging)
-
-## 📄 License
-
-**MIT License** - Feel free to use, modify, and distribute.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit changes: `git commit -m 'Add amazing feature'`
-4. Push to branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
-
-## 🎮 About DOOMlings
-
-DOOMlings is a strategic card game where players evolve creatures through different ages, collect traits, and survive catastrophes to achieve the highest score. This companion app enhances the physical game with digital card management, rule references, and multiplayer capabilities.
-
----
-
-**Built with ❤️ for the DOOMlings community**
-
-*Last updated: October 2025 - v2.2.0 with comprehensive card database*
-=======
-The site is served from `http://localhost:3000`.
-
-### Multiplayer Backend Status
-
-The Socket.IO server code lives in `server-with-socket.js` and TypeScript modules under `src/modules/doomlings/multiplayer`, but the runtime build pipeline is not yet wired up. Treat the multiplayer experience as **coming soon** and ignore deployment instructions until the backend is finalized.
-
-## Build & Release
-
-### Production Web Build
-
-```bash
-npm run build
-npm start
-```
-
-Deploy the `.next` output through Vercel or your preferred Node host.
-
-### Android Bundle Workflow
-
-Follow the end-to-end checklist in `docs/android-release-guide.md` for `npx cap sync android` and Gradle release commands. Keep generated `.aab`/`.apk` files outside the repository; they are now ignored by default.
-
-### Documentation
-
-- Roadmap: `docs/project-roadmap.md`
-- Multiplayer deployment: `docs/socket-deployment.md` (status: coming soon)
-- Test reports: `docs/backend-test-report.md`, `docs/testing-summary.md`
-
-## Release Artifact Policy
-
-Release builds (`*.aab`, `*.apk`) and keystore files must stay out of version control. Store distribution bundles in a private location (e.g., secure cloud storage) and upload to Google Play manually. Only whitelisted tester accounts may access closed-track builds.
-
-## License
-
-This repository is distributed under the **Doomlings Companion Proprietary License** (see `LICENSE`). The source code, assets, and release builds may not be copied, modified, redistributed, or hosted outside the official web deployment (`doomlings.vercel.app`) or explicitly authorized Google Play tester accounts.
->>>>>>> dff5b78 (fixing)
+_Last updated: 2026-10-26_

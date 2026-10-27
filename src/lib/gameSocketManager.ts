@@ -222,7 +222,10 @@ class GameSocketManager {
   }
 
   getPlayerId(): string | null {
-    return this.socket ? this.socket.id : null;
+    // The server identifies players by the registered playerId (which survives
+    // reconnects via localStorage), not by the transient socket.id. Room host
+    // checks compare against this id, so prefer it when registration completed.
+    return this.playerId ?? this.socket?.id ?? null;
   }
 
   getPlayerName(): string | null {

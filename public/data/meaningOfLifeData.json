@@ -64,10 +64,6 @@
     "description": "To claim this bonus, you must have 5 or more of a single color in your trait pile. When scoring Meaning of Life, draw 2 Meaning of Life cards and add applicable bonuses to your final score."
   },
   {
-    "name": "The Blind Dragon",
-    "description": "To claim this bonus, you must have 5 or more of a single color in your trait pile. When scoring Meaning of Life, draw 2 Meaning of Life cards and add applicable bonuses to your final score."
-  },
-  {
     "name": "The Bramble Brawler",
     "description": "+4sM if you have more purple traits than your opponents, and +1sM for each opponent with fewer purple traits than you."
   },
@@ -142,10 +138,6 @@
   {
     "name": "The Rain Golem",
     "description": "+4sM if you have more blue traits than your opponents, and +1sM for each opponent with fewer blue traits than you."
-  },
-  {
-    "name": "The Forest Keeper",
-    "description": "+4sM if you have more green traits than your opponents, and +1sM for each opponent with fewer green traits than you."
   },
   {
     "name": "The Forest Keeper",
